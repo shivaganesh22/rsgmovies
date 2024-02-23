@@ -15,7 +15,13 @@ module.exports = {
       },
       maxHeight: {
         '128': '18.4rem',
-      }
+      },
+      width: {
+        '128': '35rem',
+      },
+      maxWidth: {
+        '128': '35rem',
+      },
     },
   },
   plugins: [],
