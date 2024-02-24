@@ -4,10 +4,13 @@ import Movierulz from "./home/Movierulz";
 import MovierulzMovie from "./home/MovierulzMovie";
 import IBomma from "./ibomma/IBomma";
 import IBommaMovie from "./ibomma/IBommaMovie";
+import Search from "./Search";
 import Doodplay from "./tamilmv/Doodplay";
 import Tamilmv from "./tamilmv/Tamilmv";
 import TamilmvMovie from "./tamilmv/TamilmvMovie";
 import TV from "./tv/TV";
+import TVPlayer from "./tv/TVPlayer";
+import Youtube from "./Youtube";
 
 
 export const AllRoutes = () => {
@@ -20,10 +23,13 @@ export const AllRoutes = () => {
             <Route path="files" element={<MovierulzMovie />} />
             <Route path="ibomma" element={<IBomma />} />
             <Route path="ibomma/movie" element={<IBommaMovie />} />
+            <Route path="search" element={<Search />} />
             <Route path="tamilmv" element={<Tamilmv />} />
             <Route path="tamilmv/movie" element={<TamilmvMovie />} />
             <Route path="doodplay" element={<Doodplay />} />
             <Route path="tv" element={<TV />} />
+            <Route path="tv/player" element={<TVPlayer />} />
+            <Route path="youtube" element={<Youtube />} />
             <Route path="*" element={<PageNotFound />} />
            
         </Routes>

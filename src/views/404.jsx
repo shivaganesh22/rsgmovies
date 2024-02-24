@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export const PageNotFound = () => {
 
   useEffect(() => {
-    document.title = `Page Not Found / Cinemate`;
+    document.title = `404 - RSG MOVIES`;
   });
 
   return (

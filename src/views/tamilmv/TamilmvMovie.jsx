@@ -36,7 +36,7 @@ export default function TamilmvMovie() {
             </section>
             <div className="grid grid-cols-1 p-4 lg:grid-cols-2 md:grid-cols-2 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
                 {links.map((movie, index) => (
-                    <div key={index} className="w-sm  border border-gray-400 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
+                    <div key={index} className="w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
                         <Link href={`/movierulz/movie?link=${movie.link}`}>
                             <div className="p-1">
                                 <i className="fa fa-upload text-black dark:text-white" aria-hidden="true"></i>

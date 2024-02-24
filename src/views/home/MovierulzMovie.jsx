@@ -40,12 +40,12 @@ export default function MovierulzMovie() {
       </section>
       <div className="grid grid-cols-2 p-4 lg:grid-cols-5 md:grid-cols-4 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
 { links.map((movie,index) => (
-<div key={index} className="max-w-sm bg-success border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+<div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
     <Link href={`/movierulz/movie?link=${movie.link}`}>
         
     <div className="p-1">
-    <i className="fa fa-upload text-white dark:text-white" aria-hidden="true"></i>
-      <h5 className="mb-2 text-1xl text-white font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.name}</h5>
+    <i className="fa fa-upload text-black dark:text-white" aria-hidden="true"></i>
+      <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.name}</h5>
     </div>
     </Link>
 </div>
