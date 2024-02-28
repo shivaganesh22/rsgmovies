@@ -32,6 +32,7 @@ export default function Search() {
     }, [queryData]);
     return (
         <main>
+            <center>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
             <form className="max-w-md mx-auto">
                 <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
@@ -60,6 +61,7 @@ export default function Search() {
                     </div>
                 ))}
             </div>
+            </center>
         </main>
     )
 }

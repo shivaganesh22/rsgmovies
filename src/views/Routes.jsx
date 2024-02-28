@@ -1,9 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 import { PageNotFound } from "./404";
+import Files from "./files/Files";
 import Movierulz from "./home/Movierulz";
 import MovierulzMovie from "./home/MovierulzMovie";
 import IBomma from "./ibomma/IBomma";
 import IBommaMovie from "./ibomma/IBommaMovie";
+import Login from "./Login";
 import Search from "./Search";
 import Doodplay from "./tamilmv/Doodplay";
 import Tamilmv from "./tamilmv/Tamilmv";
@@ -20,7 +22,7 @@ export const AllRoutes = () => {
         <Routes>
             <Route path="" element={<Movierulz />} />
             <Route path="movierulz/movie" element={<MovierulzMovie />} />
-            <Route path="files" element={<MovierulzMovie />} />
+            <Route path="files" element={<Files />} />
             <Route path="ibomma" element={<IBomma />} />
             <Route path="ibomma/movie" element={<IBommaMovie />} />
             <Route path="search" element={<Search />} />
@@ -30,6 +32,7 @@ export const AllRoutes = () => {
             <Route path="tv" element={<TV />} />
             <Route path="tv/player" element={<TVPlayer />} />
             <Route path="youtube" element={<Youtube />} />
+            <Route path="login" element={<Login />} />
             <Route path="*" element={<PageNotFound />} />
            
         </Routes>

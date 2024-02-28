@@ -1,5 +1,4 @@
 import React ,{useState,useEffect} from 'react'
-import ReactDOM from 'react-dom';
 
 
 export default function TV() {
@@ -19,7 +18,7 @@ export default function TV() {
       };
   
       fetchData();
-    }, []);
+    }, );
     return (
       <main >
         <div className='my-4 text-left' dangerouslySetInnerHTML={{ __html: movies }} />

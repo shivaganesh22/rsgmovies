@@ -5,7 +5,7 @@ export default function Doodplay() {
     const params = new URLSearchParams(urlSearchString);
     return (
         <main>
-
+            <center>
         <div className=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 lg:h-screen   w-full md:h-96 h-72 ">
             <a href={params.get("link")}>
                 <button className="w-64 text-xl text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5 mr-2 mb-2 font-medium">Doodplay</button>
@@ -14,6 +14,7 @@ export default function Doodplay() {
 
 
         </div>
+        </center>
         </main>
     )
 }

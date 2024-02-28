@@ -29,6 +29,7 @@ export default function IBommaMovie() {
     }
     return (
         <main>
+            <center>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
             <section className="flex justify-around flex-wrap py-5">
                 <div className="max-w-sm">
@@ -65,7 +66,7 @@ export default function IBommaMovie() {
                 
                 
             </div>
-
+            </center>
         </main>
     )
 }

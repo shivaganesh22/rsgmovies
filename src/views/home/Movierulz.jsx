@@ -2,14 +2,20 @@ import React, { useEffect,useState,useRef } from 'react'
 import { Link } from 'react-router-dom';
 
 
+
+
 export default function Movierulz() {
   const query=useRef("");
    const [queryData,setQuery]=useState("");
-  const [movies,setMovies] = useState([]);
+  const [movies,setMovies] = useState(JSON.parse(localStorage.getItem("movierulz")) || []);
   const handleSubmit = (event) => {
     event.preventDefault();
     setQuery(query.current.value);
   }
+
+
+
+
 
   useEffect(() => {
     const fetchData = async (apiUrl) => {
@@ -17,7 +23,7 @@ export default function Movierulz() {
         const response = await fetch(apiUrl);
         const result = await response.json();
         setMovies(result.movies);
-       
+        localStorage.setItem("movierulz", JSON.stringify(result.movies));
         
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -27,7 +33,8 @@ export default function Movierulz() {
     fetchData(queryData?`https://rsg-movies.vercel.app/api/movierulz/search/${queryData}`:"https://rsg-movies.vercel.app/api/movierulz/");
   }, [queryData]);
   return (
-    <main>
+    <main >
+      <center>
       <form className="max-w-md mx-auto">   
     <label  className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
     <div className="relative">
@@ -55,7 +62,7 @@ export default function Movierulz() {
 </div>
 )) }
 </div>
-
+</center> 
     </main>
   )
 }
