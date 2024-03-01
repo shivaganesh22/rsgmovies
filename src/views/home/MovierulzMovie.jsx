@@ -1,13 +1,15 @@
 import React ,{useEffect,useState}from 'react'
-import { Link } from 'react-router-dom'
-
+import { Link ,useNavigate} from 'react-router-dom'
+import { toastSuccess, toastWarning } from '../components/Notifications';
+import { useAuth } from '../other/AuthContext';
 
 export default function MovierulzMovie() {
   const urlSearchString = window.location.search;
   const params = new URLSearchParams(urlSearchString);
   const [data,setData]=useState("");
   const [links,setLinks]=useState([]);
- 
+  const { loading, setLoading } = useAuth();
+  const navigate=useNavigate();
 
     useEffect(() => {
       const fetchData = async () => {
@@ -24,6 +26,28 @@ export default function MovierulzMovie() {
   
       fetchData();
     }, );
+    const addTorrent= async(link)=>{
+      setLoading();
+      try {
+        const response = await fetch(`https://rsg-movies.vercel.app/react/addtorrent/?link=${link}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${localStorage.getItem('token')}`
+          },
+        });
+        const result = await response.json();
+        if(result.result==true){
+          toastSuccess("Torrent Added");
+          navigate('/files');
+        }
+        else{
+          toastWarning(result.result)
+        }
+        
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
   return (
    <main>
     <center>
@@ -44,7 +68,7 @@ export default function MovierulzMovie() {
       <div className="grid grid-cols-2 p-4 lg:grid-cols-5 md:grid-cols-4 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
 { links.map((movie,index) => (
 <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-    <Link href={`/movierulz/movie?link=${movie.link}`}>
+    <Link  onClick={()=>{addTorrent(movie.link)}}>
         
     <div className="p-1">
     <i className="fa fa-upload text-black dark:text-white" aria-hidden="true"></i>

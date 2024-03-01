@@ -29,7 +29,6 @@ export default function Movierulz() {
         console.error('Error fetching data:', error);
       }
     };
-
     fetchData(queryData?`https://rsg-movies.vercel.app/api/movierulz/search/${queryData}`:"https://rsg-movies.vercel.app/api/movierulz/");
   }, [queryData]);
   return (
@@ -49,6 +48,7 @@ export default function Movierulz() {
 </form>
 <br/>
 
+<div className=''>
 <div className="grid grid-cols-2  p-4 lg:grid-cols-6 md:grid-cols-4 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
 
 { movies.map((movie,index) => (
@@ -61,6 +61,7 @@ export default function Movierulz() {
     </Link>
 </div>
 )) }
+</div>
 </div>
 </center> 
     </main>
