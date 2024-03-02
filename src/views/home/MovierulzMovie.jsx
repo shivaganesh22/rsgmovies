@@ -24,7 +24,7 @@ export default function MovierulzMovie() {
         }
       };
   
-      fetchData();
+      if (params.get("link")!=null) fetchData();
     }, );
     const addTorrent= async(link)=>{
       setLoading();
@@ -53,7 +53,7 @@ export default function MovierulzMovie() {
     <center>
 
     
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
      <section className="flex justify-around flex-wrap py-5">
         <div className="max-w-sm">
           <img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={data.image} alt={data.name} />
@@ -67,7 +67,7 @@ export default function MovierulzMovie() {
       </section>
       <div className="grid grid-cols-2 p-4 lg:grid-cols-5 md:grid-cols-4 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
 { links.map((movie,index) => (
-<div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+<div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
     <Link  onClick={()=>{addTorrent(movie.link)}}>
         
     <div className="p-1">

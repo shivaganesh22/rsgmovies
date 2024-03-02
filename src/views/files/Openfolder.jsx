@@ -1,43 +1,38 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate ,Link} from 'react-router-dom'
+import { useNavigate ,Link,useParams} from 'react-router-dom'
 import folderimg from "./folder.png"
 import torrentimg from "./torrent.png"
 import { useAuth } from '../other/AuthContext';
 
 export default function Files() {
   const navigate = useNavigate();
+  const params=useParams();
   const [isFileEditing,setFileEditing]=useState([]);
   const [isFolderEditing,setFolderEditing]=useState([])
   const { storage, setStorage } = useAuth();
   const [folders, setFolders] = useState([]);
   const [torrents, setTorrents] = useState([]);
   const [files, setFiles] = useState([]);
-  const [shouldFetch, setFetch] = useState(true);
   useEffect(() => {
-  
     const fetchData = async () => {
-      if(shouldFetch){
-        try {
-          const response = await fetch("https://rsg-movies.vercel.app/react/files/", {
-            method: 'GET',
-            headers: {
-              'Authorization': `Token ${localStorage.getItem('token')}`
-            },
-          });
-          const result = await response.json();
-          
-          setStorage(`${(result.space_used / (1024 * 1024 * 1024)).toFixed(1)} / ${(result.space_max / (1024 * 1024 * 1024)).toFixed(1)} GB`);
-          setFolders(result.folders);
-          setFiles(result.files);
-          setTorrents(result.torrents);
-          setFolderEditing(Array.from({ length: result.folders.length }, () => false))
-          setFileEditing(Array.from({ length: result.files.length }, () => false))
-          
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
+      try {
+        const response = await fetch(`https://rsg-movies.vercel.app/react/open/${params.id}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${localStorage.getItem('token')}`
+          },
+        });
+        const result = await response.json();
+  
+        setStorage(`${(result.space_used / (1024 * 1024 * 1024)).toFixed(1)} / ${(result.space_max / (1024 * 1024 * 1024)).toFixed(1)} GB`);
+        setFolders(result.folders);
+        setFiles(result.files);
+        setTorrents(result.torrents);
+        setFolderEditing(Array.from({ length: result.folders.length }, () => false))
+        setFileEditing(Array.from({ length: result.files.length }, () => false))
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
-      
     };
   
     if (localStorage.getItem('token') == null) {
@@ -46,12 +41,12 @@ export default function Files() {
       fetchData(); // Initial fetch
   
       // Set up interval to fetch data every 5 seconds
-      const intervalId = setInterval(fetchData, 5000);
-      
+      // const intervalId = setInterval(fetchData, 5000);
+  
       // Cleanup the interval when the component unmounts
-      return () => clearInterval(intervalId);
+      // return () => clearInterval(intervalId);
     }
-  }, [navigate,shouldFetch]);
+  }, [navigate]);
   const deleteTorrent= async(id)=>{
     
     try {
@@ -102,7 +97,6 @@ export default function Files() {
   }
   const editFolder= async(e,id)=>{
     e.preventDefault();
-    
     try {
       const response = await fetch(`https://rsg-movies.vercel.app/react/rename/folder/${id}/?name=${e.target.msg.value}`, {
         method: 'GET',
@@ -118,7 +112,6 @@ export default function Files() {
   }
   const editFile= async(e,id)=>{
     e.preventDefault();
-    
     try {
       const response = await fetch(`https://rsg-movies.vercel.app/react/rename/file/${id}/?name=${e.target.msg.value}`, {
         method: 'GET',
@@ -164,7 +157,8 @@ export default function Files() {
       console.error('Error fetching data:', error);
     }
   }
- 
+
+
   return (
     <main>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
@@ -262,7 +256,7 @@ export default function Files() {
                         </Link>
                       </div>
                       <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                        <Link onClick={()=>{setFetch(false);const newA=isFolderEditing;newA[index]=!newA[index];setFolderEditing(newA)}}>
+                        <Link onClick={()=>{const newA=isFolderEditing;newA[index]=!newA[index];setFolderEditing(newA)}}>
 
                           <div className="p-1">
                             <i className={`fa fa-${isFolderEditing[index]?"times":"edit"} text-black dark:text-white`} aria-hidden="true"></i>
@@ -346,7 +340,7 @@ export default function Files() {
                       </div>
                      
                       <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                        <Link onClick={()=>{setFetch(false) ;const newA=isFileEditing;newA[index]=!newA[index];setFileEditing(newA)}}>
+                        <Link onClick={()=>{const newA=isFileEditing;newA[index]=!newA[index];setFileEditing(newA)}}>
 
                           <div className="p-1">
                             <i className={`fa fa-${isFileEditing[index]?"times":"edit"} text-black dark:text-white`} aria-hidden="true"></i>

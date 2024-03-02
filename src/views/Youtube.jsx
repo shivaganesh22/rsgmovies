@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Link } from 'react-router-dom';
 import { faVolumeXmark, faMusic } from '@fortawesome/free-solid-svg-icons'
 export default function Youtube() {
   const query = useRef("");
@@ -70,7 +71,7 @@ export default function Youtube() {
       <div className="grid grid-cols-2 p-4 lg:grid-cols-5 md:grid-cols-4 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
         {toggle ?
           audios.map((movie, index) => (
-            <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+            <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
               <a href={`${movie.url}`}>
 
                 <div className="p-1">
@@ -87,10 +88,10 @@ export default function Youtube() {
           ))
           :
           videos.map((movie, index) => (
-            <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-              <a href={`${movie.url}`}>
+            <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+              <Link to={`${movie.url}`} target="_blank">
 
-                <div className="p-1">
+                <div className="p-1" >
 
 
                   <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.resolution}</h5>
@@ -101,7 +102,7 @@ export default function Youtube() {
                   }
                   <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.size.toFixed(2)} MB</h5>
                 </div>
-              </a>
+              </Link>
             </div>
           ))
 
