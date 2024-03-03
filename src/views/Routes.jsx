@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { PageNotFound } from "./404";
+import Contact from "./Contact";
 import Files from "./files/Files";
 import Openfolder from "./files/Openfolder";
 import Player from "./files/Player";
@@ -40,6 +41,7 @@ export const AllRoutes = () => {
             <Route path="files/open/:id" element={<Openfolder />} />
 
             <Route path="player" element={<Player />} />
+            <Route path="contact" element={<Contact />} />
 
 
             <Route path="*" element={<PageNotFound />} />
