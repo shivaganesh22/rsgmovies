@@ -1,27 +1,15 @@
-import React ,{useState,useEffect} from 'react'
-
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function TV() {
-    const [movies,setMovies] = useState("");
    
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await fetch(`https://rsg-movies.vercel.app/api/sports/`);
-          const result = await response.text();
-          setMovies(result);
-          
-        //  console.log(result);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-  
-      fetchData();
-    }, );
     return (
-      <main >
-        <div className='my-4 text-left' dangerouslySetInnerHTML={{ __html: movies }} />
-      </main>
+      <main>
+       <div className="flex justify-center my-4">
+          <Link onClick={()=>window.open("https://rsg-movies.vercel.app/tv")}>
+          <button className="w-64 text-xl text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5 mr-2 mb-2 font-medium">Go to Sports Page</button>
+          </Link>          
+        </div>
+    </main>
     )
 }

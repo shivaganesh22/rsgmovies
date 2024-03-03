@@ -14,7 +14,6 @@ import Doodplay from "./tamilmv/Doodplay";
 import Tamilmv from "./tamilmv/Tamilmv";
 import TamilmvMovie from "./tamilmv/TamilmvMovie";
 import TV from "./tv/TV";
-import TVPlayer from "./tv/TVPlayer";
 import Youtube from "./Youtube";
 
 
@@ -33,7 +32,7 @@ export const AllRoutes = () => {
             <Route path="tamilmv/movie" element={<TamilmvMovie />} />
             <Route path="doodplay" element={<Doodplay />} />
             <Route path="tv" element={<TV />} />
-            <Route path="tv/player" element={<TVPlayer />} />
+            
             <Route path="youtube" element={<Youtube />} />
             <Route path="login" element={<Login />} />
 
