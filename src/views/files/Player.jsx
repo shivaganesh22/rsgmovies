@@ -71,6 +71,10 @@ export default function Player() {
           "playbackRates": ['x2','x1.75','x1.5','x1.35','x1.25', 'x1','x0.5'],
           "autoHide": true
         },
+        controlForwardBackward: {
+          show: true, // Default: false,
+          doubleTapMobile: true // Default: true
+      },
         "htmlOnPauseBlock": {
           "html": null,
           "height": null,
@@ -104,7 +108,7 @@ export default function Player() {
       <h1 className="lg:text-4xl md:text-3xl text-2xl  font-bold my-3 text-center   text-gray-700  dark:text-white">{data&&data.name}</h1> <br/>
     
     <div className="video">
-   <video ref={videoRef} className="w-11/12" controls>
+   <video ref={videoRef} className="w-full" controls>
      <source
        src={data && data.url}
        type="video/mp4"
