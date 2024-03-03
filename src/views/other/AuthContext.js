@@ -5,8 +5,8 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setLoggedIn] = useState(localStorage.getItem('token')||false);
-  const [storage, updateStorage] = useState( null);
-  const [loading, updateLoading] = useState(true);
+  const [storage, updateStorage] = useState(null);
+  const [loading, updateLoading] = useState(false);
   const login = () => {
     // Perform login logic
     setLoggedIn(true);
@@ -20,12 +20,14 @@ export const AuthProvider = ({ children }) => {
     // localStorage.setItem('storage',JSON.stringify(size))
     updateStorage(size);
   };
-  const setLoading = () => {
-    // localStorage.setItem('storage',JSON.stringify(size))
-    updateLoading(!loading);
+  const startLoad = () => {
+    updateLoading(true);
+  };
+  const stopLoad = () => {
+    updateLoading(false);
   };
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout ,setStorage,storage,loading,setLoading}}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout ,setStorage,storage,loading,startLoad,stopLoad}}>
       {children}
     </AuthContext.Provider>
   );

@@ -23,7 +23,6 @@ export default function IBommaMovie() {
     }, []);
     const getVideo = (url) => {
         url = String(url)
-        console.log(url.split("v=")[1]);
         return url.split("v=")[1]
 
     }

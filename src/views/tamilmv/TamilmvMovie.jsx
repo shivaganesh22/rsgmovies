@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Link ,useNavigate} from 'react-router-dom'
-
+import { useAuth } from '../other/AuthContext';
+import MyLoader from '../MyLoader';
 import { toastSuccess, toastWarning } from '../components/Notifications';
 
 
 export default function TamilmvMovie() {
+    const {startLoad,stopLoad}=useAuth();
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
     const navigate=useNavigate();
@@ -14,6 +16,7 @@ export default function TamilmvMovie() {
 
     useEffect(() => {
         const fetchData = async () => {
+          startLoad();
             try {
                 const response = await fetch(`https://rsg-movies.vercel.app/api/tamilmv/movie/?link=${params.get("link")}`);
                 const result = await response.json();
@@ -23,12 +26,13 @@ export default function TamilmvMovie() {
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
+            stopLoad();
         };
 
         fetchData();
-    }, );
+    }, []);
     const addTorrent= async(link)=>{
-        
+        startLoad();
         try {
           const response = await fetch(`https://rsg-movies.vercel.app/react/addtorrent/?link=${link}`, {
             method: 'GET',
@@ -48,9 +52,11 @@ export default function TamilmvMovie() {
         } catch (error) {
           console.error('Error fetching data:', error);
         }
+        stopLoad();
       }
     return (
-        <main>
+        <MyLoader>
+          <main>
             <center>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
             <section className="">
@@ -74,5 +80,6 @@ export default function TamilmvMovie() {
             </div>
             </center>
         </main>
+          </MyLoader>
     )
 }

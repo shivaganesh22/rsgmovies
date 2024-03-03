@@ -2,13 +2,16 @@ import React, { useRef, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Link } from 'react-router-dom';
 import { faVolumeXmark, faMusic } from '@fortawesome/free-solid-svg-icons'
+import { useAuth } from './other/AuthContext';
+import MyLoader from './MyLoader';
 export default function Youtube() {
   const query = useRef("");
   const [queryData, setQuery] = useState("");
   const [toggle, setToggle] = useState(false);
-  const [data, setData] = useState(null);
-  const [videos, setVideos] = useState([]);
-  const [audios, setAudios] = useState([]);
+  const {startLoad,stopLoad}=useAuth();
+  const [data, setData] = useState(JSON.parse(localStorage.getItem("youtube")) || null);
+  const [videos, setVideos] = useState(data?data.videos:[]);
+  const [audios, setAudios] = useState(data?data.audio:[]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -17,17 +20,19 @@ export default function Youtube() {
 
   useEffect(() => {
     const fetchData = async () => {
+      startLoad();
       try {
         const response = await fetch(`https://rsg-movies.vercel.app/api/youtube/?link=${queryData}`);
         const result = await response.json();
         setData(result);
         setVideos(result.videos);
         setAudios(result.audio);
-
+        localStorage.setItem("youtube", JSON.stringify(result));
 
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+      stopLoad();
     };
 
     if (queryData) fetchData();
@@ -56,15 +61,16 @@ export default function Youtube() {
 
       <br />
      
-
-      
       <label className="inline-flex  cursor-pointer ">
         <input type="checkbox" value="" className="sr-only peer " onChange={() => { setToggle(!toggle) }} />
         <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
         <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">{toggle ? "Audio" : "Video"}</span>
       </label>
       <br />
-      <div className="p-1">
+
+     <MyLoader>
+      <main>
+     <div className="p-1">
         <h5 className="mb-2 text-1xl font-bold tracking-tight text-gray-900 dark:text-white">{data ? data.title : ""}</h5>
       </div>
       <img className="h-auto w-64 lg:w-80 rounded p-4 mx-auto" src={data ? data.thumb : ""} alt="" />
@@ -109,6 +115,8 @@ export default function Youtube() {
         }
 
       </div>
+      </main>
+      </MyLoader>
      
       </center>
 

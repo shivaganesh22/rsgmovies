@@ -1,10 +1,15 @@
 import React ,{useState,useEffect} from 'react'
 import { Link } from 'react-router-dom';
+import MyLoader from '../MyLoader';
+import { useAuth } from '../other/AuthContext';
 export default function IBomma() {
+    const {startLoad,stopLoad}=useAuth();
     const [movies,setMovies] = useState(JSON.parse(localStorage.getItem("ibomma")) || []);
     useEffect(() => {
       const fetchData = async () => {
+        startLoad();
         try {
+          if (movies.length>0) stopLoad();
           const response = await fetch(`https://rsg-movies.vercel.app/api/ibomma/`);
           const result = await response.json();
           setMovies(result.movies);
@@ -13,12 +18,14 @@ export default function IBomma() {
         } catch (error) {
           console.error('Error fetching data:', error);
         }
+        stopLoad();
       };
   
       fetchData();
-    }, );
+    }, []);
     return (
-      <main>
+      <MyLoader>
+        <main>
         <center>
  <div className=''>
  <div className="grid grid-cols-2  p-4 lg:grid-cols-6 md:grid-cols-4 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
@@ -36,5 +43,6 @@ export default function IBomma() {
  </div>
   </center>
       </main>
+        </MyLoader>
     )
 }
