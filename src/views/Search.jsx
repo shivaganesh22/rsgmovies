@@ -26,6 +26,7 @@ export default function Search() {
                 setData(result.name);
                 setLinks(result.links);
                 setPages(result.pages);
+                window.scrollTo(0, 0);
               
             } catch (error) {
                 console.error('Error fetching data:', error);
