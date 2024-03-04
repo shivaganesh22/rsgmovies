@@ -54,9 +54,9 @@ export default function Movierulz() {
     
 
  <br />
-<div className="grid grid-cols-2  p-4 lg:grid-cols-6 md:grid-cols-4 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
+<div className="grid grid-cols-2 lg:grid-cols-6 md:grid-cols-4 gap-4 ">
 { movies.map((movie,index) => (
-<div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+<div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  mx-auto overflow-hidden">
     <Link to={`/movierulz/movie?link=${movie.link}`} >
         <img className="rounded-t-lg center" src={movie.image} alt="img" />
     <div className="p-1">
@@ -65,11 +65,7 @@ export default function Movierulz() {
     </Link>
 </div>
 )) }
-</div>
-
-
-
-      
+</div>  
 </center> 
     </main>
     </MyLoader>
