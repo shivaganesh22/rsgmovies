@@ -1,6 +1,7 @@
 import React,{useEffect,useState ,useRef} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import fluidPlayer from 'fluid-player';
+import { toastSuccess } from '../components/Notifications';
 
 
 export default function Player() {
@@ -121,7 +122,7 @@ export default function Player() {
 <div className='flex justify-center items-center'>
 <div className="grid grid-cols-2 p-4 gap-5 place-items-center ">
 <div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-    <Link  onClick={()=>{const ta=document.getElementById("message");ta.select();document.execCommand('copy');}}>
+    <Link  onClick={()=>{const ta=document.getElementById("message");ta.select();document.execCommand('copy');toastSuccess("Copied")}}>
         
     <div className="p-1">
     <i className="fa fa-copy text-black dark:text-white" aria-hidden="true"></i>

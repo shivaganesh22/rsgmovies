@@ -272,12 +272,12 @@ export default function Files() {
                     <img className="w-8 h-8 rounded-full" src={folderimg} alt="Neil image" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-md font-medium text-gray-900 truncate dark:text-white">
+                    <p className="text-md pt-3 font-medium text-gray-900 truncate dark:text-white">
                       {item.name}
                     </p>
 
                     <div className='flex justify-center items-center'>
-                      <div className="grid grid-cols-5 p-4 gap-5 place-items-center ">
+                      <div className="grid grid-cols-5 pt-3 pb-1 gap-5 place-items-center ">
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                           <Link to={`/player/?mode=folder&id=${item.id}`}>
 

@@ -78,7 +78,7 @@ export default function Youtube() {
         {toggle ?
           audios.map((movie, index) => (
             <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-              <a href={`${movie.url}`}>
+              <a href={`${movie.url}`}  target="_blank">
 
                 <div className="p-1">
 
