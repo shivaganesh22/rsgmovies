@@ -240,7 +240,16 @@ export default function Files() {
                     {item.warnings != null && item.warnings != "[]" ? <p className="text-sm pb-4 text-gray-500 truncate dark:text-gray-400">
                       {item.warnings}
                     </p> : ""}
+                    <div className='flex justify-center items-center'>
+                      <div className="grid grid-cols-2  pb-1 gap-5 place-items-center ">
+                    <div className=" w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
+                      <Link onClick={() => { deleteTorrent(item.id) }}>
 
+                        <div className="p-1">
+                          <h5 className="text-black dark:text-white" aria-hidden="true">{parseFloat(item.progress).toFixed(1)}%</h5>
+                        </div>
+                      </Link>
+                    </div>
                     <div className=" w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                       <Link onClick={() => { deleteTorrent(item.id) }}>
 
@@ -250,7 +259,8 @@ export default function Files() {
                         </div>
                       </Link>
                     </div>
-
+                    </div>
+                    </div>
 
                   </div>
                   <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
