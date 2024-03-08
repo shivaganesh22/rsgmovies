@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import MyLoader from '../MyLoader';
+import { useAuth } from '../other/AuthContext';
 export default function IBommaMovie() {
     const urlSearchString = window.location.search;
+    const {startLoad,stopLoad}=useAuth();
     const params = new URLSearchParams(urlSearchString);
     const [data, setData] = useState("");
     
@@ -8,8 +11,9 @@ export default function IBommaMovie() {
 
     useEffect(() => {
         const fetchData = async () => {
+            startLoad();
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/api/ibomma/movie/?link=${params.get("link")}`);
+                const response = await fetch(`https://rsg-movies.vercel.app/react/ibomma/movie/?link=${params.get("link")}`);
                 const result = await response.json();
                 setData(result);
 
@@ -17,6 +21,7 @@ export default function IBommaMovie() {
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
+            stopLoad();
         };
 
         fetchData();
@@ -27,12 +32,13 @@ export default function IBommaMovie() {
 
     }
     return (
-        <main>
+        <MyLoader>
+            <main>
             <center>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
             <section className="flex justify-around flex-wrap py-5">
                 <div className="max-w-sm">
-                    <img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={data.image} alt={data.name} />
+                    <img className="rounded lg:w-56   md:w-56" src={`data:image/png;base64,${data.image}`} alt={data.name} />
                 </div>
                 <div className="max-w-2xl text-gray-700 text-lg dark:text-white">
                     <h1 className="lg:text-4xl md:text-3xl text-2xl md:text-left font-bold my-3 text-center lg:text-left">{data.name}</h1>
@@ -67,5 +73,7 @@ export default function IBommaMovie() {
             </div>
             </center>
         </main>
+            </MyLoader>
+
     )
 }
