@@ -4,16 +4,17 @@ import { useAuth } from '../other/AuthContext';
 import MyLoader from '../MyLoader';
 
 
-export default function Movierulz() {
+export default function Special() {
   const {startLoad,stopLoad,loading}=useAuth();
   const query=useRef("");
+  const urlSearchString = window.location.search;
+  const params = new URLSearchParams(urlSearchString);
    const [queryData,setQuery]=useState("");
-  const [movies,setMovies] = useState(JSON.parse(localStorage.getItem("movierulz")) || []);
+  const [movies,setMovies] = useState([]);
   const handleSubmit = (event) => {
     event.preventDefault();
     setQuery(query.current.value);
   }
-
   useEffect(() => {
     const fetchData = async (apiUrl) => {
       startLoad();
@@ -22,13 +23,12 @@ export default function Movierulz() {
         const response = await fetch(apiUrl);
         const result = await response.json();
         setMovies(result.movies);
-        localStorage.setItem("movierulz", JSON.stringify(result.movies));
       } catch (error) {
         console.error('Error fetching data:', error);
       }
       stopLoad();
     };
-    fetchData(queryData?`https://rsg-movies.vercel.app/api/movierulz/search/${queryData}`:"https://rsg-movies.vercel.app/react/movierulz/");
+    fetchData(queryData?`https://rsg-movies.vercel.app/api/movierulz/search/${queryData}`:`https://rsg-movies.vercel.app/react/movierulz/special/?link=${params.get('link')}`);
   }, [queryData]);
   return (
     

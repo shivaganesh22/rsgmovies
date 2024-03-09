@@ -14,11 +14,10 @@ export default function MovierulzMovie() {
     const fetchData = async () => {
       startLoad();
       try {
-        const response = await fetch(`https://rsg-movies.vercel.app/api/movierulz/movie/?link=${params.get("link")}`);
+        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/?link=${params.get("link")}`);
         const result = await response.json();
         setData(result.details);
         setLinks(result.links);
-       
         
       } catch (error) {
         console.error('Error fetching data:', error);

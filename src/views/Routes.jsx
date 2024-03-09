@@ -6,6 +6,7 @@ import Openfolder from "./files/Openfolder";
 import Player from "./files/Player";
 import Movierulz from "./home/Movierulz";
 import MovierulzMovie from "./home/MovierulzMovie";
+import Special from "./home/Special";
 import IBomma from "./ibomma/IBomma";
 import IBommaMovie from "./ibomma/IBommaMovie";
 import Login from "./Login";
@@ -24,6 +25,7 @@ export const AllRoutes = () => {
         <Routes>
             <Route path="" element={<Movierulz />} />
             <Route path="movierulz/movie" element={<MovierulzMovie />} />
+            <Route path="movierulz/special" element={<Special />} />
             
             <Route path="ibomma" element={<IBomma />} />
             <Route path="ibomma/movie" element={<IBommaMovie />} />
