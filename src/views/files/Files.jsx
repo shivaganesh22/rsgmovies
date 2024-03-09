@@ -243,7 +243,7 @@ export default function Files() {
                     <div className='flex justify-center items-center'>
                       <div className="grid grid-cols-2  pb-1 gap-5 place-items-center ">
                     <div className=" w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                      <Link onClick={() => { deleteTorrent(item.id) }}>
+                      <Link to={item.progress_url}>
 
                         <div className="p-1">
                           <h5 className="text-black dark:text-white" aria-hidden="true">{parseFloat(item.progress).toFixed(1)}%</h5>
