@@ -44,6 +44,7 @@ export default function Search() {
             fetchData();
         }
         else {
+            setSpinner(false)
             setData("");
             setLinks([]);
             setPages(null);
