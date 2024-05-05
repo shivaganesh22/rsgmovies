@@ -22,21 +22,18 @@ export const generateToken = async () => {
 
     const token = await getToken(messaging, { vapidKey: "BACo2ZUFUi8RATi9827omEBdMgQdxsz_RdW9mmfmZ3uDYIhuC52_O0trtLq3CHCOf8d9WwN1IMy8MlrWp5VzOHU" });
     // console.log(token);
-    try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/fcm/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-          },
-        body: JSON.stringify({
-         "token":token
-        }),
-      });
-      
+    fetch('https://iid.googleapis.com/iid/v1/' + token + '/rel/topics/movies', {
+      method: 'POST',
+      headers: new Headers({
+        'Authorization': 'key=AAAAhHqY1L0:APA91bF76GAl0BG_JOc9UNOTmQCBAA8irf_7z9zRRIr7NmvM3Gr4VYYTnHAMLb-ZP-td473Bfjek76dYR81a0xnRRFkPihOeTdA8quIotP8uw685M6ZjZJrL-jokGGreuRywtYd7JdJj'
+      })
+    }).then(response => {
 
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+    }).catch(error => {
+      console.error(error);
+    })
+
+  
 
   }
 
