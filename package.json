@@ -12,6 +12,7 @@
     "@vidstack/player": "^1.6.5",
     "@vidstack/player-react": "^1.6.5",
     "@vidstack/react": "^1.10.9",
+    "firebase": "^10.11.1",
     "fluid-player": "^3.31.0",
     "lit": "^2.8.0",
     "react": "^18.2.0",
