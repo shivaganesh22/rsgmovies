@@ -18,14 +18,16 @@ const messaging = firebase.messaging();
 // Handle background messages
 
 messaging.onBackgroundMessage((payload) => {
-    const notificationTitle = payload.notification.title;
+    const notificationTitle = payload.data.title;
     const notificationOptions = {
-        body: payload.notification.body,
-        icon:payload.notification.image,
+        body: payload.data.body,
+        image:payload.data.image,
+        icon:payload.data.icon,
         data:payload.data
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
 
 // Handle notification click event
 self.addEventListener('notificationclick', (event) => {
