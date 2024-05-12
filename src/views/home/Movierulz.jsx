@@ -18,7 +18,7 @@ export default function Movierulz() {
   const fetchData = async (apiUrl) => {
     startLoad();
     try {
-      if (movies.length>0) stopLoad();
+      if (movies.length>0  || queryData) stopLoad();
       const response = await fetch(apiUrl);
       const result = await response.json();
       setMovies(result.movies);
@@ -47,8 +47,7 @@ export default function Movierulz() {
 <MyLoader>
     <main >
       <center>
-     {
-      loading?"":
+  
       <form className="max-w-md mx-auto">   
       <label  className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
       <div className="relative">
@@ -61,8 +60,6 @@ export default function Movierulz() {
           <button type="submit" onClick={handleSubmit} className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
       </div>
   </form>
-     }
-
     
 
  
