@@ -35,7 +35,7 @@ export default function Files() {
         setFileEditing(Array.from({ length: result.files.length }, () => false))
       }
       else{
-        toastWarning[result["error"]]
+        toastWarning(result["error"])
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -179,7 +179,7 @@ export default function Files() {
         },
       });
       const result = await response.json();
-      if(response.result==200){
+      if(response.status==200){
 
         if (result.result == true) {
           toastSuccess("Torrent Added");
