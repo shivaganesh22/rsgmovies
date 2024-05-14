@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import { useAuth } from './other/AuthContext';
 import { toastSuccess, toastWarning } from './components/Notifications';
 import MyLoader from './MyLoader';
@@ -19,6 +19,27 @@ export default function Login() {
             },
             body: JSON.stringify({ email, password }),
           });
+    
+          const result = await response.json();
+          if (response.status==200){
+            localStorage.setItem('token',result.token)
+            navigate('/');
+            toastSuccess('Login Success')
+            login();    
+          }
+
+          else{
+            toastWarning(result["error"])
+          }
+        } catch (error) {
+          console.error('Error during login:', error);
+        }
+        stopLoad();
+      };
+    const freeAccount = async (event) => {
+        startLoad();
+        try {
+          const response = await fetch("https://rsg-movies.vercel.app/react/login/default/");
     
           const result = await response.json();
           if (response.status==200){
@@ -73,6 +94,10 @@ export default function Login() {
                             </div>
                         </div>
                         <a href="https://www.seedr.cc/dynamic/lost_password" target="_blank" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
+                    </div>
+                    <div className="flex items-center justify-between">
+                       
+                        <Link onClick={()=>{freeAccount();}}  className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Do you want to use free account ?</Link>
                     </div>
                     <button type="submit"  className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign in</button>
                     <p className="text-sm font-light text-gray-500 dark:text-gray-400">
