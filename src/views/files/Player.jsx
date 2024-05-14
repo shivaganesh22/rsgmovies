@@ -1,7 +1,7 @@
 import React,{useEffect,useState ,useRef} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import fluidPlayer from 'fluid-player';
-import { toastSuccess } from '../components/Notifications';
+import { toastSuccess, toastWarning } from '../components/Notifications';
 
 
 export default function Player() {
@@ -24,8 +24,14 @@ export default function Player() {
               },
             });
             const result = await response.json();
-            setData(result);
-            initializeFluidPlayer();
+            if(response.status==200){
+
+              setData(result);
+              initializeFluidPlayer();
+            }
+            else{
+              toastWarning(result["error"])
+            }
             
           } catch (error) {
             console.error('Error fetching data:', error);
@@ -40,8 +46,13 @@ export default function Player() {
               },
             });
             const result = await response.json();
-            setData(result);
-            initializeFluidPlayer();
+            if(response.status==200){
+
+              setData(result);
+              initializeFluidPlayer();
+            }else{
+              toastWarning(result["error"])
+            }
             
           } catch (error) {
             console.error('Error fetching data:', error);

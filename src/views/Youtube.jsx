@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { faVolumeXmark, faMusic } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from './other/AuthContext';
 import MyLoader from './MyLoader';
+import { toastWarning } from './components/Notifications';
 export default function Youtube() {
   const query = useRef("");
   const [queryData, setQuery] = useState(JSON.parse(localStorage.getItem("youtubequery")) || "");
@@ -25,10 +26,15 @@ export default function Youtube() {
         if(data) stopLoad();
         const response = await fetch(`https://rsg-movies.vercel.app/api/youtube/?link=${queryData}`);
         const result = await response.json();
-        setData(result);
-        setVideos(result.videos);
-        setAudios(result.audio);
-        localStorage.setItem("youtube", JSON.stringify(result));
+        if(response.status==200){
+
+          setData(result);
+          setVideos(result.videos);
+          setAudios(result.audio);
+          localStorage.setItem("youtube", JSON.stringify(result));
+        }else{
+          toastWarning("Failed to get results")
+        }
 
       } catch (error) {
         console.error('Error fetching data:', error);

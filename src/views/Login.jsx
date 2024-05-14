@@ -21,7 +21,7 @@ export default function Login() {
           });
     
           const result = await response.json();
-          if (result.status){
+          if (response.status==200){
             localStorage.setItem('token',result.token)
             navigate('/');
             toastSuccess('Login Success')
@@ -29,7 +29,7 @@ export default function Login() {
           }
 
           else{
-            toastWarning('Login Failed, Invalid Credentials')
+            toastWarning(result["error"])
           }
         } catch (error) {
           console.error('Error during login:', error);

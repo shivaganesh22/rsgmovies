@@ -1,5 +1,6 @@
 import React ,{useState,useEffect} from 'react'
 import { Link } from 'react-router-dom';
+import {toastWarning} from '../components/Notifications'
 import MyLoader from '../MyLoader';
 import { useAuth } from '../other/AuthContext';
 export default function IBomma() {
@@ -12,9 +13,14 @@ export default function IBomma() {
           if (movies.length>0) stopLoad();
           const response = await fetch(`https://rsg-movies.vercel.app/react/ibomma/`);
           const result = await response.json();
-          setMovies(result.movies);
-          localStorage.setItem("ibomma", JSON.stringify(result.movies));
-          
+          if (response.status==200){
+
+            setMovies(result.movies);
+            localStorage.setItem("ibomma", JSON.stringify(result.movies));
+          }
+          else{
+            toastWarning("Failed to get results")
+          }
         } catch (error) {
           console.error('Error fetching data:', error);
         }

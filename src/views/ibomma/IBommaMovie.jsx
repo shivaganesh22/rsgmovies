@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import MyLoader from '../MyLoader';
+import { toastWarning } from '../components/Notifications';
 import { useAuth } from '../other/AuthContext';
 export default function IBommaMovie() {
     const urlSearchString = window.location.search;
@@ -15,7 +16,11 @@ export default function IBommaMovie() {
             try {
                 const response = await fetch(`https://rsg-movies.vercel.app/react/ibomma/movie/?link=${params.get("link")}`);
                 const result = await response.json();
+                if(response.status==200)
                 setData(result);
+                else{
+                    toastWarning("Failed to get results")
+                  }
 
 
             } catch (error) {

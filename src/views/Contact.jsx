@@ -23,7 +23,7 @@ export default function Contact() {
             }),
           });
           const result = await response.json();
-          if (result.status == "true") {
+          if (response.status == 200) {
             toastSuccess("Form Submitted");
             navigate('/');
           }

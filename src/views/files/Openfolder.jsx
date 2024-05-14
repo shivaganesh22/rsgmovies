@@ -25,13 +25,18 @@ export default function Files() {
         },
       });
       const result = await response.json();
+      if(response.status==200){
 
-      setStorage(`${(result.space_used / (1024 * 1024 * 1024)).toFixed(1)} / ${(result.space_max / (1024 * 1024 * 1024)).toFixed(1)} GB`);
-      setFolders(result.folders);
-      setFiles(result.files);
-      setTorrents(result.torrents);
-      setFolderEditing(Array.from({ length: result.folders.length }, () => false))
-      setFileEditing(Array.from({ length: result.files.length }, () => false))
+        setStorage(`${(result.space_used / (1024 * 1024 * 1024)).toFixed(1)} / ${(result.space_max / (1024 * 1024 * 1024)).toFixed(1)} GB`);
+        setFolders(result.folders);
+        setFiles(result.files);
+        setTorrents(result.torrents);
+        setFolderEditing(Array.from({ length: result.folders.length }, () => false))
+        setFileEditing(Array.from({ length: result.files.length }, () => false))
+      }
+      else{
+        toastWarning[result["error"]]
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -174,11 +179,16 @@ export default function Files() {
         },
       });
       const result = await response.json();
-      if (result.result == true) {
-        toastSuccess("Torrent Added");
-      }
-      else {
-        toastWarning(result.result)
+      if(response.result==200){
+
+        if (result.result == true) {
+          toastSuccess("Torrent Added");
+        }
+        else {
+          toastWarning(result.result)
+        }
+      }else{
+        toastWarning(result["error"])
       }
 
     } catch (error) {

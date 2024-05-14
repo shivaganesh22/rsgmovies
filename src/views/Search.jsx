@@ -23,13 +23,19 @@ export default function Search() {
         try {
             const response = await fetch(`https://rsg-movies.vercel.app/api/search/?q=${queryData}&page=${page}`);
             const result = await response.json();
-            setData(result.name);
-            setLinks(result.links);
-            setPages(result.pages);
-            localStorage.setItem("torrent", JSON.stringify(result.name));
-            localStorage.setItem("torrentlinks", JSON.stringify(result.links));
-            localStorage.setItem("torrentpages", JSON.stringify(result.pages));
-            window.scrollTo(0, 0);
+            if(response.status==200){
+
+                setData(result.name);
+                setLinks(result.links);
+                setPages(result.pages);
+                localStorage.setItem("torrent", JSON.stringify(result.name));
+                localStorage.setItem("torrentlinks", JSON.stringify(result.links));
+                localStorage.setItem("torrentpages", JSON.stringify(result.pages));
+                window.scrollTo(0, 0);
+            }
+            else{
+                toastWarning("Failed to get results")
+              }
 
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -63,12 +69,17 @@ export default function Search() {
                 },
             });
             const result = await response.json();
-            if (result.result == true) {
-                toastSuccess("Torrent Added");
-                navigate('/files');
-            }
-            else {
-                toastWarning(result.result)
+            if(response.status==200){
+
+                if (result.result == true) {
+                    toastSuccess("Torrent Added");
+                    navigate('/files');
+                }
+                else {
+                    toastWarning(result.result)
+                }
+            }else{
+                toastWarning(result["error"])
             }
 
         } catch (error) {

@@ -1,8 +1,8 @@
 import React, { useEffect,useState,useRef } from 'react'
 import { Link } from 'react-router-dom';
 import { useAuth } from '../other/AuthContext';
+import {toastWarning} from '../components/Notifications'
 import MyLoader from '../MyLoader';
-
 
 export default function Movierulz() {
   const {startLoad,stopLoad,loading}=useAuth();
@@ -21,8 +21,13 @@ export default function Movierulz() {
       if (movies.length>0  || queryData) stopLoad();
       const response = await fetch(apiUrl);
       const result = await response.json();
-      setMovies(result.movies);
-      localStorage.setItem("movierulz", JSON.stringify(result.movies));
+      if(response.status==200){
+        setMovies(result.movies);
+        localStorage.setItem("movierulz", JSON.stringify(result.movies));
+      }
+      else{
+        toastWarning("Failed to get results")
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }

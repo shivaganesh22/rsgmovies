@@ -16,9 +16,14 @@ export default function MovierulzMovie() {
       try {
         const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/?link=${params.get("link")}`);
         const result = await response.json();
-        setData(result.details);
-        setLinks(result.links);
-        
+        if(response.status==200){
+
+          setData(result.details);
+          setLinks(result.links);
+        }
+        else{
+          toastWarning("Failed to get results")
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -37,12 +42,17 @@ export default function MovierulzMovie() {
         },
       });
       const result = await response.json();
-      if (result.result == true) {
-        toastSuccess("Torrent Added");
-        navigate('/files');
+      if(response.status==200){
+        if (result.result == true) {
+          toastSuccess("Torrent Added");
+          navigate('/files');
+        }
+        else {
+          toastWarning(result.result)
+        }
       }
-      else {
-        toastWarning(result.result)
+      else{
+        toastWarning(result["error"])
       }
 
     } catch (error) {

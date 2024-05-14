@@ -1,6 +1,7 @@
 import React ,{useState,useEffect} from 'react'
 import { useAuth } from '../other/AuthContext';
 import MyLoader from '../MyLoader';
+import { toastWarning } from '../components/Notifications';
 export default function Tamilmv() {
     const {startLoad,stopLoad}=useAuth();
     const [movies,setMovies] = useState(JSON.parse(localStorage.getItem("tamilmv")) || "");;
@@ -11,8 +12,13 @@ export default function Tamilmv() {
           if(movies) stopLoad();
           const response = await fetch(`https://rsg-movies.vercel.app/api/tamilmv/`);
           const result = await response.json();
-          setMovies(result.items);
-          localStorage.setItem("tamilmv", JSON.stringify(result.items));
+          if(response.status==200){
+
+            setMovies(result.items);
+            localStorage.setItem("tamilmv", JSON.stringify(result.items));
+          }else{
+            toastWarning("Failed to get results")
+          }
          
         } catch (error) {
           console.error('Error fetching data:', error);
