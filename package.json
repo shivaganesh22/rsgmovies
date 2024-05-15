@@ -12,6 +12,7 @@
     "firebase": "^10.11.1",
     "fluid-player": "^3.31.0",
     "lit": "^2.8.0",
+    "lodash.debounce": "^4.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-loading-overlay-nextgen": "^1.2.9",

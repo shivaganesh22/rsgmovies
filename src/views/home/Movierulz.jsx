@@ -1,8 +1,9 @@
-import React, { useEffect,useState,useRef } from 'react'
+import React, { useEffect,useState,useRef,useCallback } from 'react'
 import { Link } from 'react-router-dom';
 import { useAuth } from '../other/AuthContext';
 import {toastWarning} from '../components/Notifications'
 import MyLoader from '../MyLoader';
+import debounce from 'lodash.debounce';
 
 export default function Movierulz() {
   const {startLoad,stopLoad,loading}=useAuth();
@@ -10,11 +11,7 @@ export default function Movierulz() {
   const [spinner,setSpinner]=useState(false);
    const [queryData,setQuery]=useState(JSON.parse(localStorage.getItem("query")) ||"");
   const [movies,setMovies] = useState(JSON.parse(localStorage.getItem("movierulz")) || []);
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setQuery(query.current.value);
-    setSpinner(true);
-  }
+ 
   const fetchData = async (apiUrl) => {
     startLoad();
     try {
@@ -35,17 +32,51 @@ export default function Movierulz() {
     setSpinner(false);
   };
   useEffect(() => {
-    localStorage.setItem("query", JSON.stringify(queryData));
     if(queryData){
     fetchData(`https://rsg-movies.vercel.app/api/movierulz/search/${queryData}`)
     }
     else{
       fetchData("https://rsg-movies.vercel.app/react/movierulz/");
-    }
-   
-    
-  }, [queryData]);
+    } 
+  }, []);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setQuery(query.current.value);
+    localStorage.setItem("query", JSON.stringify(query.current.value))
+    setSpinner(true);
+    if(query.current.value){
+      fetchData(`https://rsg-movies.vercel.app/api/movierulz/search/${query.current.value}`)
+      }
+      else{
+        fetchData("https://rsg-movies.vercel.app/react/movierulz/");
+      } 
+  }
+const handleChange=()=>{
+    localStorage.setItem("query", JSON.stringify(query.current.value))
+    setSpinner(true);
+    if(query.current.value){
+      fetchData(`https://rsg-movies.vercel.app/api/movierulz/search/${query.current.value}`)
+      }
+      else{
+        fetchData("https://rsg-movies.vercel.app/react/movierulz/");
+      } 
+  }
+const debounce=(func)=>{
+  let timer;
+  return function(...args){
+    const context=this;
+    if(timer) clearTimeout(timer);
+    timer=setTimeout(()=>{
+      timer=null;
+      func.apply(context,args);
+    },300)
+  }
+}
+const optimized=useCallback(debounce(handleChange),[])
   
+
+
+
   
   return (
     
@@ -53,7 +84,7 @@ export default function Movierulz() {
     <main >
       <center>
   
-      <form className="max-w-md mx-auto">   
+      <form className="max-w-md mx-auto" onSubmit={handleSubmit}>   
       <label  className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
       <div className="relative">
           <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -61,8 +92,8 @@ export default function Movierulz() {
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
               </svg>
           </div>
-          <input type="search" id="default-search" ref={query} value={queryData} autoComplete="off" onChange={handleSubmit}  className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search movie here..." required />
-          <button type="submit" onClick={handleSubmit} className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+          <input type="search" id="default-search" ref={query} value={queryData} autoComplete="off" onChange={()=>{setQuery(query.current.value);optimized()}}  className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search movie here..."  />
+          <button type="submit"  className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
       </div>
   </form>
     
@@ -85,7 +116,7 @@ export default function Movierulz() {
     <Link to={`/movierulz/movie?link=${movie.link}`} >
         <img className="rounded-t-lg center" src={movie.image} alt="img" />
     <div className="p-1">
-      <h5 className="mb-2 text-1xl font-bold tracking-tight text-gray-900 dark:text-white">{movie.name}</h5>
+      <h5 className="mb-2 text-1xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-3">{movie.name}</h5>
     </div>
     </Link>
 </div>
