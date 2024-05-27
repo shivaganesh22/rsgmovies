@@ -10,7 +10,7 @@ export default function Tamilmv() {
         startLoad();
         try {
           if(movies) stopLoad();
-          const response = await fetch(`https://rsg-movies.vercel.app/api/tamilmv/`);
+          const response = await fetch(`https://rsg-movies.vercel.app/react/tamilmv/`);
           const result = await response.json();
           if(response.status==200){
 

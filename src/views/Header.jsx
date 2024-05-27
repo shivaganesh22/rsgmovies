@@ -74,6 +74,10 @@ export default function Header() {
         <NavLink to="/search" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>Search</NavLink>
       </li>
       <li>
+        <NavLink to="/movierulz" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>Movierulz</NavLink>
+      </li>
+      <li>
+
         <NavLink to="/ibomma" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>IBomma</NavLink>
       </li>
       <li>

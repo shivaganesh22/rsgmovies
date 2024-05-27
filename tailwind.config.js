@@ -1,5 +1,5 @@
 module.exports = {
-  content: ["./src/**/*.{html,js,jsx}"],
+  content: ["./src/**/*.{html,js,jsx}",'node_modules/flowbite-react/lib/esm/**/*.js'],
   darkMode: 'class',
   theme: {
     extend: {
@@ -26,5 +26,7 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin')
+],
 }

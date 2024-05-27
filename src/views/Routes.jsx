@@ -16,23 +16,31 @@ import Tamilmv from "./tamilmv/Tamilmv";
 import TamilmvMovie from "./tamilmv/TamilmvMovie";
 import TV from "./tv/TV";
 import Youtube from "./Youtube";
-
-
+import AllMoviesPage from "./allmovies/allMoviesPage";
+import AllMoviesLinks from "./allmovies/allMoviesLinks";
+import AllMoviesMovie from "./allmovies/allMoviesMovie";
 export const AllRoutes = () => {
  
   return (
     <div className="dark:bg-darkbg">
         <Routes>
-            <Route path="" element={<Movierulz />} />
-            <Route path="movierulz/movie" element={<MovierulzMovie />} />
+            <Route path="movierulz" element={<Movierulz />} />
+            <Route path="movierulz/movie/:id" element={<MovierulzMovie />} />
             <Route path="movierulz/special" element={<Special />} />
-            
+
+            <Route path="" element={<AllMoviesPage />} />
+            <Route path="/:id" element={<AllMoviesLinks />} />
+            <Route path="/movies/:id" element={<AllMoviesMovie />} />
+
             <Route path="ibomma" element={<IBomma />} />
-            <Route path="ibomma/movie" element={<IBommaMovie />} />
+            <Route path="ibomma/movie/" element={<IBommaMovie />} />
+
             <Route path="search" element={<Search />} />
+
             <Route path="tamilmv" element={<Tamilmv />} />
-            <Route path="tamilmv/movie" element={<TamilmvMovie />} />
+            <Route path="tamilmv/movie/" element={<TamilmvMovie />} />
             <Route path="doodplay" element={<Doodplay />} />
+
             <Route path="tv" element={<TV />} />
             
             <Route path="youtube" element={<Youtube />} />

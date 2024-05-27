@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toastSuccess, toastWarning } from '../components/Notifications';
 import { useAuth } from '../other/AuthContext';
 import MyLoader from '../MyLoader';
 export default function MovierulzMovie() {
   const urlSearchString = window.location.search;
-  const params = new URLSearchParams(urlSearchString);
+  const params = useParams();
   const [data, setData] = useState("");
   const [links, setLinks] = useState([]);
   const { startLoad, stopLoad } = useAuth();
@@ -14,7 +14,7 @@ export default function MovierulzMovie() {
     const fetchData = async () => {
       startLoad();
       try {
-        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/?link=${params.get("link")}`);
+        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/`);
         const result = await response.json();
         if(response.status==200){
 
@@ -30,8 +30,8 @@ export default function MovierulzMovie() {
       stopLoad();
     };
     
-    if (params.get("link") != null) fetchData();
-  },[]);
+    fetchData();
+  },[params.id]);
   const addTorrent = async (link) => {
     startLoad();
     try {
