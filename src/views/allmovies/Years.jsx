@@ -10,7 +10,7 @@ export default function Years() {
     return (
         <>
             <h1 className="mb-4 text-2xl font-bold text-black dark:text-white text-left ">Years</h1>
-            <div className='max-h-64 overflow-y-auto '>
+            <div className='h-64 overflow-y-auto '>
                 {/* <MyLoader>                 */}
                     <div className="grid grid-cols-2 lg:grid-cols-3 md:grid-cols-2 gap-4">
                     {years.map((movie, index) => (

@@ -10,7 +10,7 @@ export default function Genres() {
     return (
         <>
             <h1 className="mb-4 text-2xl font-bold text-black dark:text-white text-left ">Genres</h1>
-            <div className='max-h-64 overflow-y-auto '>
+            <div className='h-64 overflow-y-auto '>
                 {/* <MyLoader> */}
                 <ul className=" max-w-md divide-y divide-gray-200 dark:divide-gray-700 ">
                     {genres.map((genre, index) => (

@@ -47,7 +47,7 @@ export default function AllMoviesMovie() {
 
 
           <MyLoader >
-            {data ? <>
+            <main>{data ? <>
               <section className="flex justify-around flex-wrap py-5">
                 <center>
                   <img className="rounded w-1/2 lg:mt-5 md:mt-14 md:h-56 md:w-auto" src={data.image} alt={data.name} />
@@ -188,7 +188,7 @@ export default function AllMoviesMovie() {
                                 </div>
                             ))}
                         </div>
-            </> : ""} </MyLoader>
+            </> : ""} </main></MyLoader>
 
         </div>
         <div className="  md:w-1/4 p-4 border-l border-r border-b border-gray-200 dark:border-gray-700 ">

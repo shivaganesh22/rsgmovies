@@ -67,6 +67,7 @@ export default function AllMoviesPage() {
 
 
         <MyLoader>
+          <main>
         <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4 ">
             {movies.map((movie, index) => (
               <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  mx-auto overflow-hidden">
@@ -80,9 +81,10 @@ export default function AllMoviesPage() {
               </div>
             ))}
           </div>
+          </main>
         </MyLoader>
       </div>
-      <div className="  md:w-1/4 p-4 border-l border-gray-200 dark:border-gray-700 ">
+      <div className="  md:w-1/4 p-4 border-l border-r border-b border-gray-200 dark:border-gray-700 ">
         <Genres></Genres>
         <TopMovies></TopMovies>
         <Years></Years>
