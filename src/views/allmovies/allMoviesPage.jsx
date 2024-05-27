@@ -54,9 +54,14 @@ export default function AllMoviesPage() {
     <main>
         <Header2></Header2>
      <div className="flex flex-col md:flex-row md:justify-between">
-      <div className="md:w-9/12 p-4">
+      <div className="md:w-9/12 ">
 
-      <Link to="/movierulz">
+      
+
+
+        <MyLoader>
+          <main>
+          <Link to="/movierulz">
       <h1 className="mb-4 text-2xl font-bold text-black dark:text-white flex items-center">
   Trending
   <svg className="w-2.5 h-2.5 ml-3 mt-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
@@ -64,10 +69,6 @@ export default function AllMoviesPage() {
   </svg>
 </h1>
       </Link>
-
-
-        <MyLoader>
-          <main>
         <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4 ">
             {movies.map((movie, index) => (
               <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  mx-auto overflow-hidden">
@@ -84,7 +85,7 @@ export default function AllMoviesPage() {
           </main>
         </MyLoader>
       </div>
-      <div className="  md:w-1/4 p-4 border-l border-r border-b border-gray-200 dark:border-gray-700 ">
+      <div className="  md:w-1/4 p-4 border border-gray-200 dark:border-gray-700 ">
         <Genres></Genres>
         <TopMovies></TopMovies>
         <Years></Years>

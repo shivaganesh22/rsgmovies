@@ -42,19 +42,19 @@ export default function AllMoviesMovie() {
       <Header2></Header2>
 
       <div className="flex flex-col md:flex-row md:justify-between">
-        <div className="md:w-9/12 p-4  border-b border-gray-200 dark:border-gray-700">
+        <div className="md:w-9/12  border-b border-gray-200 dark:border-gray-700">
 
 
 
           <MyLoader >
-            <main>{data ? <>
+            <div className='header2'>{data ? <>
               <section className="flex justify-around flex-wrap py-5">
                 <center>
                   <img className="rounded w-1/2 lg:mt-5 md:mt-14 md:h-56 md:w-auto" src={data.image} alt={data.name} />
                 </center>
                 <div className="max-w-2xl   text-gray-700 text-lg dark:text-white">
                   <h1 className="lg:text-4xl md:text-3xl text-2xl md:text-left font-bold my-3 text-center lg:text-left">{data.name}</h1>
-                  <div className='my-4  text-left' >
+                  <div className='my-4 text-left' >
                     <p className='text-xs font-medium text-slate-500 dark:text-gray-400'>{data.extra}</p>
                     <p className="py-2 font-medium text-gray-700 text-xs dark:text-gray-400 underline underline-offset-4 text-left text-balance">
                       {data.genre.map((movie, index) => (
@@ -188,7 +188,7 @@ export default function AllMoviesMovie() {
                                 </div>
                             ))}
                         </div>
-            </> : ""} </main></MyLoader>
+            </> : ""} </div></MyLoader>
 
         </div>
         <div className="  md:w-1/4 p-4 border-l border-r border-b border-gray-200 dark:border-gray-700 ">

@@ -8,3 +8,9 @@ main{
     min-height: 90vh;
     padding: 10px;
 }
+.header2{
+    max-width: 1280px;
+    margin: auto;
+    min-height: 90vh;
+   
+}

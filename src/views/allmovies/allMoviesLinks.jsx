@@ -39,7 +39,7 @@ export default function AllMoviesLinks() {
             <Header2></Header2>
 
             <div className="flex flex-col md:flex-row md:justify-between">
-                <div className="md:w-9/12 p-4  border-b border-gray-200 dark:border-gray-700">
+                <div className="md:w-9/12  border-b border-gray-200 dark:border-gray-700">
                     <MyLoader >
                         <main>
                             <p className="font-medium text-gray-700 dark:text-gray-400 underline underline-offset-4 text-center text-balance">
@@ -49,6 +49,8 @@ export default function AllMoviesLinks() {
                                     </Link>
                                 ))}
                             </p>
+
+                            
                             {data && data.name ?
                                 <h1 className="mb-4 mt-2 text-2xl font-bold text-black dark:text-white text-left">{data.name}</h1> : ""}
 
@@ -103,7 +105,7 @@ export default function AllMoviesLinks() {
                         </main>
                     </MyLoader>
                 </div>
-                <div className="  md:w-1/4 p-4 border-l border-r border-b border-gray-200 dark:border-gray-700 ">
+                <div className="  md:w-1/4 p-4 border border-gray-200 dark:border-gray-700 ">
                     <Genres></Genres>
                     <TopMovies></TopMovies>
                     <Years></Years>
