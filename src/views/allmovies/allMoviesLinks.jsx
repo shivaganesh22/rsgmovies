@@ -42,14 +42,12 @@ export default function AllMoviesLinks() {
                 <div className="md:w-9/12  border-b border-gray-200 dark:border-gray-700">
                     <MyLoader >
                         <main>
-                            <p className="font-medium text-gray-700 dark:text-gray-400 underline underline-offset-4 text-center text-balance">
+                            <p className="font-medium text-gray-700 dark:text-gray-400 text-center">
                                 {data && data.links.map((movie, index) => (
-                                    <Link to={`/${encodeURIComponent(movie.link)}`} key={index}>
-                                        <span className='underline px-4'>{movie.name}</span>
-                                    </Link>
+                                    <><Link to={`/${encodeURIComponent(movie.link)}`}  key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
                                 ))}
                             </p>
-
+                            
                             
                             {data && data.name ?
                                 <h1 className="mb-4 mt-2 text-2xl font-bold text-black dark:text-white text-left">{data.name}</h1> : ""}

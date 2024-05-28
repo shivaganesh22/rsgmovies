@@ -12,7 +12,8 @@ export default function AllMoviesMovie() {
   const { startLoad, stopLoad } = useAuth();
   const [data, setData] = useState("");
   const [spinner, setSpinner] = useState(true);
-  const [isShow, setShow] = useState(true);
+  const [playerSrc, setPlayerSrc] = useState("");
+  const [active, setActive] = useState("1");
   const params = useParams();
   useEffect(() => {
     const fetchData = async () => {
@@ -22,7 +23,6 @@ export default function AllMoviesMovie() {
         const result = await response.json();
         if (response.status == 200) {
           setData(result);
-          console.log(result);
         } else {
           toastWarning("Failed to get results")
         }
@@ -36,7 +36,35 @@ export default function AllMoviesMovie() {
     fetchData()
 
   }, [params.id]);
+const fetchPlayer=async(item)=>{
+  setSpinner(true);
+  setActive(item.num)
+  try {
+    const response = await fetch(`https://rsg-movies.vercel.app/react/allmovies/player/`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+        },
+      body: JSON.stringify({
+       "id":item.id,
+       "type":item.type,
+       "num":item.num
+      }),
+    });
+    const result = await response.json();
+    if (response.status == 200) {
+      setPlayerSrc(result.link)
+     
+    }
+    else {
+      toastWarning("Failed to get results")
+    }
 
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+  setSpinner(false)
+}
   return (
     <main >
       <Header2></Header2>
@@ -56,13 +84,12 @@ export default function AllMoviesMovie() {
                   <h1 className="lg:text-4xl md:text-3xl text-2xl md:text-left font-bold my-3 text-center lg:text-left">{data.name}</h1>
                   <div className='my-4 text-left' >
                     <p className='text-xs font-medium text-slate-500 dark:text-gray-400'>{data.extra}</p>
-                    <p className="py-2 font-medium text-gray-700 text-xs dark:text-gray-400 underline underline-offset-4 text-left text-balance">
-                      {data.genre.map((movie, index) => (
-                        <Link to={`/${encodeURIComponent(movie.link)}`} key={index}>
-                          <span className='underline pr-4'>{movie.name}</span>
-                        </Link>
-                      ))}
-                    </p>
+                   
+                    <p className="py-2 font-medium text-gray-700 dark:text-gray-400 text-left text-xs">
+                                {data.genre.map((movie, index) => (
+                                    <><Link to={`/${encodeURIComponent(movie.link)}`}  key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
+                                ))}
+                            </p>
                     <p className='text-sm text-left text-slate-500 dark:text-gray-400'>{data.description}</p>
                   </div>
                 </div>
@@ -71,15 +98,7 @@ export default function AllMoviesMovie() {
               <center>
 
                 <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ">
-                  <div className='flex justify-center border-b border-gray-200 dark:border-gray-700 space-x-4'>
 
-                    <button onClick={() => { setShow(true); if (!isShow) setSpinner(true) }} className="w-1/2 text-xl text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5  font-medium">Movie</button>
-                    <button onClick={() => { setShow(false); if (isShow) setSpinner(true) }} className="w-1/2 text-xl text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5  font-medium">Trailer</button>
-
-                  </div>
-                  {!data.trailer && !isShow ? <p className="text-sm text-center font-medium text-gray-900 truncate dark:text-white">
-                    No trailer data
-                  </p> : ""}
                   {spinner ?
 
                     <center>
@@ -92,19 +111,61 @@ export default function AllMoviesMovie() {
                     </center>
                     : ""
                   }
-                  <iframe className='w-full' height="315" src={isShow ? data.player : data.trailer} onLoad={() => setSpinner(false)} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
-                  <a href={data.download} target="_blank" rel="noopener noreferrer">
-                    <button className="w-1/2 text-xl text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5  font-medium">Download</button>
+                  <iframe className='w-full' height="315" src={playerSrc ? playerSrc : data.player} onLoad={() => setSpinner(false)} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
+                  </div>
+                  <div class="grid grid-cols-2 pt-2 md:grid-cols-2 gap-5 ">
+                    <div className='max-h-64 overflow-y-auto '>
+                    <h5 className="mt-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Streams</h5>
+                      <ul class="  dark:border-gray-700 max-w-md divide-y divide-gray-200 dark:divide-gray-700">
+                      {data.players.map((genre, index) => (
+                    <Link onClick={()=>fetchPlayer(genre)}>
+                    
+                      <li class={`p-2  my-2 hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow  dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center ${active==genre.num?"bg-gray-200 dark:bg-gray-600":"bg-white dark:bg-gray-800" }`}>
+                        <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                          <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              {genre.name}
+                            </p>
+                           
+                          </div>
 
-                  </a>
-                </div>
+                        </div>
+                      </li></Link>
+                  ))}
+
+                      </ul>
+                    </div>
+                    <div className='max-h-64 overflow-y-auto '>
+                    <h5 className="mt-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase text-left">Downloads</h5>
+                      <ul class="max-w-md dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
+                      {data.download.map((genre, index) => (
+                    <a href={`${(genre.link)}`} target='_blank'>
+                      <li class="p-2 bg-white my-2 hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
+                        <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                          
+                          <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              {genre.name}
+                            </p>
+                           
+
+                          </div>
+
+                        </div>
+                      </li></a>
+                  ))}
+
+                      </ul>
+                    </div>
+                  </div>
+                
               </center>
 
-                 <div className='border-b pt-4 border-gray-200 dark:border-gray-700'></div>
+              <div className='border-b pt-4 border-gray-200 dark:border-gray-700'></div>
               <h5 className="mt-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">Director</h5>
               <ul class="grid grid-cols-1 pt-2 md:grid-cols-2 gap-5 ">
                 <Link to={`/${encodeURIComponent(data.director.link)}`}>
-                  <li class="p-2 bg-white  hover:bg-gray-50 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
+                  <li class="p-2 bg-white  hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
                     <div class="flex items-center space-x-4 rtl:space-x-reverse">
                       <div class="flex-shrink-0" >
                         <img class=" w-8 h-auto -8 rounded-full" src={data.director.image} alt="Neil image" />
@@ -128,7 +189,7 @@ export default function AllMoviesMovie() {
 
                   {data.actors.map((genre, index) => (
                     <Link to={`/${encodeURIComponent(genre.link)}`}>
-                      <li class="p-2 bg-white  hover:bg-gray-50 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
+                      <li class="p-2 bg-white  hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
                         <div class="flex items-center space-x-4 rtl:space-x-reverse">
                           <div class="flex-shrink-0" >
                             <img class=" w-8 h-auto -8 rounded-full" src={genre.image} alt="Neil image" />
@@ -151,43 +212,43 @@ export default function AllMoviesMovie() {
               </div>
               <div className='border-b pt-4 border-gray-200 dark:border-gray-700'></div>
               <div className="flex overflow-x-auto">
-                            {data.images.map((movie, index) => (
-                                <div key={index} className="flex-none w-64 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mr-4 my-4">
-                                        <img className="rounded-t-lg h-40 w-auto" src={movie} alt="img" />
-                                </div>
-                            ))}   
-                        </div>
-                        <div className='max-h-64 overflow-y-auto '>
+                {data.images.map((movie, index) => (
+                  <div key={index} className="flex-none w-64 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mr-4 my-4">
+                    <img className="rounded-t-lg h-40 w-auto" src={movie} alt="img" />
+                  </div>
+                ))}
+              </div>
+              <div className='max-h-64 overflow-y-auto '>
                 <ul class="grid grid-cols-1  md:grid-cols-2 gap-5 ">
                   {data.custom.map((genre, index) => (
-                   
-                      <li class="p-2 bg-white  hover:bg-gray-50 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
-                        <div class="flex items-center space-x-4">
-                         
-                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                              {genre.name}:
-                            </p>
-                          
-                          <div className="text-base  text-gray-900 dark:text-white" dangerouslySetInnerHTML={{ __html: genre.description }} />
-                              
-                        </div>
-                      </li>
+
+                    <li class="p-2 bg-white  hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
+                      <div class="flex items-center space-x-4">
+
+                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                          {genre.name}:
+                        </p>
+
+                        <div className="text-base  text-gray-900 dark:text-white" dangerouslySetInnerHTML={{ __html: genre.description }} />
+
+                      </div>
+                    </li>
                   ))}
 
                 </ul>
               </div>
               <div className='border-b pt-4 border-gray-200 dark:border-gray-700'></div>
               <h1 className=" text-2xl font-bold text-black dark:text-white text-left">Similar Movies</h1>
-                        <div className="flex overflow-x-auto">
-                            {data.movies.map((movie, index) => (
-                                <div key={index} className="flex-none  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mr-4 my-4">
-                                    <Link to={`${movie.link}`}>
-                                        <img className="rounded-t-lg h-40 w-auto" src={movie.image} alt="img" />
-                                        
-                                    </Link>
-                                </div>
-                            ))}
-                        </div>
+              <div className="flex overflow-x-auto">
+                {data.movies.map((movie, index) => (
+                  <div key={index} className="flex-none  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mr-4 my-4">
+                    <Link to={`${movie.link}`}>
+                      <img className="rounded-t-lg h-40 w-auto" src={movie.image} alt="img" />
+
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </> : ""} </div></MyLoader>
 
         </div>

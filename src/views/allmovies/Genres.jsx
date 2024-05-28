@@ -8,7 +8,7 @@ export default function Genres() {
     const { genres } = useAuth();
     const navigate = useNavigate();
     return (
-        <>
+        <div className='hidden md:block'>
             <h1 className="mb-4 text-2xl font-bold text-black dark:text-white text-left ">Genres</h1>
             <div className='h-64 overflow-y-auto '>
                 {/* <MyLoader> */}
@@ -18,7 +18,7 @@ export default function Genres() {
                         // <span className='float-right'>{genre.count}</span>
                         // </li>
                         <Link to={`/${encodeURIComponent(genre.link)}`}>  
-                        <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                             <div className="flex items-center space-x-4 rtl:space-x-reverse">
 
                                 <div className="flex-1 min-w-0">
@@ -36,6 +36,6 @@ export default function Genres() {
                 </ul>
                 {/* </MyLoader> */}
             </div>
-        </>
+        </div>
     )
 }

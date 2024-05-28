@@ -6,7 +6,7 @@ import { Dropdown } from "flowbite-react";
 
 export default function Header2() {
     const [hidden, setHidden] = useState(true);
-    const { navbar, startLoad, stopLoad, topmovies } = useAuth();
+    const { navbar, startLoad, stopLoad, topmovies,genres,years } = useAuth();
     const [movies, setMovies] = useState(JSON.parse(localStorage.getItem("allquerymovies")) || [])
     const [spinner, setSpinner] = useState(false);
     const navigate = useNavigate();
@@ -103,7 +103,7 @@ export default function Header2() {
                                 <div className='  '>
                                     <ul className="w-auto ">
                                         {spinner ?
-                                            <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                            <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
 
                                                 <center>
                                                     <svg aria-hidden="true" className="w-8 h-8 text-center text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -118,7 +118,7 @@ export default function Header2() {
                                         <div className='max-h-64 overflow-y-auto'>
                                             {movies.map((genre, index) => (
                                                 <Link to={`${genre.link}`}>
-                                                    <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                    <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                                                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                                                             <div className="flex-shrink-0" >
                                                                 <img className="w-8 h-auto rounded-full" src={genre.image} alt="Neil image" />
@@ -141,13 +141,13 @@ export default function Header2() {
 
                                         {
                                             !spinner && !movies.length > 0 ?
-                                                <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                                                     <p className="text-sm text-center font-medium text-gray-900 truncate dark:text-white">
                                                         No results found
                                                     </p>
                                                 </li> : ""
                                         }
-                                        <Link onClick={() => { setQuery(""); localStorage.removeItem("allquery"); localStorage.removeItem("allquerymovies") }} className="text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Close</Link>
+                                        <Link onClick={() => { setQuery(""); localStorage.removeItem("allquery"); localStorage.removeItem("allquerymovies") }} className="text-center border-t dark:border-gray-700 border-gray-200 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Close</Link>
 
 
                                     </ul>
@@ -181,7 +181,7 @@ export default function Header2() {
                                 <div className='  '>
                                     <ul className="w-auto ">
                                         {spinner ?
-                                            <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                            <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
 
                                                 <center>
                                                     <svg aria-hidden="true" className="w-8 h-8 text-center text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -195,8 +195,8 @@ export default function Header2() {
                                         }
                                         <div className='max-h-64 overflow-y-auto'>
                                             {movies.map((genre, index) => (
-                                                <Link to={`${genre.link}`}>
-                                                    <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                <Link onClick={(e)=>{e.preventDefault();navigate(genre.link);setHidden(!hidden);}} key={index} >
+                                                    <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                                                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                                                             <div className="flex-shrink-0" >
                                                                 <img className="w-8 h-auto rounded-full" src={genre.image} alt="Neil image" />
@@ -219,13 +219,13 @@ export default function Header2() {
 
                                         {
                                             !spinner && !movies.length > 0 ?
-                                                <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                                                     <p className="text-sm text-center font-medium text-gray-900 truncate dark:text-white">
                                                         No results found
                                                     </p>
                                                 </li> : ""
                                         }
-                                        <Link onClick={() => { setQuery(""); localStorage.removeItem("allquery"); localStorage.removeItem("allquerymovies"); setHidden(!hidden); }} className="text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Close</Link>
+                                        <Link onClick={() => { setQuery(""); localStorage.removeItem("allquery"); localStorage.removeItem("allquerymovies"); setHidden(!hidden); }} className="text-center border-t dark:border-gray-700 border-gray-200 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Close</Link>
 
 
                                     </ul>
@@ -245,24 +245,53 @@ export default function Header2() {
                                             label={
                                                 <label >{movie.name}</label>
                                             }
-                                        >
+                                        >   <div className='max-h-64 overflow-y-auto '>
                                             {movie.link ?
-                                                <Dropdown.Header>
+                                                <Dropdown.Header className='hover:bg-gray-100'>
                                                     <Link to={`/${encodeURIComponent(movie.link)}`} className="dark:text-white">{movie.name}</Link>
                                                 </Dropdown.Header> : ""}
                                             {movie.subitems.map((sub, index) => (
                                                 <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`) }}>{sub.name}</Dropdown.Item>
 
-                                            ))}
+                                            ))}</div>
 
                                         </Dropdown>
                                     </li>
 
 
                             ))}
-                            <li>
+                            <li className='md:hidden block py-2 px-3 lg:p-0 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700'>
+                                        <Dropdown
+                                            arrowIcon={true}
+                                            inline
+                                            label={
+                                                <label >Genres</label>
+                                            }
+                                        >   <div className='max-h-64 overflow-y-auto '>
+                                            
+                                            {genres.map((sub, index) => (
+                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`) }}>{sub.name}</Dropdown.Item>
 
-                            </li>
+                                            ))}</div>
+
+                                        </Dropdown>
+                                    </li>
+                            <li className='md:hidden block py-2 px-3 lg:p-0 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700'>
+                                        <Dropdown
+                                            arrowIcon={true}
+                                            inline
+                                            label={
+                                                <label >Years</label>
+                                            }
+                                        >   <div className='max-h-64 overflow-y-auto '>
+                                            
+                                            {years.map((sub, index) => (
+                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`) }}>{sub.name}</Dropdown.Item>
+
+                                            ))}</div>
+
+                                        </Dropdown>
+                                    </li>
                         </ul>
                     </div>
                 </div>
