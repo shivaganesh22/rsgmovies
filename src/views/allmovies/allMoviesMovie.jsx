@@ -34,6 +34,7 @@ export default function AllMoviesMovie() {
 
     };
     fetchData()
+    setSpinner(true);
 
   }, [params.id]);
 const fetchPlayer=async(item)=>{
@@ -63,7 +64,7 @@ const fetchPlayer=async(item)=>{
   } catch (error) {
     console.error('Error fetching data:', error);
   }
-  setSpinner(false)
+  // setSpinner(false)
 }
   return (
     <main >
@@ -111,7 +112,7 @@ const fetchPlayer=async(item)=>{
                     </center>
                     : ""
                   }
-                  <iframe className='w-full' height="315" src={playerSrc ? playerSrc : data.player} onLoad={() => setSpinner(false)} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
+                  <iframe className='w-full h-64 md:h-80' height="315" src={playerSrc ? playerSrc : data.player} onLoad={() => setSpinner(false)} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
                   </div>
                   <div class="grid grid-cols-2 pt-2 md:grid-cols-2 gap-5 ">
                     <div className='max-h-64 overflow-y-auto '>
