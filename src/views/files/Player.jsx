@@ -135,7 +135,7 @@ export default function Player() {
     return (
         <main>
             <center>
-                <h1 className="lg:text-4xl md:text-3xl text-2xl  font-bold my-3 text-center   text-gray-700  dark:text-white">{data && data.name}</h1> <br />
+                <h1 className="lg:text-4xl md:text-3xl text-2xl  font-bold my-3 text-center   text-gray-700  dark:text-white">{data && data.name}</h1> 
                 <div className='flex justify-center items-center'>
                     <div className="grid grid-cols-2 p-4 gap-5 place-items-center ">
                         <div className={`m-4 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"} border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-40 max-h-128  overflow-hidden`}>
@@ -161,7 +161,7 @@ export default function Player() {
                     <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
                     <div className={!isShow ? "block" : "hidden"}>
 
-                        <video ref={videoRef} className="w-full" controls>
+                        <video ref={videoRef1} className="w-full" controls>
                             <source
                                 src={data && data.url}
                                 type="video/mp4"
@@ -170,7 +170,7 @@ export default function Player() {
                     </div>
                     <div className={isShow ? "block" : "hidden"}>
 
-                        <video ref={videoRef1} className="w-full" controls>
+                        <video ref={videoRef} className="w-full" controls>
                             <source
                                 src={data && data.url}
                                 type="video/mp4"
