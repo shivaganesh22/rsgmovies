@@ -2,37 +2,103 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://rsgmovies.vercel.app/</loc>
-        <lastmod>2024-05-29T02:08:47+00:00</lastmod>
+        <lastmod>2024-06-10</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://rsgmovies.vercel.app/movies/</loc>
-        <lastmod>	2024-05-29T02:08:47+00:00</lastmod>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/movierulz/</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/tamilmv/</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/ibomma/</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/%2Fgenre%2Ftelugu%2F/</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/%2Ftrending%2F</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/%2Fgenre%2Fnetflix%2F</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/%2Fgenre%2Famazon-prime%2F</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/%2Fgenre%2Fhotstar%2F</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/%2Fgenre%2Faha%2F</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/%2Frelease%2F2024%2F</loc>
+        <lastmod>	2024-06-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://rsgmovies.vercel.app/search</loc>
+        <lastmod>	2024-06-10</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://rsgmovies.vercel.app/files/</loc>
-        <lastmod>	2024-05-29T02:08:47+00:00</lastmod>
+        <lastmod>	2024-06-10</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://rsgmovies.vercel.app/openfolder/</loc>
-        <lastmod>	2024-05-29T02:08:47+00:00</lastmod>
+        <lastmod>	2024-06-10</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://rsgmovies.vercel.app/signup/</loc>
-        <lastmod>	2024-05-29T02:08:47+00:00</lastmod>
+        <lastmod>	2024-06-10</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://rsgmovies.vercel.app/login/</loc>
-        <lastmod>	2024-05-29T02:08:47+00:00</lastmod>
+        <lastmod>	2024-06-10</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
