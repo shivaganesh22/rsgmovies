@@ -16,6 +16,7 @@ import Tamilmv from "./tamilmv/Tamilmv";
 import TamilmvMovie from "./tamilmv/TamilmvMovie";
 import TV from "./tv/TV";
 import Youtube from "./Youtube";
+import Y2Mate from "./y2mate";
 import AllMoviesPage from "./allmovies/allMoviesPage";
 import AllMoviesLinks from "./allmovies/allMoviesLinks";
 import AllMoviesMovie from "./allmovies/allMoviesMovie";
