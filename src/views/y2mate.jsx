@@ -11,27 +11,44 @@ export default function Y2Mate() {
   const [toggle, setToggle] = useState(false);
   const {startLoad,stopLoad}=useAuth();
   const [data, setData] = useState(JSON.parse(localStorage.getItem("y2mate")) || null);
-  const [videos, setVideos] = useState([]);
+
   const [isShow, setShow] = useState(1);
-  const [audios, setAudios] = useState([]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     setQuery(query.current.value);
   }
+  const downloadVideo = async (link) => {
+    startLoad();
+    try {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/y2matedownload/?link=${link}&vid=${data.vid}`);
+      if(response.status==200){
+        const result = await response.json();
+        console.log(result.dlink);
+        // window.location.href=result.dlink;
+        
+        
+      }else{
+        toastWarning("Failed to get results")
+      }
 
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    stopLoad();
+  };
   useEffect(() => {
     const fetchData = async () => {
       startLoad();
       try {
         if(data) stopLoad();
         const response = await fetch(`https://rsg-movies.vercel.app/react/y2mate/?link=${queryData}`);
-        const result = await response.json();
         if(response.status==200){
-
+          const result = await response.json();
+          console.log(result);
           setData(result);
           localStorage.setItem("y2mate", JSON.stringify(result));
-          console.log(data);
+          
         }else{
           toastWarning("Failed to get results")
         }
@@ -46,7 +63,7 @@ export default function Y2Mate() {
     if (queryData) {
       fetchData();}
       else{
-        setData(null);setAudios([]);setVideos([]);
+        setData(null);
         localStorage.removeItem('y2mate');
       }
   }, [queryData]);
@@ -75,13 +92,13 @@ export default function Y2Mate() {
 
      <MyLoader>
       <main>
-     <div className="p-1">
+     {data&&<><div className="p-1">
         <h5 className="mb-2 text-1xl font-bold tracking-tight text-gray-900 dark:text-white">{data && data.title }</h5>
       </div>
       <img className="h-auto w-64 lg:w-80 rounded p-2 mx-auto" src={data&&`https://i.ytimg.com/vi/${data.vid}/0.jpg`} alt="Image" />
       <div className='flex justify-center items-center'>
                     <div className="grid grid-cols-3  gap-0 place-items-center ">
-                        <div className={`m-4 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow==1 ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"} border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-40 max-h-128  overflow-hidden`}>
+                        <div className={`m-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow==1 ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"} border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-20 md:w-40  max-h-128  overflow-hidden`}>
                             <Link onClick={(e) => { e.preventDefault(); setShow(1) }} >
 
                                 <div className="p-1 text-black dark:text-white ">
@@ -89,7 +106,7 @@ export default function Y2Mate() {
                                 </div>
                             </Link>
                         </div>
-                        <div className={`m-4 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow==2 ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"}   border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-40 max-h-128  overflow-hidden`}>
+                        <div className={`m-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow==2 ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"}   border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-20 md:w-40 max-h-128  overflow-hidden`}>
                             <Link onClick={(e) => { e.preventDefault(); setShow(2); }}>
 
                                 <div className="p-1 text-black dark:text-white">
@@ -97,7 +114,7 @@ export default function Y2Mate() {
                                 </div>
                             </Link>
                         </div>
-                        <div className={`m-4 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow==3 ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"}   border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-40 max-h-128  overflow-hidden`}>
+                        <div className={`m-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow==3 ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"}   border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-20 md:w-40 max-h-128  overflow-hidden`}>
                             <Link onClick={(e) => { e.preventDefault(); setShow(3); }}>
 
                                 <div className="p-1 text-black dark:text-white">
@@ -106,66 +123,62 @@ export default function Y2Mate() {
                             </Link>
                         </div>
                     </div>
-                </div>
+                </div></>}
+      {data?.mess&&<h5 className="mt-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-center">{data.mess}</h5>}
       <div className="grid grid-cols-2 p-4 lg:grid-cols-5 md:grid-cols-4 gap-5  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
         {isShow==1?
-        data&& videos.map((movie, index) => (
-            <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+        data?.links?.mp4&& Object.entries(data.links.mp4).map(([index, movie]) => (
+          <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+          <Link  onClick={(e)=>{e.preventDefault();downloadVideo(movie.k)}}>
+
+            <div className="p-1" >
+
+
+              <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.q}</h5>
+              <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase"><i className="fa fa-video-camera dark:text-white" aria-hidden="true"></i> {movie.f}</h5>
+              
+              <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.size}</h5>
+            </div>
+          </Link>
+        </div>
+        ))
+        :""}
+        {isShow==2 ?
+        data?.links?.mp3&& Object.entries(!data.mess&&data.links.mp3).map(([index, movie]) => (
+          <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+          <a href={`${movie.url}`}  >
+
+            <div className="p-1">
+
+
+              <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.q}</h5>
+
+              <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase"> <FontAwesomeIcon icon={faMusic}></FontAwesomeIcon> {movie.f}</h5>
+
+              <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.size} </h5>
+            </div>
+          </a>
+        </div>
+        ))
+          
+        :""}
+          {
+            isShow==3?
+            data?.links?.other&&Object.entries(!data.mess&&data.links.other).map(([index, movie]) => (
+              <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
               <Link to={`${movie.url}`} target="_blank">
 
                 <div className="p-1" >
 
 
-                  <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.resolution}</h5>
-                  {movie.audio ?
-                    <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase"><i className="fa fa-video-camera dark:text-white" aria-hidden="true"></i> {movie.codec}</h5>
-                    : <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase"><FontAwesomeIcon icon={faVolumeXmark} /> {movie.codec}</h5>
-
-                  }
-                  <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.size.toFixed(2)} MB</h5>
+                  <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase" dangerouslySetInnerHTML={{ __html: movie.q_text }}></h5>
+          
+                  <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.size} </h5>
                 </div>
               </Link>
             </div>
-          ))
-        :""}
-        {isShow==2 ?
-          audios.map((movie, index) => (
-            <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-              <a href={`${movie.url}`}  target="_blank">
-
-                <div className="p-1">
-
-
-                  <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.resolution}</h5>
-
-                  <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase"> <FontAwesomeIcon icon={faMusic}></FontAwesomeIcon> {movie.codec}</h5>
-
-                  <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.size.toFixed(2)} MB</h5>
-                </div>
-              </a>
-            </div>
-          ))
-          :""}
-          {
-            isShow==3?
-            videos.map((movie, index) => (
-                <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-                  <Link to={`${movie.url}`} target="_blank">
-    
-                    <div className="p-1" >
-    
-    
-                      <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.resolution}</h5>
-                      {movie.audio ?
-                        <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase"><i className="fa fa-video-camera dark:text-white" aria-hidden="true"></i> {movie.codec}</h5>
-                        : <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase"><FontAwesomeIcon icon={faVolumeXmark} /> {movie.codec}</h5>
-    
-                      }
-                      <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.size.toFixed(2)} MB</h5>
-                    </div>
-                  </Link>
-                </div>
-              ))
+            ))
+           
             :""}
           
 
