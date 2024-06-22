@@ -20,6 +20,8 @@ import Y2Mate from "./y2mate";
 import AllMoviesPage from "./allmovies/allMoviesPage";
 import AllMoviesLinks from "./allmovies/allMoviesLinks";
 import AllMoviesMovie from "./allmovies/allMoviesMovie";
+import TVShows from "./allmovies/TVShows";
+import Episodes from "./allmovies/Episodes";
 export const AllRoutes = () => {
  
   return (
@@ -32,6 +34,8 @@ export const AllRoutes = () => {
             <Route path="" element={<AllMoviesPage />} />
             <Route path="/:id" element={<AllMoviesLinks />} />
             <Route path="/movies/:id" element={<AllMoviesMovie />} />
+            <Route path="/tvshows/:id" element={<TVShows />} />
+            <Route path="/episodes/:id" element={<Episodes />} />
 
             <Route path="ibomma" element={<IBomma />} />
             <Route path="ibomma/movie/" element={<IBommaMovie />} />

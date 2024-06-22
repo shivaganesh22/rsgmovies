@@ -47,6 +47,11 @@ export default function AllMoviesLinks() {
                                     <><Link to={`/${encodeURIComponent(movie.link)}`}  key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
                                 ))}
                             </p>
+                            <p className="font-medium text-gray-700 mb-2 dark:text-gray-400 text-center">
+                                {data && data.trendings.map((movie, index) => (
+                                    <><Link to={`/${encodeURIComponent(movie.link)}`}  key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
+                                ))}
+                            </p>
                             
                             
                             {data && data.name ?
