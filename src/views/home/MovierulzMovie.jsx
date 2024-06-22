@@ -11,6 +11,7 @@ export default function MovierulzMovie() {
   const [streams, setStreams] = useState([]);
   const [active, setActive] = useState(0);
   const [spinner, setSpinner] = useState(false);
+  const [isShow, setShow] = useState(false);
   const [playerSrc, setPlayerSrc] = useState(null);
   const { startLoad, stopLoad } = useAuth();
   const fetchStreams=async(name)=>{
@@ -23,6 +24,8 @@ export default function MovierulzMovie() {
         setStreams(result.movies);
         if (result.movies.length>0)
           setPlayerSrc(result.movies[0]["link"])
+        else
+        setShow(true)
       }
       else{
         toastWarning("Failed to get streams")
@@ -115,7 +118,8 @@ export default function MovierulzMovie() {
 
         <div class="grid grid-cols-2 pt-2 md:grid-cols-2 gap-5 ">
                     <div className='max-h-64 overflow-y-auto '>
-                    {streams.length>0?<h5 className="my-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Streams</h5>:""}
+                    {streams.length>0||isShow?<h5 className="my-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Streams</h5>:""}
+                    {isShow?<p className="font-medium text-gray-700 dark:text-gray-400 text-left text-xs ">Stream links are in progress and will be added soon.</p>:""}
                       <ul class=" grid grid-cols-1 gap-2 md:grid-cols-2 ">
                       {streams.map((genre, index) => (
                     <Link key={index} onClick={()=>{setSpinner(true);setActive(index);setPlayerSrc(genre.link)}}>
