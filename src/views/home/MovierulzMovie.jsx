@@ -92,14 +92,14 @@ export default function MovierulzMovie() {
     <main>
       <center>
         
-        <section className="flex justify-around flex-wrap py-5">
+        <section className="flex justify-around flex-wrap ">
           <div className="max-w-sm">
             <img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={data.image} alt={data.name} />
           </div>
           <div className="max-w-2xl text-gray-700 text-lg dark:text-white">
             <h1 className="lg:text-4xl md:text-3xl text-2xl md:text-left font-bold my-3 text-center lg:text-left">{data.name}</h1>
-            <div className='my-4 text-left' dangerouslySetInnerHTML={{ __html: data.inf }} />
-            <div className='my-4 text-left' dangerouslySetInnerHTML={{ __html: data.desc }} />
+            <div className='mt-4 text-left' dangerouslySetInnerHTML={{ __html: data.inf }} />
+            <div className='mt-4 text-left' dangerouslySetInnerHTML={{ __html: data.desc }} />
           </div>
         </section>
         {spinner ?
@@ -114,13 +114,15 @@ export default function MovierulzMovie() {
 </center>
 : ""
 }
-{playerSrc?<iframe className='w-full h-64 md:h-80 md:w-1/2 border border-gray-200 dark:border-gray-700' height="315" src={`https://swdyu.com/e/${playerSrc}`} onLoad={() => setSpinner(false)} frameBorder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>:""}
-
+{playerSrc?<iframe className='w-full h-64 md:h-80 md:w-1/2 mt-2 border border-gray-200 dark:border-gray-700' height="315" src={`https://swdyu.com/e/${playerSrc}`} onLoad={() => setSpinner(false)} frameBorder="1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>:""}
+{isShow?<h5 className="my-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Streams</h5>:""}
+                    {isShow?<p className="font-medium text-gray-700 dark:text-gray-400 text-left text-sm ">Stream links are in progress and will be added soon.</p>:""}
+                    
         <div class="grid grid-cols-2 pt-2 md:grid-cols-2 gap-5 ">
                     <div className='max-h-64 overflow-y-auto '>
-                    {streams.length>0||isShow?<h5 className="my-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Streams</h5>:""}
-                    {isShow?<p className="font-medium text-gray-700 dark:text-gray-400 text-left text-xs ">Stream links are in progress and will be added soon.</p>:""}
-                      <ul class=" grid grid-cols-1 gap-2 md:grid-cols-2 ">
+                    {streams.length>0?<h5 className="my-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Streams</h5>:""}
+ 
+                     <ul class=" grid grid-cols-1 gap-2 md:grid-cols-2 ">
                       {streams.map((genre, index) => (
                     <Link key={index} onClick={()=>{setSpinner(true);setActive(index);setPlayerSrc(genre.link)}}>
                     
