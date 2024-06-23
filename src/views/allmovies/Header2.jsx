@@ -248,10 +248,10 @@ export default function Header2() {
                                         >   <div className='max-h-64 overflow-y-auto '>
                                             {movie.link ?
                                                 <Dropdown.Header className='hover:bg-gray-100'>
-                                                    <Link to={`/${encodeURIComponent(movie.link)}`} className="dark:text-white">{movie.name}</Link>
+                                                    <Link onClick={(e) => { e.preventDefault();navigate(`/${encodeURIComponent(movie.link)}`);setHidden(!hidden) }} className="dark:text-white">{movie.name}</Link>
                                                 </Dropdown.Header> : ""}
                                             {movie.subitems.map((sub, index) => (
-                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`) }}>{sub.name}</Dropdown.Item>
+                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
 
                                             ))}</div>
 
@@ -270,7 +270,7 @@ export default function Header2() {
                                         >   <div className='max-h-64 overflow-y-auto '>
                                             
                                             {genres.map((sub, index) => (
-                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`) }}>{sub.name}</Dropdown.Item>
+                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
 
                                             ))}</div>
 
@@ -286,7 +286,7 @@ export default function Header2() {
                                         >   <div className='max-h-64 overflow-y-auto '>
                                             
                                             {years.map((sub, index) => (
-                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`) }}>{sub.name}</Dropdown.Item>
+                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
 
                                             ))}</div>
 

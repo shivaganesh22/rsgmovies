@@ -77,7 +77,7 @@ const fetchPlayer=async(item)=>{
 
           <MyLoader >
             <div className='header2'>{data ? <>
-              <section className="flex justify-around flex-wrap py-5">
+              <section className="flex justify-around flex-wrap pt-5 lg:pb-5">
                 <center>
                   <img className="rounded w-1/2 lg:mt-5 md:mt-14 md:h-56 md:w-auto" src={data.image} alt={data.name} />
                 </center>
