@@ -121,53 +121,36 @@ export default function MovierulzMovie() {
 {isShow?<h5 className="my-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Streams</h5>:""}
                     {isShow?<p className="font-medium text-gray-700 dark:text-gray-400 text-left text-sm ">Stream links are in progress and will be added soon.</p>:""}
                     
-        <div class="grid grid-cols-2 pt-2 md:grid-cols-2 gap-5 ">
+      
                     <div className='max-h-64 overflow-y-auto '>
                     {streams.length>0?<h5 className="my-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Streams</h5>:""}
- 
                      <ul class=" grid grid-cols-1 gap-2 md:grid-cols-2 ">
                       {streams.map((genre, index) => (
-                    <Link key={index} onClick={()=>{setSpinner(true);setActive(index);setPlayerSrc(genre.link)}}>
                     
-                      <li class={`p-2 hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow  dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center ${active==index?"bg-gray-200 dark:bg-gray-600":"bg-white dark:bg-gray-800" } `}>
+                    
+                      <li key={index} class={`p-2 hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow  dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center ${active==index?"bg-gray-200 dark:bg-gray-600":"bg-white dark:bg-gray-800" } `}>
                         <div class="flex items-center space-x-4 rtl:space-x-reverse">
                           <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white uppercase">
+                        <Link  onClick={()=>{setSpinner(true);setActive(index);setPlayerSrc(genre.link)}}>
+                            <p class={`text-sm font-medium text-gray-900  dark:text-white uppercase`}>
                               {genre.name}
                             </p>
-                           
+                          </Link>
                           </div>
-
-                        </div>
-                      </li></Link>
+                          <div className="inline-flex items-center   text-base font-semibold text-gray-900 dark:text-white pr-1">
+                          <a href={`https://swdyu.com/f/${(genre.link)}`} target='_blank'>
+                          <i className="fa fa-download text-black dark:text-white" aria-hidden="true"></i>
+                          </a>
+                          </div>
+                          </div>
+                      </li>
                   ))}
 
                       </ul>
                     </div>
 
-                    <div className='max-h-64 overflow-y-auto '>
-                    {streams.length>0?<h5 className="my-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase text-left">Downloads</h5>:""}
-                      <ul class="grid grid-cols-1 gap-2 md:grid-cols-2 ">
-                      {streams.map((genre, index) => (
-                    <a href={`https://swdyu.com/f/${(genre.link)}`} target='_blank'>
-                      <li class="p-2 bg-white hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
-                        <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                          
-                          <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white uppercase">
-                              {genre.name}
-                            </p>
-                           
-
-                          </div>
-
-                        </div>
-                      </li></a>
-                  ))}
-
-                      </ul>
-                    </div>
-                  </div>
+                 
+                 
                   {links.length>0?<h5 className="mt-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Torrents</h5>:""}
         <div className="grid grid-cols-2 p-4 lg:grid-cols-5 md:grid-cols-4 gap-5 my-2  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
           {links.map((movie, index) => (
