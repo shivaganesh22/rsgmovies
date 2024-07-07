@@ -95,7 +95,7 @@ export default function Movierulz() {
       <main >
         <center>
 
-          <form className="max-w-md mx-auto" onSubmit={handleSubmit}>
+          <form className="max-w-md mx-auto mb-4" onSubmit={handleSubmit}>
             <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
             <div className="relative">
               <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -162,7 +162,7 @@ export default function Movierulz() {
           </div>
           </form>
                 <Link to="/allmovies">
-      <h1 className="my-4 ml-3 text-2xl font-bold text-black dark:text-white flex items-center underline underline-offset-4">
+      <h1 className="mb-4 lg:hidden text-2xl font-bold text-black dark:text-white flex items-center underline underline-offset-4">
   Allmovies
   <svg className="w-2.5 h-2.5 ml-3 mt-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
