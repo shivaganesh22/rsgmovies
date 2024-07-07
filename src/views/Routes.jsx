@@ -27,15 +27,15 @@ export const AllRoutes = () => {
   return (
     <div className="dark:bg-darkbg">
         <Routes>
-            <Route path="movierulz" element={<Movierulz />} />
-            <Route path="movierulz/movie/:id" element={<MovierulzMovie />} />
-            <Route path="movierulz/special" element={<Special />} />
+            <Route path="" element={<Movierulz />} />
+            <Route path="movie/:id" element={<MovierulzMovie />} />
+            <Route path="special" element={<Special />} />
 
-            <Route path="" element={<AllMoviesPage />} />
-            <Route path="/:id" element={<AllMoviesLinks />} />
-            <Route path="/movies/:id" element={<AllMoviesMovie />} />
-            <Route path="/tvshows/:id" element={<TVShows />} />
-            <Route path="/episodes/:id" element={<Episodes />} />
+            <Route path="allmovies" element={<AllMoviesPage />} />
+            <Route path="allmovies/:id" element={<AllMoviesLinks />} />
+            <Route path="allmovies/movies/:id" element={<AllMoviesMovie />} />
+            <Route path="allmovies/tvshows/:id" element={<TVShows />} />
+            <Route path="allmovies/episodes/:id" element={<Episodes />} />
 
             <Route path="ibomma" element={<IBomma />} />
             <Route path="ibomma/movie/" element={<IBommaMovie />} />

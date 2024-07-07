@@ -72,7 +72,7 @@ export default function Header2() {
         <div>
             <nav className="bg-white border-2 rounded-2xl border-gray-200 px-2 sm:px-4 dark:bg-gray-900 dark:border-b-1 dark:border-gray-900">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
-                    <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+                    <Link to="/allmovies" className="flex items-center space-x-3 rtl:space-x-reverse">
                         <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Logo" />
                         <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">AllMovies</span>
                     </Link>
@@ -117,7 +117,7 @@ export default function Header2() {
                                         }
                                         <div className='max-h-64 overflow-y-auto'>
                                             {movies.map((genre, index) => (
-                                                <Link to={`${genre.link}`}>
+                                                <Link to={`/allmovies${genre.link}`}>
                                                     <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                                                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                                                             <div className="flex-shrink-0" >
@@ -195,7 +195,7 @@ export default function Header2() {
                                         }
                                         <div className='max-h-64 overflow-y-auto'>
                                             {movies.map((genre, index) => (
-                                                <Link onClick={(e)=>{e.preventDefault();navigate(genre.link);setHidden(!hidden);}} key={index} >
+                                                <Link onClick={(e)=>{e.preventDefault();navigate(`/allmovies${genre.link}`);setHidden(!hidden);}} key={index} >
                                                     <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                                                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                                                             <div className="flex-shrink-0" >
@@ -236,7 +236,7 @@ export default function Header2() {
                             {navbar.map((movie, index) => (
                                 movie.subitems.length == 0 ?
                                     <li key={index}>
-                                        <NavLink to={`/${encodeURIComponent(movie.link)}`} className="block py-2 px-3 lg:p-0 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">{movie.name}</NavLink>
+                                        <NavLink to={`/allmovies/${encodeURIComponent(movie.link)}`} className="block py-2 px-3 lg:p-0 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">{movie.name}</NavLink>
                                     </li>
                                     : <li className=' block py-2 px-3 lg:p-0 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700'>
                                         <Dropdown
@@ -248,10 +248,10 @@ export default function Header2() {
                                         >   <div className='max-h-64 overflow-y-auto '>
                                             {movie.link ?
                                                 <Dropdown.Header className='hover:bg-gray-100'>
-                                                    <Link onClick={(e) => { e.preventDefault();navigate(`/${encodeURIComponent(movie.link)}`);setHidden(!hidden) }} className="dark:text-white">{movie.name}</Link>
+                                                    <Link onClick={(e) => { e.preventDefault();navigate(`/allmovies/${encodeURIComponent(movie.link)}`);setHidden(!hidden) }} className="dark:text-white">{movie.name}</Link>
                                                 </Dropdown.Header> : ""}
                                             {movie.subitems.map((sub, index) => (
-                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
+                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/allmovies/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
 
                                             ))}</div>
 
@@ -270,7 +270,7 @@ export default function Header2() {
                                         >   <div className='max-h-64 overflow-y-auto '>
                                             
                                             {genres.map((sub, index) => (
-                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
+                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/allmovies/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
 
                                             ))}</div>
 
@@ -286,7 +286,7 @@ export default function Header2() {
                                         >   <div className='max-h-64 overflow-y-auto '>
                                             
                                             {years.map((sub, index) => (
-                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
+                                                <Dropdown.Item key={index} className='dark:text-white' onClick={() => { navigate(`/allmovies/${encodeURIComponent(sub.link)}`);setHidden(!hidden) }}>{sub.name}</Dropdown.Item>
 
                                             ))}</div>
 

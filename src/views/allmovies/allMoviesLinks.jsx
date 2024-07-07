@@ -44,12 +44,12 @@ export default function AllMoviesLinks() {
                         <main>
                             <p className="font-medium text-gray-700 dark:text-gray-400 text-center">
                                 {data && data.links.map((movie, index) => (
-                                    <><Link to={`/${encodeURIComponent(movie.link)}`}  key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
+                                    <><Link to={`/allmovies/${encodeURIComponent(movie.link)}`}  key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
                                 ))}
                             </p>
                             <p className="font-medium text-gray-700 mb-2 dark:text-gray-400 text-center">
                                 {data && data.trendings.map((movie, index) => (
-                                    <><Link to={`/${encodeURIComponent(movie.link)}`}  key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
+                                    <><Link to={`/allmovies/${encodeURIComponent(movie.link)}`}  key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
                                 ))}
                             </p>
                             
@@ -60,7 +60,7 @@ export default function AllMoviesLinks() {
                             <div className="grid border-b border-gray-200 dark:border-gray-700 pb-4 grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4 ">
                                 {data && data.movies.map((movie, index) => (
                                     <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  mx-auto overflow-hidden">
-                                        <Link to={`${movie.link}`} >
+                                        <Link to={`/allmovies${movie.link}`} >
                                             <img className="rounded-t-lg center h-52 w-40" src={movie.image} alt="img" />
                                             <div className="p-1 ">
                                                 <h5 className="mb-2 h-12 text-1xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-2">{movie.name}</h5>
@@ -77,7 +77,7 @@ export default function AllMoviesLinks() {
                                     <ul className="flex items-center -space-x-px h-8 text-sm mt-4 justify-center ">
                                         <span className='m-4 text-gray-500 dark:text-gray-400'>{data.pagination.count}</span>
                                         {data.pagination.arrows.length > 1 ? <li>
-                                            <Link to={`/${encodeURIComponent(data.pagination.arrows[0])}`} className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            <Link to={`/allmovies/${encodeURIComponent(data.pagination.arrows[0])}`} className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                                 <span className="sr-only">Previous</span>
                                                 <svg className="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 1 1 5l4 4" />
@@ -86,14 +86,14 @@ export default function AllMoviesLinks() {
                                         </li> : ""}
                                         {data.pagination.pages.map((item, index) => (
                                             <li>
-                                                <Link to={`/${encodeURIComponent(item.link)}`} className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{item.name}</Link>
+                                                <Link to={`/allmovies/${encodeURIComponent(item.link)}`} className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{item.name}</Link>
                                             </li>
 
                                         ))}
 
 
                                         <li>
-                                            <Link to={data.pagination.arrows.length > 1 ? `/${encodeURIComponent(data.pagination.arrows[1])}` : `/${encodeURIComponent(data.pagination.arrows[0])}`} className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            <Link to={data.pagination.arrows.length > 1 ? `/allmovies/${encodeURIComponent(data.pagination.arrows[1])}` : `/allmovies/${encodeURIComponent(data.pagination.arrows[0])}`} className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                                 <span className="sr-only">Next</span>
                                                 <svg className="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />

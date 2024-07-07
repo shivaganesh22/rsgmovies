@@ -61,18 +61,18 @@ export default function AllMoviesPage() {
 
         <MyLoader>
           <main>
-          <Link to="/movierulz">
+          {/* <Link to="/movierulz">
       <h1 className="mb-4 text-2xl font-bold text-black dark:text-white flex items-center underline underline-offset-4">
   Movierulz
   <svg className="w-2.5 h-2.5 ml-3 mt-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
   </svg>
 </h1>
-      </Link>
+      </Link> */}
         <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4 ">
             {movies.map((movie, index) => (
               <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  mx-auto overflow-hidden">
-                <Link to={`${movie.link}`} >
+                <Link to={`/allmovies${movie.link}`} >
                   <img className="rounded-t-lg center h-52 w-40" src={movie.image} alt="img" />
                   <div className="p-1 ">
                     <h5 className="mb-2 h-12 text-1xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-2">{movie.name}</h5>

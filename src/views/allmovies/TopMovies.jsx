@@ -17,7 +17,7 @@ export default function TopMovies() {
                 
                     {topmovies.map((genre, index) => (
 
-                        <Link to={`${genre.link}`}><li class="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                        <Link to={`/allmovies${genre.link}`}><li class="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                             <div class="flex items-center space-x-4 rtl:space-x-reverse">
                                 <div class="flex-shrink-0" >
                                     <img class="w-8 h-auto rounded-full" src={genre.image} alt="Neil image" />

@@ -125,7 +125,7 @@ export default function Movierulz() {
                 }
                 <div className='max-h-64 overflow-y-auto'>
                   {queryMovies.map((genre, index) => (
-                    <Link to={`/movierulz/movie${genre.link}`} key={index}>
+                    <Link to={`/movie${genre.link}`} key={index}>
                       <li  className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                           <div className="flex-shrink-0" >
@@ -161,12 +161,18 @@ export default function Movierulz() {
 
           </div>
           </form>
-
-          <br />
+                <Link to="/allmovies">
+      <h1 className="my-4 ml-3 text-2xl font-bold text-black dark:text-white flex items-center underline underline-offset-4">
+  Allmovies
+  <svg className="w-2.5 h-2.5 ml-3 mt-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
+  </svg>
+</h1>
+      </Link>
           <div className="grid grid-cols-2 lg:grid-cols-6 md:grid-cols-4 gap-4 ">
             {movies.map((movie, index) => (
               <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  mx-auto overflow-hidden">
-                <Link to={`/movierulz/movie${movie.link}`} >
+                <Link to={`/movie${movie.link}`} >
                   <img className="rounded-t-lg center" src={movie.image} alt="img" />
                   <div className="p-1">
                     <h5 className="mb-2 text-1xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-3">{movie.name}</h5>

@@ -17,7 +17,7 @@ export default function Genres() {
                         // <li key={index} className='dark:text-gray-400 font-medium border-b dark:border-gray-700' onClick={()=>{navigate(`/allmovies/${encodeURIComponent(genre.link)}`)}}>{genre.name} 
                         // <span className='float-right'>{genre.count}</span>
                         // </li>
-                        <Link to={`/${encodeURIComponent(genre.link)}`}>  
+                        <Link to={`/allmovies/${encodeURIComponent(genre.link)}`}>  
                         <li className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                             <div className="flex items-center space-x-4 rtl:space-x-reverse">
 

@@ -60,7 +60,7 @@ export default function TVShows() {
 
                                         <p className="py-2 font-medium text-gray-700 dark:text-gray-400 text-left text-xs">
                                             {data.genre.map((movie, index) => (
-                                                <><Link to={`/${encodeURIComponent(movie.link)}`} key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
+                                                <><Link to={`/allmovies/${encodeURIComponent(movie.link)}`} key={index}>   <span className='underline underline-offset-4'> {movie.name}</span>  <>&nbsp;&nbsp;</> </Link></>
                                             ))}
                                         </p>
                                         <p className='text-sm text-left text-slate-500 dark:text-gray-400'>{data.description}</p>
@@ -91,7 +91,7 @@ export default function TVShows() {
                                             <ul class="grid grid-cols-1 pt-2 md:grid-cols-2 gap-5 ">
 
                                                 {movie.episodes.map((genre, index) => (
-                                                    <Link to={genre.link}>
+                                                    <Link to={`/allmovies${genre.link}`}>
                                                         <li class="p-2 bg-white  hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
                                                             <div class="flex items-center space-x-4 rtl:space-x-reverse">
                                                                 <div class="flex-shrink-0" >
@@ -129,7 +129,7 @@ export default function TVShows() {
                             <div className='border-b pt-4 border-gray-200 dark:border-gray-700'></div>
                             <h5 className="mt-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">Director</h5>
                             <ul class="grid grid-cols-1 pt-2 md:grid-cols-2 gap-5 ">
-                                <Link to={`/${encodeURIComponent(data.director.link)}`}>
+                                <Link to={`/allmovies/${encodeURIComponent(data.director.link)}`}>
                                     <li class="p-2 bg-white  hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
                                         <div class="flex items-center space-x-4 rtl:space-x-reverse">
                                             <div class="flex-shrink-0" >
@@ -153,7 +153,7 @@ export default function TVShows() {
                                 <ul class="grid grid-cols-1 pt-2 md:grid-cols-2 gap-5 ">
 
                                     {data.actors.map((genre, index) => (
-                                        <Link to={`/${encodeURIComponent(genre.link)}`}>
+                                        <Link to={`/allmovies/${encodeURIComponent(genre.link)}`}>
                                             <li class="p-2 bg-white  hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
                                                 <div class="flex items-center space-x-4 rtl:space-x-reverse">
                                                     <div class="flex-shrink-0" >
@@ -207,7 +207,7 @@ export default function TVShows() {
                             <div className="flex overflow-x-auto">
                                 {data.movies.map((movie, index) => (
                                     <div key={index} className="flex-none  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mr-4 my-4">
-                                        <Link to={`${movie.link}`}>
+                                        <Link to={`/allmovies${movie.link}`}>
                                             <img className="rounded-t-lg h-40 w-auto" src={movie.image} alt="img" />
 
                                         </Link>

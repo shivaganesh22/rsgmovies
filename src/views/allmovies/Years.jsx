@@ -15,7 +15,7 @@ export default function Years() {
                     <div className="grid grid-cols-2 lg:grid-cols-3 md:grid-cols-2 gap-4">
                     {years.map((movie, index) => (
                         <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-                            <Link to={`/${encodeURIComponent(movie.link)}`}>
+                            <Link to={`/allmovies/${encodeURIComponent(movie.link)}`}>
 
                                 <div className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600">
 

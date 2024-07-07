@@ -108,7 +108,7 @@ const fetchPlayer=async(item)=>{
                   <div className="grid grid-cols-3 mt-2 gap-4">
                     {data.pages.map((movie, index) => (
                         <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-                            <Link to={movie.link}>
+                            <Link to={`/allmovies${movie.link}`}>
 
                                 <div className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600">
 
@@ -189,7 +189,7 @@ const fetchPlayer=async(item)=>{
                                             <ul class="grid grid-cols-1 pt-2 md:grid-cols-2 gap-5 ">
 
                                                 {movie.episodes.map((genre, index) => (
-                                                    <Link to={genre.link}>
+                                                    <Link to={`/allmovies${genre.link}`}>
                                                         <li class="p-2 bg-white  hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
                                                             <div class="flex items-center space-x-4 rtl:space-x-reverse">
                                                                 <div class="flex-shrink-0" >
