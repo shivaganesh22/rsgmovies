@@ -84,6 +84,23 @@ export default function Files() {
     }
     stopLoad();
   }
+  const copyFolder = async (id) => {
+    startLoad();
+    try {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/folder/file/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('token')}`
+        },
+      });
+      const result = await response.json();
+      await navigator.clipboard.writeText(result.url);
+      toastSuccess("Copied");
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    stopLoad();
+  }
   const deleteFolder = async (id) => {
     startLoad();
     try {
@@ -152,6 +169,24 @@ export default function Files() {
     }
     stopLoad();
   }
+  const copyFile = async (id) => {
+    startLoad();
+    try {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/file/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('token')}`
+        },
+      });
+      const result = await response.json();
+      await navigator.clipboard.writeText(result.url);
+      toastSuccess("Copied");
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    stopLoad();
+  }
   const deleteFile = async (id) => {
     startLoad();
     try {
@@ -197,7 +232,38 @@ export default function Files() {
     fetchData();
 
   }
-
+  function formatTime(timeString) {
+    const utcTime = new Date(timeString + ' UTC'); // Parse as UTC
+    const now = new Date(); // Get current local time
+    const timeDiff = now - utcTime; // Difference in milliseconds
+  
+    // Calculate time differences
+    const seconds = Math.floor(timeDiff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+  
+    // Formatting options for "Today at HH:MM AM/PM"
+    const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+  
+    if (days === 0) {
+      return `Today at ${utcTime.toLocaleTimeString([], timeOptions)}`;
+    } else if (days === 1) {
+      return `Yesterday at ${utcTime.toLocaleTimeString([], timeOptions)}`;
+    } else if (days < 30) {
+      return `${days} days ago`;
+    } else if (months === 1) {
+      return "1 month ago";
+    } else if (months < 12) {
+      return `${months} months ago`;
+    } else if (years === 1) {
+      return "1 year ago";
+    } else {
+      return `${years} years ago`;
+    }
+  }
 
   return (
     <MyLoader>
@@ -276,12 +342,14 @@ export default function Files() {
                     <img className="w-8 h-8 rounded-full" src={folderimg} alt="Neil image" />
                   </div>
                   <div className="flex-1 min-w-0">
+                  <Link to={`/files/open/${item.id}`}>
                     <p className="text-md font-medium text-gray-900 truncate dark:text-white">
                       {item.name}
                     </p>
+                  </Link>
 
                     <div className='flex justify-center items-center'>
-                      <div className="grid grid-cols-5 p-4 gap-5 place-items-center ">
+                      <div className="grid grid-cols-5 pt-3 gap-5 place-items-center ">
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                           <Link to={`/player/?mode=folder&id=${item.id}`}>
 
@@ -301,10 +369,10 @@ export default function Files() {
                           </Link>
                         </div>
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                          <Link to={`/files/open/${item.id}`}>
+                          <Link onClick={() => { copyFolder(item.id) }}>
 
                             <div className="p-1">
-                              <i className="fa fa-folder-open text-black dark:text-white" aria-hidden="true"></i>
+                              <i className="fa fa-copy text-black dark:text-white" aria-hidden="true"></i>
 
                             </div>
                           </Link>
@@ -329,6 +397,9 @@ export default function Files() {
                         </div>
                       </div>
                     </div>
+                    <p className="text-xs pt-1 font-medium text-gray-900 truncate dark:text-white">
+                    {formatTime(item.last_update)}
+                    </p>
 
 
 
@@ -373,7 +444,7 @@ export default function Files() {
                       {item.name}
                     </p>
                     <div className='flex  justify-center items-center '>
-                      <div className="grid grid-cols-4 pt-3 pb-1 gap-5 place-items-center ">
+                      <div className="grid grid-cols-5 pt-3 pb-1 gap-5 place-items-center ">
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                           <Link to={`/player/?mode=file&id=${item.folder_file_id}`}>
 
@@ -388,6 +459,15 @@ export default function Files() {
 
                             <div className="p-1">
                               <i className="fa fa-download text-black dark:text-white" aria-hidden="true"></i>
+
+                            </div>
+                          </Link>
+                        </div>
+                        <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
+                          <Link onClick={() => { copyFile(item.folder_file_id) }}>
+
+                            <div className="p-1">
+                              <i className="fa fa-copy text-black dark:text-white" aria-hidden="true"></i>
 
                             </div>
                           </Link>
@@ -413,6 +493,10 @@ export default function Files() {
                         </div>
                       </div>
                     </div>
+                    <p className="text-xs pt-1 font-medium text-gray-900 truncate dark:text-white">
+                      {formatTime(item.last_update)}
+                    </p>
+
                     {
                       isFileEditing[index] ?
 
