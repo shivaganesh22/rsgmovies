@@ -27,7 +27,7 @@ export default function Files() {
           },
         });
         const result = await response.json();
-        console.log(result);
+        // console.log(result);
         if(load) setLoad(false)
         if(response.status==200){
 
