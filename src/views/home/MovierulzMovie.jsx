@@ -94,7 +94,7 @@ export default function MovierulzMovie() {
 
           <section className="flex justify-around flex-wrap ">
             <div className="max-w-sm">
-              <img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={data.image} alt={data.name} />
+              {data &&<img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={`data:image/png;base64,${data.base64}`} alt={data.name} />}
             </div>
             <div className="max-w-2xl text-gray-700 text-lg dark:text-white">
               <h1 className="lg:text-4xl md:text-3xl text-2xl md:text-left font-bold my-3 text-center lg:text-left">{data.name}</h1>
