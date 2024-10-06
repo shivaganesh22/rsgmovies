@@ -28,8 +28,9 @@ export const AllRoutes = () => {
     <div className="dark:bg-darkbg">
         <Routes>
             <Route path="" element={<Movierulz />} />
-            <Route path="movie/:id" element={<MovierulzMovie />} />
-            <Route path="special" element={<Special />} />
+            {/* <Route path="movie/:id" element={<MovierulzMovie />} /> */}
+            <Route path="movie/:id/:slug" element={<MovierulzMovie />} />
+            <Route path="movierulz/special/:id/:slug" element={<Special />} />
 
             <Route path="allmovies" element={<AllMoviesPage />} />
             <Route path="allmovies/:id" element={<AllMoviesLinks />} />

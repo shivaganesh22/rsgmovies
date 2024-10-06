@@ -40,13 +40,14 @@ export default function MovierulzMovie() {
     const fetchData = async () => {
       startLoad();
       try {
-        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/`);
+        // const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/`);
+        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/${params.slug}/`);
         const result = await response.json();
         if (response.status == 200) {
 
           setData(result.details);
           setLinks(result.links);
-          fetchStreams(result.details.name);
+          // fetchStreams(result.details.name);
         }
         else {
           toastWarning("Failed to get results")
@@ -94,7 +95,7 @@ export default function MovierulzMovie() {
 
           <section className="flex justify-around flex-wrap ">
             <div className="max-w-sm">
-              {data &&<img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={`data:image/png;base64,${data.base64}`} alt={data.name} />}
+              {data &&<img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={`${data.image}`} alt={data.name} />}
             </div>
             <div className="max-w-2xl text-gray-700 text-lg dark:text-white">
               <h1 className="lg:text-4xl md:text-3xl text-2xl md:text-left font-bold my-3 text-center lg:text-left">{data.name}</h1>
@@ -102,6 +103,11 @@ export default function MovierulzMovie() {
               <div className='mt-4 text-left' dangerouslySetInnerHTML={{ __html: data.desc }} />
             </div>
           </section>
+          {data && 
+                    <a href={data.movie_link}>
+                        <button className="w-full text-xl mt-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5 mr-2 mb-2 font-medium">Watch Online (Use Adblocker)</button>
+                    </a>         
+          }
           {/* {data && <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-2">
             {spinner ?
 

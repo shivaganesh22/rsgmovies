@@ -129,7 +129,7 @@ export default function Movierulz() {
                       <li  className="py-2 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                           <div className="flex-shrink-0" >
-                            <img className="w-8 h-auto rounded-full" src={`data:image/png;base64,${genre.base64}`} alt="Neil image" />
+                            <img className="w-8 h-auto rounded-full" src={`${genre.image}`} alt="Neil image" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
@@ -173,7 +173,7 @@ export default function Movierulz() {
             {movies.map((movie, index) => (
               <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  mx-auto overflow-hidden">
                 <Link to={`/movie${movie.link}`} >
-                  <img className="rounded-t-lg center" src={`data:image/png;base64,${movie.base64}`} alt="img" />
+                  <img className="rounded-t-lg center" src={`${movie.image}`} alt="img" />
                   <div className="p-1">
                     <h5 className="mb-2 text-1xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-3">{movie.name}</h5>
                   </div>
