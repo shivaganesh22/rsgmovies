@@ -40,8 +40,8 @@ export default function MovierulzMovie() {
     const fetchData = async () => {
       startLoad();
       try {
-        // const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/`);
-        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/${params.slug}/`);
+        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/`);
+        // const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/${params.slug}/`);
         const result = await response.json();
         if (response.status == 200) {
 
@@ -104,7 +104,7 @@ export default function MovierulzMovie() {
             </div>
           </section>
           {data && 
-                    <a href={data.movie_link}>
+                    <a href={data.movie_link} target='_blank'>
                         <button className="w-full text-xl mt-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5 mr-2 mb-2 font-medium">Watch Online (Use Adblocker)</button>
                     </a>         
           }

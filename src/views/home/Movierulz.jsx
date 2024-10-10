@@ -173,7 +173,7 @@ export default function Movierulz() {
             {movies.map((movie, index) => (
               <div key={index} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  mx-auto overflow-hidden">
                 <Link to={`/movie${movie.link}`} >
-                  <img className="rounded-t-lg center" src={`${movie.image}`} alt="img" />
+                  <img className="rounded-t-lg center w-full h-3/4" src={`${movie.image}`} alt="img" />
                   <div className="p-1">
                     <h5 className="mb-2 text-1xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-3">{movie.name}</h5>
                   </div>
