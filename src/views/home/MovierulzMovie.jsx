@@ -40,8 +40,8 @@ export default function MovierulzMovie() {
     const fetchData = async () => {
       startLoad();
       try {
-        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/`);
-        // const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/${params.slug}/`);
+        // const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/`);
+        const response = await fetch(`https://rsg-movies.vercel.app/react/movierulz/movie/${params.id}/${params.slug}/`);
         const result = await response.json();
         if (response.status == 200) {
 
