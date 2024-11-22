@@ -11,6 +11,7 @@ import Special from "./home/Special";
 import IBomma from "./ibomma/IBomma";
 import IBommaMovie from "./ibomma/IBommaMovie";
 import Login from "./Login";
+import CodeLogin from "./CodeLogin";
 import Search from "./Search";
 import Doodplay from "./tamilmv/Doodplay";
 import Tamilmv from "./tamilmv/Tamilmv";
@@ -54,6 +55,7 @@ export const AllRoutes = () => {
             
             <Route path="youtube" element={<Youtube />} />
             <Route path="login" element={<Login />} />
+            <Route path="login/code" element={<CodeLogin />} />
 
             <Route path="files" element={<Files />} />
             <Route path="files/open/:id" element={<Openfolder />} />
