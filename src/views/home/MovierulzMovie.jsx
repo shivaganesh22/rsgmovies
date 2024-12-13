@@ -95,7 +95,7 @@ export default function MovierulzMovie() {
 
           <section className="flex justify-around flex-wrap ">
             <div className="max-w-sm">
-              {data &&<img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={`${data.image}`} alt={data.name} />}
+              {data && <img className="rounded lg:w-72 lg:mt-5 md:mt-14 md:w-56" src={`${data.image}`} alt={data.name} />}
             </div>
             <div className="max-w-2xl text-gray-700 text-lg dark:text-white">
               <h1 className="lg:text-4xl md:text-3xl text-2xl md:text-left font-bold my-3 text-center lg:text-left">{data.name}</h1>
@@ -103,10 +103,10 @@ export default function MovierulzMovie() {
               <div className='mt-4 text-left' dangerouslySetInnerHTML={{ __html: data.desc }} />
             </div>
           </section>
-          {data && 
-                    <a href={data.movie_link} target='_blank'>
-                        <button className="w-full text-xl mt-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5 mr-2 mb-2 font-medium">Watch Online (Use Adblocker)</button>
-                    </a>         
+          {data &&
+            <a href={data.movie_link} target='_blank'>
+              <button className="w-full text-xl mt-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 rounded-lg px-5 py-2.5 mr-2 mb-2 font-medium">Watch Online (Use Adblocker)</button>
+            </a>
           }
           {/* {data && <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-2">
             {spinner ?
@@ -154,23 +154,40 @@ export default function MovierulzMovie() {
 
             </ul>
           </div> */}
-
-
-
           {links.length > 0 ? <h5 className="mt-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white text-left uppercase">Torrents</h5> : ""}
-          <div className="grid grid-cols-2 p-4 lg:grid-cols-5 md:grid-cols-4 gap-5 my-2  md:gap-4 md:p-0 lg:p-0 lg:gap-4 ">
-            {links.map((movie, index) => (
-              <div key={index} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-                <Link onClick={() => { addTorrent(movie.link) }}>
+          <ul className="grid grid-cols-1 pt-2 sm:grid-cols-2 gap-5 ">
 
-                  <div className="p-1">
-                    <i className="fa fa-upload text-black dark:text-white" aria-hidden="true"></i>
-                    <h5 className="mb-2 text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">{movie.name}</h5>
+            {links.map((genre, index) => (
+              
+                <li className="p-2 bg-white  hover:bg-gray-100 dark:hover:bg-gray-600 w-full w-sm  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 md:max-w-128 lg:max:w-128  overflow-hidden md:justify-self-center">
+                  <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                    <div className="flex-1 min-w-0">
+                    <Link onClick={() => { addTorrent(genre.link) }}>
+                      <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                        <i className="fa fa-upload text-black dark:text-white" aria-hidden="true"></i>
+                      </p>
+                      <p className="text-1xl text-black font-bold tracking-tight text-gray-900 dark:text-white uppercase">
+                        {genre.name}
+                      </p>
+                    </Link>
+                    </div>
+                    <div className="border border-gray-200 dark:border-gray-700  h-16"></div>
+                    <div className="flex-shrink-0" >
+                    <a href={`https://webtor.io/${genre.link}`} target='_blank'>
+                    <svg width="64px" className='stroke-gray-700 dark:stroke-gray-400 pr-3' height="64px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g clip-path="url(#clip0_429_11238)"> <path d="M19 10.2679C20.3333 11.0377 20.3333 12.9623 19 13.7321L10 18.9282C8.66667 19.698 7 18.7358 7 17.1962L7 6.80385C7 5.26425 8.66667 4.302 10 5.0718L19 10.2679Z" stroke="" stroke-width="2.5" stroke-linejoin="round"></path> </g> <defs> <clipPath id="clip0_429_11238"> <rect width="24" height="24" fill="white"></rect> </clipPath> </defs> </g></svg>
+                    </a>
+                    </div>
                   </div>
-                </Link>
-              </div>
+                </li>
             ))}
-          </div>
+
+          </ul>
+
+
+
+          
+          
+
 
         </center>
       </main>

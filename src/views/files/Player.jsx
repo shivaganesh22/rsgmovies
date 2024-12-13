@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import fluidPlayer from 'fluid-player';
 import { toastSuccess, toastWarning } from '../components/Notifications';
 
-
+import MyPlyrVideo from './MyPlyrVideo';
 export default function Player() {
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
@@ -12,9 +12,10 @@ export default function Player() {
     const navigate = useNavigate();
     const videoRef = useRef(null);
     const videoRef1 = useRef(null);
-    const [isShow, setShow] = useState(true);
-
-
+    const [isShow, setShow] = useState(() => {
+        const storedValue = localStorage.getItem("player");
+        return storedValue !== null ? JSON.parse(storedValue) : true;
+      });
 
     useEffect(() => {
         const fetchFolder = async () => {
@@ -30,7 +31,7 @@ export default function Player() {
 
                     setData(result);
                     setUrl(result.url);
-                    initPlayer();
+                    // initPlayer();
                     initializeFluidPlayer();
                 }
                 else {
@@ -54,7 +55,7 @@ export default function Player() {
 
                     setData(result);
                     setUrl(result.url);
-                    initPlayer();
+                    // initPlayer();
                     initializeFluidPlayer();
                 } else {
                     toastWarning(result["error"])
@@ -80,7 +81,7 @@ export default function Player() {
     }, []);
 
 
-    const initializeFluidPlayer =  () => {
+    const initializeFluidPlayer = () => {
         fluidPlayer(videoRef.current, {
             "layoutControls": {
                 "controlBar": {
@@ -135,11 +136,12 @@ export default function Player() {
     return (
         <main>
             <center>
-                <h1 className="lg:text-4xl md:text-3xl text-2xl  font-bold my-3 text-center   text-gray-700  dark:text-white">{data && data.name}</h1> 
+                
+                <h1 className="lg:text-4xl md:text-3xl text-2xl  font-bold my-3 text-center   text-gray-700  dark:text-white">{data && data.name}</h1>
                 <div className='flex justify-center items-center'>
                     <div className="grid grid-cols-2 p-4 gap-5 place-items-center ">
                         <div className={`m-4 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"} border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-40 max-h-128  overflow-hidden`}>
-                            <Link onClick={(e) => { e.preventDefault(); setShow(true) }} >
+                            <Link onClick={(e) => { e.preventDefault(); setShow(true); localStorage.setItem("player", JSON.stringify(true)); }} >
 
                                 <div className="p-1 text-black dark:text-white ">
                                     Player 1
@@ -147,7 +149,7 @@ export default function Player() {
                             </Link>
                         </div>
                         <div className={`m-4 hover:bg-gray-100 dark:hover:bg-gray-600 ${!isShow ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"}   border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-40 max-h-128  overflow-hidden`}>
-                            <Link onClick={(e) => { e.preventDefault(); setShow(false); }}>
+                            <Link onClick={(e) => { e.preventDefault(); setShow(false); localStorage.setItem("player", JSON.stringify(false));}}>
 
                                 <div className="p-1 text-black dark:text-white">
                                     Player 2
@@ -157,11 +159,17 @@ export default function Player() {
                     </div>
                 </div>
                 <div className="video">
-                    <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
-                    <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
+                    {/* <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
+                    <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" /> */}
                     <div className={!isShow ? "block" : "hidden"}>
 
-                        <video ref={videoRef1} className="w-full" controls>
+                        {/* <video ref={videoRef1} className="w-full" controls>
+                            <source
+                                src={data && data.url}
+                                type="video/mp4"
+                            />
+                        </video> */}
+                        <video ref={videoRef} className="w-full" controls>
                             <source
                                 src={data && data.url}
                                 type="video/mp4"
@@ -169,13 +177,15 @@ export default function Player() {
                         </video>
                     </div>
                     <div className={isShow ? "block" : "hidden"}>
-
-                        <video ref={videoRef} className="w-full" controls>
+                        {
+                                <MyPlyrVideo videoSrc={data&&data.url}/>
+                        }
+                        {/* <video ref={videoRef} className="w-full" controls>
                             <source
                                 src={data && data.url}
                                 type="video/mp4"
                             />
-                        </video>
+                        </video> */}
                     </div>
 
                 </div>
