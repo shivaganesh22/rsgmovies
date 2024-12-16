@@ -80,7 +80,7 @@ export default function Youtube() {
                                 clearInterval(intervalId);
                                 setLoading(false);
                             }
-                        }, 3000);
+                        }, 5000);
 
                         // Cleanup interval on component unmount
                         return () => clearInterval(intervalId);
