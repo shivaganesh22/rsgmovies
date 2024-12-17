@@ -8,12 +8,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
 import { onMessage } from 'firebase/messaging';
 function App() {
-  useEffect(()=>{
-    generateToken();
-    onMessage(messaging,(payload)=>{
+  // useEffect(()=>{
+  //   generateToken();
+  //   onMessage(messaging,(payload)=>{
       
-    })
-  },[])
+  //   })
+  // },[])
   return (
     <div className="App">
       <Header></Header>
