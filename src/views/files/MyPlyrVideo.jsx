@@ -12,7 +12,7 @@ function MyPlyrVideo({ videoSrc }) {
       type: "video",
       sources: [
         {
-          src: videoSrc, // Dynamic video URL from props
+          src: videoSrc, // Dynamic video URL from zprops
           provider: "html5", // Provider set to "html5" for remote links
         },
       ],

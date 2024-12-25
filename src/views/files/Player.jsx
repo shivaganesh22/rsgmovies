@@ -161,7 +161,7 @@ export default function Player() {
                 <div className="video">
                     {/* <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
                     <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" /> */}
-                    <div className={!isShow ? "block" : "hidden"}>
+                    <div className={isShow ? "block" : "hidden"}>
 
                         {/* <video ref={videoRef1} className="w-full" controls>
                             <source
@@ -176,7 +176,7 @@ export default function Player() {
                             />
                         </video>
                     </div>
-                    <div className={isShow ? "block" : "hidden"}>
+                    <div className={!isShow ? "block" : "hidden"}>
                         {
                                 <MyPlyrVideo videoSrc={data&&data.url}/>
                         }
