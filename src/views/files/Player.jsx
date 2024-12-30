@@ -1,22 +1,26 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import fluidPlayer from 'fluid-player';
 import { toastSuccess, toastWarning } from '../components/Notifications';
-import '@vidstack/react/player/styles/default/theme.css';
-import '@vidstack/react/player/styles/default/layouts/video.css';
-import { MediaPlayer, MediaProvider } from '@vidstack/react';
-import { defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
 
+import MyPlyrVideo from './MyPlyrVideo';
 export default function Player() {
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
     const [data, setData] = useState(null)
+    const [url, setUrl] = useState("")
     const navigate = useNavigate();
-    const [spinner, setSpinner] = useState(true);
+    const videoRef = useRef(null);
+    const videoRef1 = useRef(null);
+    const [isShow, setShow] = useState(() => {
+        const storedValue = localStorage.getItem("player");
+        return storedValue !== null ? JSON.parse(storedValue) : true;
+      });
+
     useEffect(() => {
         const fetchFolder = async () => {
-            setSpinner(true);
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/react/folder/file/player/${params.get("id")}`, {
+                const response = await fetch(`https://rsg-movies.vercel.app/react/folder/file/${params.get("id")}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Token ${localStorage.getItem('token')}`
@@ -26,7 +30,9 @@ export default function Player() {
                 if (response.status == 200) {
 
                     setData(result);
-                    
+                    setUrl(result.url);
+                    // initPlayer();
+                    initializeFluidPlayer();
                 }
                 else {
                     toastWarning(result["error"])
@@ -35,12 +41,10 @@ export default function Player() {
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
-            setSpinner(false);
         };
         const fetchFile = async () => {
-            setSpinner(true);
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/react/file/player/${params.get("id")}`, {
+                const response = await fetch(`https://rsg-movies.vercel.app/react/file/${params.get("id")}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Token ${localStorage.getItem('token')}`
@@ -50,7 +54,9 @@ export default function Player() {
                 if (response.status == 200) {
 
                     setData(result);
-                   
+                    setUrl(result.url);
+                    // initPlayer();
+                    initializeFluidPlayer();
                 } else {
                     toastWarning(result["error"])
                 }
@@ -58,7 +64,6 @@ export default function Player() {
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
-            setSpinner(false);
         };
         if (localStorage.getItem('token') == null) {
             navigate('/login');
@@ -67,47 +72,131 @@ export default function Player() {
             else fetchFile();
         }
 
+
+
+        // if (videoRef.current && !videoRef.current.fluidPlayerInitialized) {
+        //   initializeFluidPlayer();
+        //   videoRef.current.fluidPlayerInitialized = true;
+        // }
     }, []);
+
+
+    const initializeFluidPlayer = () => {
+        fluidPlayer(videoRef.current, {
+            "layoutControls": {
+                "controlBar": {
+                    "autoHideTimeout": 3,
+                    "animated": true,
+                    "playbackRates": ['x2', 'x1.75', 'x1.5', 'x1.35', 'x1.25', 'x1', 'x0.5'],
+                    "autoHide": true
+                },
+                controlForwardBackward: {
+                    show: true, // Default: false,
+                    doubleTapMobile: true // Default: true
+                },
+                "htmlOnPauseBlock": {
+                    "html": null,
+                    "height": null,
+                    "width": null
+                },
+                "autoPlay": false,
+                "mute": false,
+                "allowTheatre": false,
+                "playPauseAnimation": true,
+                "playbackRateEnabled": true,
+                "allowDownload": false,
+                "playButtonShowing": true,
+                "fillToContainer": false,
+                "posterImage": "",
+                "subtitlesEnabled": false,
+                "primaryColor": "#28B8ED",
+
+            },
+            "vastOptions": {
+                "adList": [],
+                "adCTAText": false,
+                "adCTATextPosition": ""
+            }
+
+        });
+    };
+    const initPlayer = async () => {
+        const { VidstackPlayer, VidstackPlayerLayout } = await import('https://cdn.vidstack.io/player');
+
+        await VidstackPlayer.create({
+            target: videoRef1.current,
+            src: url,
+            layout: new VidstackPlayerLayout({
+            }),
+        });
+    };
+
+
+
     return (
         <main>
             <center>
-
-                <h1 className="lg:text-4xl md:text-3xl text-2xl  font-bold my-3 text-center   text-gray-700  dark:text-white">{data && data.name}</h1>
                 
+                <h1 className="lg:text-4xl md:text-3xl text-2xl  font-bold my-3 text-center   text-gray-700  dark:text-white">{data && data.name}</h1>
+                <div className='flex justify-center items-center'>
+                    <div className="grid grid-cols-2 p-4 gap-5 place-items-center ">
+                        <div className={`mr-4 hover:bg-gray-100 dark:hover:bg-gray-600 ${isShow ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"} border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-40 max-h-128  overflow-hidden`}>
+                            <Link onClick={(e) => { e.preventDefault(); setShow(true); localStorage.setItem("player", JSON.stringify(true)); }} >
+
+                                <div className="p-1 text-black dark:text-white ">
+                                    Player 1
+                                </div>
+                            </Link>
+                        </div>
+                        <div className={`mr-4 hover:bg-gray-100 dark:hover:bg-gray-600 ${!isShow ? "bg-gray-200 dark:bg-gray-600" : "bg-white dark:bg-gray-800"}   border border-gray-200 rounded-lg shadow  dark:border-gray-700 w-40 max-h-128  overflow-hidden`}>
+                            <Link onClick={(e) => { e.preventDefault(); setShow(false); localStorage.setItem("player", JSON.stringify(false));}}>
+
+                                <div className="p-1 text-black dark:text-white">
+                                    Player 2
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
                 <center>
                     <div className="mb-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
                         <Link to={`/player1/?mode=${params.get("mode")}&id=${params.get("id")}`}>
 
                             <div className="p-1">
-                                <p className=" text-black dark:text-white" aria-hidden="true">Old Streams</p>
+                                <p className=" text-black dark:text-white" aria-hidden="true">New Stream</p>
                             </div>
                         </Link>
                     </div>
                 </center>
-                {spinner ?
-
-                    <center>
-                        <svg aria-hidden="true" className="w-8 h-8 text-center text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
-                        </svg>
-                        <span className="sr-only">Loading...</span>
-
-                    </center>
-                    : ""
-                }
                 <div className="video">
-                    <div >
+                    {/* <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
+                    <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" /> */}
+                    <div className={isShow ? "block" : "hidden"}>
 
-                        {data &&
-                            <MediaPlayer title={data.name} src={data.m3u8}>
-                                <MediaProvider />
-                                <DefaultVideoLayout icons={defaultLayoutIcons} />
-                            </MediaPlayer>}
-
-
+                        {/* <video ref={videoRef1} className="w-full" controls>
+                            <source
+                                src={data && data.url}
+                                type="video/mp4"
+                            />
+                        </video> */}
+                        <video ref={videoRef} className="w-full" controls>
+                            <source
+                                src={data && data.url}
+                                type="video/mp4"
+                            />
+                        </video>
                     </div>
-                   
+                    <div className={!isShow ? "block" : "hidden"}>
+                        {
+                                <MyPlyrVideo videoSrc={data&&data.url}/>
+                        }
+                        {/* <video ref={videoRef} className="w-full" controls>
+                            <source
+                                src={data && data.url}
+                                type="video/mp4"
+                            />
+                        </video> */}
+                    </div>
 
                 </div>
 
@@ -118,7 +207,7 @@ export default function Player() {
 
 
 
-                <textarea id="message" rows="4" onClick={() => { }} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Stream link" value={data ? data.m3u8 : ""} readOnly></textarea>
+                <textarea id="message" rows="4" onClick={() => { }} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Download link" value={data ? data.url : ""} readOnly></textarea>
                 <div className='flex justify-center items-center'>
                     <div className="grid grid-cols-2 p-4 gap-5 place-items-center ">
                         <div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
