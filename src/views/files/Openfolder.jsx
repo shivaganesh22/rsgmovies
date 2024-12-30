@@ -179,7 +179,8 @@ export default function Files() {
         },
       });
       const result = await response.json();
-      window.open(result.url)
+      await navigator.clipboard.writeText(result.url);
+      toastSuccess("Copied");
 
 
     } catch (error) {
