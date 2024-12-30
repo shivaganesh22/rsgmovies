@@ -24,6 +24,7 @@ import AllMoviesLinks from "./allmovies/allMoviesLinks";
 import AllMoviesMovie from "./allmovies/allMoviesMovie";
 import TVShows from "./allmovies/TVShows";
 import Episodes from "./allmovies/Episodes";
+import Player1 from "./files/Player1";
 export const AllRoutes = () => {
  
   return (
@@ -61,6 +62,7 @@ export const AllRoutes = () => {
             <Route path="files/open/:id" element={<Openfolder />} />
 
             <Route path="player" element={<Player />} />
+            <Route path="player1" element={<Player1 />} />
             <Route path="contact" element={<Contact />} />
 
 

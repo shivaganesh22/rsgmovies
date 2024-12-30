@@ -180,6 +180,24 @@ export default function Files() {
     }
     stopLoad();
   }
+  const archieveFolder = async (id) => {
+    startLoad();
+    try {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/folder/archieve/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('token')}`
+        },
+      });
+      const result = await response.json();
+      window.open(result.url)
+
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    stopLoad();
+  }
   const copyFile = async (id) => {
     startLoad();
     try {
@@ -400,13 +418,20 @@ export default function Files() {
                           </Link>
                         </div>
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                          <Link onClick={() => { setFetch(false); const newA = isFolderEditing; newA[index] = !newA[index]; setFolderEditing(newA) }}>
+                          <Link onClick={() => { archieveFolder(item.id) }}>
+
+                            <div className="p-1">
+                              <i className={`fa fa-file-archive-o text-black dark:text-white`} aria-hidden="true"></i>
+
+                            </div>
+                          </Link>
+                          {/* <Link onClick={() => { setFetch(false); const newA = isFolderEditing; newA[index] = !newA[index]; setFolderEditing(newA) }}>
 
                             <div className="p-1">
                               <i className={`fa fa-${isFolderEditing[index] ? "times" : "edit"} text-black dark:text-white`} aria-hidden="true"></i>
 
                             </div>
-                          </Link>
+                          </Link> */}
                         </div>
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                           <Link onClick={() => { deleteFolder(item.id) }}>
