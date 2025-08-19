@@ -458,7 +458,7 @@ export default function Files() {
 
                             </div>
                           </Link> */}
-                        </div>
+                        
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                           <Link onClick={() => { deleteFolder(item.id) }}>
 
@@ -476,7 +476,7 @@ export default function Files() {
 
                             </div>
                           </Link>
-
+                          </div>
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                           <Link onClick={() => { setFetch(false); const newA = isFolderEditing; newA[index] = !newA[index]; setFolderEditing(newA) }}>
 
