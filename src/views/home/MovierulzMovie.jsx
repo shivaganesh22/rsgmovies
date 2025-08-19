@@ -63,7 +63,7 @@ export default function MovierulzMovie() {
   const addTorrent = async (link) => {
     if (localStorage.getItem('session') == null) {
       window.location.href="/login";
-      toastWarning("Login First");
+      
     }
     else{
       startLoad();

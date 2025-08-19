@@ -450,14 +450,7 @@ export default function Files() {
                             </div>
                           </Link>
                         </div>
-                        <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                          <Link onClick={() => { archieveFolder(item.id) }}>
-
-                            <div className="p-1">
-                              <i className={`fa fa-file-archive-o text-black dark:text-white`} aria-hidden="true"></i>
-
-                            </div>
-                          </Link>
+                        
                           {/* <Link onClick={() => { setFetch(false); const newA = isFolderEditing; newA[index] = !newA[index]; setFolderEditing(newA) }}>
 
                             <div className="p-1">
@@ -475,7 +468,14 @@ export default function Files() {
                             </div>
                           </Link>
                         </div>
+                        <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
+                          <Link onClick={() => { archieveFolder(item.id) }}>
 
+                            <div className="p-1">
+                              <i className={`fa fa-file-archive-o text-black dark:text-white`} aria-hidden="true"></i>
+
+                            </div>
+                          </Link>
 
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                           <Link onClick={() => { setFetch(false); const newA = isFolderEditing; newA[index] = !newA[index]; setFolderEditing(newA) }}>
