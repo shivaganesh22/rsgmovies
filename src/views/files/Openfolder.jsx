@@ -18,10 +18,10 @@ export default function Files() {
   const fetchData = async () => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/open/${params.id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/open/${params.id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       const result = await response.json();
@@ -35,7 +35,7 @@ export default function Files() {
         setFileEditing(Array.from({ length: result.files.length }, () => false))
       }
       else {
-        toastWarning(result["error"])
+        toastWarning(result["detail"])
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -43,7 +43,7 @@ export default function Files() {
     stopLoad();
   };
   useEffect(() => {
-    if (localStorage.getItem('token') == null) {
+    if (localStorage.getItem('session') == null) {
       navigate('/login');
     } else {
 
@@ -54,10 +54,10 @@ export default function Files() {
   const deleteTorrent = async (id) => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/deletetorrent/${id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/deletetorrent/${id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       // window.location.reload()
@@ -71,10 +71,10 @@ export default function Files() {
   const downloadFolder = async (id) => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/folder/file/${id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/folder/file/${id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       const result = await response.json();
@@ -87,10 +87,10 @@ export default function Files() {
   const copyFolder = async (id) => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/folder/file/${id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/folder/file/${id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       const result = await response.json();
@@ -104,12 +104,16 @@ export default function Files() {
   const deleteFolder = async (id) => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/deletefolder/${id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/deletefolder/${id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
+      if (response.status!=200){
+        const result = await response.json();
+        toastWarning(result["detail"])
+      }
       // window.location.reload()
 
     } catch (error) {
@@ -117,14 +121,38 @@ export default function Files() {
     }
     fetchData();
   }
+  const lockFolder = async (id) => {
+    startLoad();
+    try {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/lock/folder/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('session')}`
+        },
+      });
+      const result = await response.json();
+      if(response.status==200){
+        toastSuccess(result["detail"])
+      }
+      else{
+        toastWarning(result["detail"])
+      }
+      // window.location.reload()
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    stopLoad();
+  }
+  
   const editFolder = async (e, id) => {
     e.preventDefault();
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/rename/folder/${id}/?name=${e.target.msg.value}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/rename/folder/${id}/?name=${e.target.msg.value}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       // window.location.reload()
@@ -138,10 +166,10 @@ export default function Files() {
     e.preventDefault();
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/rename/file/${id}/?name=${e.target.msg.value}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/rename/file/${id}/?name=${e.target.msg.value}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       // window.location.reload()
@@ -154,10 +182,10 @@ export default function Files() {
   const downloadFile = async (id) => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/file/${id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/file/${id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       const result = await response.json();
@@ -172,10 +200,10 @@ export default function Files() {
   const archieveFolder = async (id) => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/folder/archieve/${id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/folder/archieve/${id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       const result = await response.json();
@@ -191,10 +219,10 @@ export default function Files() {
   const copyFile = async (id) => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/file/${id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/file/${id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       const result = await response.json();
@@ -209,12 +237,16 @@ export default function Files() {
   const deleteFile = async (id) => {
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/deletefile/${id}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/deletefile/${id}/${params.id}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
+      if (response.status!=200){
+        const result = await response.json();
+        toastWarning(result["detail"])
+      }
       // window.location.reload()
 
     } catch (error) {
@@ -226,10 +258,10 @@ export default function Files() {
     e.preventDefault();
     startLoad();
     try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/addtorrent/?link=${e.target.link.value}`, {
+      const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/addtorrent/?link=${e.target.link.value}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
+          'Authorization': `Token ${localStorage.getItem('session')}`
         },
       });
       const result = await response.json();
@@ -242,7 +274,7 @@ export default function Files() {
           toastWarning(result.result)
         }
       } else {
-        toastWarning(result["error"])
+        toastWarning(result["detail"])
       }
 
     } catch (error) {
@@ -368,7 +400,7 @@ export default function Files() {
                       </Link>
 
                       <div className='flex justify-center items-center'>
-                        <div className="grid grid-cols-5 pt-3 gap-5 place-items-center ">
+                        <div className="grid grid-cols-4 lg:grid-cols-8 pt-3 gap-5 place-items-center ">
                           <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
                             <Link to={`/player/?mode=folder&id=${item.id}`}>
 
@@ -421,6 +453,37 @@ export default function Files() {
                               </div>
                             </Link>
                           </div>
+
+                          <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
+                          <Link onClick={() => { const newA = isFolderEditing; newA[index] = !newA[index]; setFolderEditing(newA) }}>
+
+                            <div className="p-1">
+                              <i className={`fa fa-${isFolderEditing[index] ? "times" : "edit"} text-black dark:text-white`} aria-hidden="true"></i>
+
+                            </div>
+                          </Link>
+                        </div>
+                     
+                        <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
+                          <Link onClick={() => { lockFolder(item.id) }}>
+
+                            <div className="p-1">
+                              <i className={`fa fa-lock text-black dark:text-white`} aria-hidden="true"></i>
+
+                            </div>
+                          </Link>
+                        </div>
+                        
+                        <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
+                          <Link onClick={()=>{toastWarning("Currently unavilable")}}>
+
+                            <div className="p-1">
+                              <i className={`fa fa-share text-black dark:text-white`} aria-hidden="true"></i>
+
+                            </div>
+                          </Link>
+                        </div>
+
                         </div>
                       </div>
                       <p className="text-xs pt-1 font-medium text-gray-900 truncate dark:text-white">

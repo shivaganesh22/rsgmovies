@@ -5,7 +5,7 @@ import { json } from 'react-router-dom';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setLoggedIn] = useState(localStorage.getItem('token')||false);
+  const [isLoggedIn, setLoggedIn] = useState(localStorage.getItem('session')||false);
   const [storage, updateStorage] = useState(null);
   const [loading, updateLoading] = useState(false);
   const [navbar,updateNav] = useState(JSON.parse(localStorage.getItem("navbar")) || []);

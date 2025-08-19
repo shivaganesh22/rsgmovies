@@ -36,12 +36,17 @@ export default function TamilmvMovie() {
         fetchData();
     }, []);
     const addTorrent= async(link)=>{
+      if (localStorage.getItem('session') == null) {
+        window.location.href="/login";
+        toastWarning("Login First");
+      }
+      else{
         startLoad();
         try {
-          const response = await fetch(`https://rsg-movies.vercel.app/react/addtorrent/?link=${link}`, {
+          const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/addtorrent/?link=${link}`, {
             method: 'GET',
             headers: {
-              'Authorization': `Token ${localStorage.getItem('token')}`
+              'Authorization': `Token ${localStorage.getItem('session')}`
             },
           });
           const result = await response.json();
@@ -55,13 +60,15 @@ export default function TamilmvMovie() {
             }
           }
           else{
-            toastWarning(result["error"])
+            toastWarning(result["detail"])
           }
           
         } catch (error) {
           console.error('Error fetching data:', error);
         }
         stopLoad();
+      }
+        
       }
     return (
         <MyLoader>

@@ -16,10 +16,10 @@ export default function Player1() {
         const fetchFolder = async () => {
             setSpinner(true);
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/react/folder/file/player/${params.get("id")}`, {
+                const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/folder/file/player/${params.get("id")}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Token ${localStorage.getItem('token')}`
+                        'Authorization': `Token ${localStorage.getItem('session')}`
                     },
                 });
                 const result = await response.json();
@@ -29,7 +29,7 @@ export default function Player1() {
                     
                 }
                 else {
-                    toastWarning(result["error"])
+                    toastWarning(result["detail"])
                 }
 
             } catch (error) {
@@ -40,10 +40,10 @@ export default function Player1() {
         const fetchFile = async () => {
             setSpinner(true);
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/react/file/player/${params.get("id")}`, {
+                const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/file/player/${params.get("id")}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Token ${localStorage.getItem('token')}`
+                        'Authorization': `Token ${localStorage.getItem('session')}`
                     },
                 });
                 const result = await response.json();
@@ -52,7 +52,7 @@ export default function Player1() {
                     setData(result);
                    
                 } else {
-                    toastWarning(result["error"])
+                    toastWarning(result["detail"])
                 }
 
             } catch (error) {
@@ -60,7 +60,7 @@ export default function Player1() {
             }
             setSpinner(false);
         };
-        if (localStorage.getItem('token') == null) {
+        if (localStorage.getItem('session') == null) {
             navigate('/login');
         } else {
             if (params.get("mode") == "folder") fetchFolder();

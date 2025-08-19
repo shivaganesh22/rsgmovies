@@ -12,20 +12,21 @@ export default function CodeLogin() {
         event.preventDefault();
         startLoad();
         try {
-          const response = await fetch(`https://rsg-movies.vercel.app/react/login/code/${email}/`, {
+          const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/login/code/${email}/`, {
             method: 'GET',
           });
     
           const result = await response.json();
           if (response.status==200){
-            localStorage.setItem('token',result.token)
+            localStorage.setItem('session',result.session)
+            localStorage.setItem('rsg',result.rsg)
             navigate('/');
             toastSuccess('Login Success')
             login();    
           }
 
           else{
-            toastWarning("Invalid code")
+            toastWarning(result["error"])
           }
         } catch (error) {
           console.error('Error during login:', error);
@@ -35,7 +36,7 @@ export default function CodeLogin() {
    
       
    useEffect(()=>{
-    if(localStorage.getItem('token')!=null) navigate('/')
+    if(localStorage.getItem('session')!=null) navigate('/')
    },)
   return (
     <main>

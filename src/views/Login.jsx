@@ -12,7 +12,7 @@ export default function Login() {
         event.preventDefault();
         startLoad();
         try {
-          const response = await fetch("https://rsg-movies.vercel.app/react/login/", {
+          const response = await fetch("https://rsg-movies.vercel.app/react/jwt/login/", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -22,7 +22,8 @@ export default function Login() {
     
           const result = await response.json();
           if (response.status==200){
-            localStorage.setItem('token',result.token)
+            localStorage.setItem('session',result.session)
+            localStorage.setItem('rsg',result.rsg)
             navigate('/');
             toastSuccess('Login Success')
             login();    
@@ -39,11 +40,12 @@ export default function Login() {
     const freeAccount = async (event) => {
         startLoad();
         try {
-          const response = await fetch("https://rsg-movies.vercel.app/react/login/default/");
+          const response = await fetch("https://rsg-movies.vercel.app/react/jwt/login/default/");
     
           const result = await response.json();
           if (response.status==200){
-            localStorage.setItem('token',result.token)
+            localStorage.setItem('session',result.session)
+            localStorage.setItem('rsg',result.rsg)
             navigate('/');
             toastSuccess('Login Success')
             login();    
@@ -59,7 +61,7 @@ export default function Login() {
       };
       
    useEffect(()=>{
-    if(localStorage.getItem('token')!=null) navigate('/')
+    if(localStorage.getItem('session')!=null) navigate('/')
    },)
   return (
     <main>

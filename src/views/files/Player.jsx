@@ -20,10 +20,10 @@ export default function Player() {
     useEffect(() => {
         const fetchFolder = async () => {
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/react/folder/file/${params.get("id")}`, {
+                const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/folder/file/${params.get("id")}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Token ${localStorage.getItem('token')}`
+                        'Authorization': `Token ${localStorage.getItem('session')}`
                     },
                 });
                 const result = await response.json();
@@ -35,7 +35,7 @@ export default function Player() {
                     initializeFluidPlayer();
                 }
                 else {
-                    toastWarning(result["error"])
+                    toastWarning(result["detail"])
                 }
 
             } catch (error) {
@@ -44,10 +44,10 @@ export default function Player() {
         };
         const fetchFile = async () => {
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/react/file/${params.get("id")}`, {
+                const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/file/${params.get("id")}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Token ${localStorage.getItem('token')}`
+                        'Authorization': `Token ${localStorage.getItem('session')}`
                     },
                 });
                 const result = await response.json();
@@ -58,14 +58,14 @@ export default function Player() {
                     // initPlayer();
                     initializeFluidPlayer();
                 } else {
-                    toastWarning(result["error"])
+                    toastWarning(result["detail"])
                 }
 
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
-        if (localStorage.getItem('token') == null) {
+        if (localStorage.getItem('session') == null) {
             navigate('/login');
         } else {
             if (params.get("mode") == "folder") fetchFolder();

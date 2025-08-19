@@ -61,32 +61,39 @@ export default function MovierulzMovie() {
     fetchData();
   }, [params.id]);
   const addTorrent = async (link) => {
-    startLoad();
-    try {
-      const response = await fetch(`https://rsg-movies.vercel.app/react/addtorrent/?link=${link}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Token ${localStorage.getItem('token')}`
-        },
-      });
-      const result = await response.json();
-      if (response.status == 200) {
-        if (result.result == true) {
-          toastSuccess("Torrent Added");
-          navigate('/files');
+    if (localStorage.getItem('session') == null) {
+      window.location.href="/login";
+      toastWarning("Login First");
+    }
+    else{
+      startLoad();
+      try {
+        const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/addtorrent/?link=${link}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${localStorage.getItem('session')}`
+          },
+        });
+        const result = await response.json();
+        if (response.status == 200) {
+          if (result.result == true) {
+            toastSuccess("Torrent Added");
+            navigate('/files');
+          }
+          else {
+            toastWarning(result.result)
+          }
         }
         else {
-          toastWarning(result.result)
+          toastWarning(result["detail"])
         }
+  
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
-      else {
-        toastWarning(result["error"])
-      }
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
+      stopLoad();
     }
-    stopLoad();
+    
   }
   return (
     <MyLoader>
