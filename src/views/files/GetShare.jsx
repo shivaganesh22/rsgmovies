@@ -74,7 +74,6 @@ export default function GetShare() {
     stopLoad();
   }
 const shareFolder = async () => {
-  startLoad();
   const shareText = `🎬 ${data.name}\n\n▶️ Stream or access instantly:\n${data.link}\n\n— Powered by RSG Movies`;
   if (navigator.share) {
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -98,7 +97,7 @@ const shareFolder = async () => {
     await navigator.clipboard.writeText(shareText);
     toastSuccess("Copied to clipboard");
   }
-  stopLoad();
+
 };
 
   function formatTime(timeString) {

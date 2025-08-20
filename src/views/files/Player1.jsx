@@ -70,8 +70,7 @@ export default function Player1() {
 
     }, []);
     const shareFolder = async () => {
-        startLoad();
-          
+      
         try {
           const response = await fetch(
             `https://rsg-movies.vercel.app/react/jwt/share/${params.id}/?name=${encodeURIComponent(data.name)}`,
@@ -119,7 +118,7 @@ export default function Player1() {
           console.error("Error fetching data:", error);
         }
       
-        stopLoad();
+      
       };
     return (
         <main>
@@ -174,7 +173,7 @@ export default function Player1() {
                 <textarea id="message" rows="4" onClick={() => { }} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Stream link" value={data ? data.m3u8 : ""} readOnly></textarea>
                 <div className='flex justify-center items-center'>
                 <div className={`grid p-4 gap-5 place-items-center ${params.mode === "folder" ? "grid-cols-3" : "grid-cols-2"}`}>
-                        <div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+                        <div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-20 md:w-40 max-h-128  overflow-hidden">
                             <Link onClick={() => { const ta = document.getElementById("message"); ta.select(); document.execCommand('copy'); toastSuccess("Copied") }}>
 
                                 <div className="p-1">
@@ -182,7 +181,7 @@ export default function Player1() {
                                 </div>
                             </Link>
                         </div>
-                        <div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+                        <div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-20 md:w-40 max-h-128  overflow-hidden">
                             <Link to={data && data.url}>
 
                                 <div className="p-1">
@@ -190,7 +189,7 @@ export default function Player1() {
                                 </div>
                             </Link>
                         </div>
-                        {params.mode == "folder"?<div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+                        {params.mode == "folder"?<div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-20 md:w-40 max-h-128  overflow-hidden">
                             <Link onClick={()=>{shareFolder()}}>
 
                                 <div className="p-1">
