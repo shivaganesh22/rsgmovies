@@ -402,7 +402,7 @@ export default function Files() {
                       <div className='flex justify-center items-center'>
                         <div className="grid grid-cols-4 lg:grid-cols-8 pt-3 gap-5 place-items-center ">
                           <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                            <Link to={`/player/?mode=folder&id=${item.id}`}>
+                            <Link to={`/player/folder/${item.id}`}>
 
                               <div className="p-1">
                                 <i className="fa fa-play text-black dark:text-white" aria-hidden="true"></i>
@@ -536,7 +536,7 @@ export default function Files() {
                       <div className='flex  justify-center items-center '>
                         <div className="grid grid-cols-5 pt-3 pb-1 gap-5 place-items-center ">
                           <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                            <Link to={`/player/?mode=file&id=${item.folder_file_id}`}>
+                            <Link to={`/player/file/${item.folder_file_id}`}>
 
                               <div className="p-1">
                                 <i className="fa fa-play text-black dark:text-white" aria-hidden="true"></i>

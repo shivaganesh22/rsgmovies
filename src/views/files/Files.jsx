@@ -156,6 +156,60 @@ export default function Files() {
     }
     setFetch(true);
   }
+  const shareFolder = async (id, name) => {
+    startLoad();
+    setFetch(false);
+  
+    try {
+      const response = await fetch(
+        `https://rsg-movies.vercel.app/react/jwt/share/${id}/?name=${encodeURIComponent(name)}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Token ${localStorage.getItem("session")}`,
+          },
+        }
+      );
+  
+      const result = await response.json();
+  
+      if (response.status === 200) {
+        const shareText = `🎬 ${result.name}\n\n▶️ Stream or access instantly:\n${result.link}\n\n— Powered by RSG Movies`;
+  
+        // --- Native share (if supported) ---
+        if (navigator.share) {
+          const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  
+          if (isMobile) {
+            // --- Mobile: only text (remove url to avoid duplication)
+            await navigator.share({
+              title: result.name,
+              text: shareText,
+            });
+          } else {
+            // --- Laptop/Desktop: include both text and url
+            await navigator.share({
+              title: result.name,
+              text: shareText,
+              url: result.link,
+            });
+          }
+        } else {
+          // --- No native share: fallback to copy
+          await navigator.clipboard.writeText(shareText);
+          toastSuccess("Copied to clipboard");
+        }
+  
+      } else {
+        toastWarning(result["detail"]);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  
+    setFetch(true);
+    stopLoad();
+  };
   
 
   const editFolder = async (e, id) => {
@@ -424,7 +478,7 @@ export default function Files() {
                       <div className="grid grid-cols-4 lg:grid-cols-8 pt-3 pb-1 gap-5 place-items-center ">
                         
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                          <Link to={`/player/?mode=folder&id=${item.id}`}>
+                          <Link to={`/player/folder/${item.id}`}>
 
                             <div className="p-1">
                               <i className="fa fa-play text-black dark:text-white" aria-hidden="true"></i>
@@ -498,7 +552,7 @@ export default function Files() {
                         </div>
                         
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                          <Link onClick={()=>{toastWarning("Currently unavilable")}}>
+                        <Link onClick={()=>{shareFolder(item.id,item.name)}}>
 
                             <div className="p-1">
                               <i className={`fa fa-share text-black dark:text-white`} aria-hidden="true"></i>
@@ -558,7 +612,7 @@ export default function Files() {
                     <div className='flex justify-center items-center '>
                       <div className="grid grid-cols-5 pt-3 gap-5 place-items-center ">
                         <div className="w-12 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700  max-h-128  overflow-hidden">
-                          <Link to={`/player/?mode=file&id=${item.folder_file_id}`}>
+                          <Link to={`/player/file/${item.folder_file_id}`}>
 
                             <div className="p-1">
                               <i className="fa fa-play text-black dark:text-white" aria-hidden="true"></i>

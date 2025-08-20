@@ -1,22 +1,23 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toastSuccess, toastWarning } from '../components/Notifications';
 import '@vidstack/react/player/styles/default/theme.css';
 import '@vidstack/react/player/styles/default/layouts/video.css';
 import { MediaPlayer, MediaProvider } from '@vidstack/react';
 import { defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
-
+import { useAuth } from '../other/AuthContext';
 export default function Player1() {
     const urlSearchString = window.location.search;
-    const params = new URLSearchParams(urlSearchString);
+    const params = useParams();
     const [data, setData] = useState(null)
     const navigate = useNavigate();
+    const { startLoad,stopLoad} = useAuth();
     const [spinner, setSpinner] = useState(true);
     useEffect(() => {
         const fetchFolder = async () => {
             setSpinner(true);
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/folder/file/player/${params.get("id")}`, {
+                const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/folder/file/player/${params.id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Token ${localStorage.getItem('session')}`
@@ -40,7 +41,7 @@ export default function Player1() {
         const fetchFile = async () => {
             setSpinner(true);
             try {
-                const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/file/player/${params.get("id")}`, {
+                const response = await fetch(`https://rsg-movies.vercel.app/react/jwt/file/player/${params.id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Token ${localStorage.getItem('session')}`
@@ -63,11 +64,63 @@ export default function Player1() {
         if (localStorage.getItem('session') == null) {
             navigate('/login');
         } else {
-            if (params.get("mode") == "folder") fetchFolder();
+            if (params.mode == "folder") fetchFolder();
             else fetchFile();
         }
 
     }, []);
+    const shareFolder = async () => {
+        startLoad();
+          
+        try {
+          const response = await fetch(
+            `https://rsg-movies.vercel.app/react/jwt/share/${params.id}/?name=${encodeURIComponent(data.name)}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Token ${localStorage.getItem("session")}`,
+              },
+            }
+          );
+      
+          const result = await response.json();
+      
+          if (response.status === 200) {
+            const shareText = `🎬 ${result.name}\n\n▶️ Stream or access instantly:\n${result.link}\n\n— Powered by RSG Movies`;
+      
+            // --- Native share (if supported) ---
+            if (navigator.share) {
+              const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      
+              if (isMobile) {
+                // --- Mobile: only text (remove url to avoid duplication)
+                await navigator.share({
+                  title: result.name,
+                  text: shareText,
+                });
+              } else {
+                // --- Laptop/Desktop: include both text and url
+                await navigator.share({
+                  title: result.name,
+                  text: shareText,
+                  url: result.link,
+                });
+              }
+            } else {
+              // --- No native share: fallback to copy
+              await navigator.clipboard.writeText(shareText);
+              toastSuccess("Copied to clipboard");
+            }
+      
+          } else {
+            toastWarning(result["detail"]);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      
+        stopLoad();
+      };
     return (
         <main>
             <center>
@@ -76,7 +129,7 @@ export default function Player1() {
                 
                 <center>
                     <div className="mb-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
-                        <Link to={`/player/?mode=${params.get("mode")}&id=${params.get("id")}`}>
+                        <Link to={`/player/${params.mode}/${params.id}`}>
 
                             <div className="p-1">
                                 <p className=" text-black dark:text-white" aria-hidden="true">Old Streams</p>
@@ -120,7 +173,7 @@ export default function Player1() {
 
                 <textarea id="message" rows="4" onClick={() => { }} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Stream link" value={data ? data.m3u8 : ""} readOnly></textarea>
                 <div className='flex justify-center items-center'>
-                    <div className="grid grid-cols-2 p-4 gap-5 place-items-center ">
+                <div className={`grid p-4 gap-5 place-items-center ${params.mode === "folder" ? "grid-cols-3" : "grid-cols-2"}`}>
                         <div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
                             <Link onClick={() => { const ta = document.getElementById("message"); ta.select(); document.execCommand('copy'); toastSuccess("Copied") }}>
 
@@ -137,6 +190,14 @@ export default function Player1() {
                                 </div>
                             </Link>
                         </div>
+                        {params.mode == "folder"?<div className="m-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-40 max-h-128  overflow-hidden">
+                            <Link onClick={()=>{shareFolder()}}>
+
+                                <div className="p-1">
+                                    <i className="fa fa-share text-black dark:text-white" aria-hidden="true"></i>
+                                </div>
+                            </Link>
+                        </div>:<></>}
                     </div>
                 </div>
 

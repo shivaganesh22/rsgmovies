@@ -25,6 +25,8 @@ import AllMoviesMovie from "./allmovies/allMoviesMovie";
 import TVShows from "./allmovies/TVShows";
 import Episodes from "./allmovies/Episodes";
 import Player1 from "./files/Player1";
+import GetShare from "./files/GetShare";
+import SharePlayer from "./files/SharePlayer";
 export const AllRoutes = () => {
  
   return (
@@ -61,8 +63,11 @@ export const AllRoutes = () => {
             <Route path="files" element={<Files />} />
             <Route path="files/open/:id" element={<Openfolder />} />
 
-            <Route path="player" element={<Player />} />
-            <Route path="player1" element={<Player1 />} />
+            <Route path="share/:key" element={<GetShare />} />
+            <Route path="player/share/:id/:key" element={<SharePlayer />} />
+
+            <Route path="player/:mode/:id" element={<Player />} />
+            <Route path="player1/:mode/:id" element={<Player1 />} />
             <Route path="contact" element={<Contact />} />
 
 
