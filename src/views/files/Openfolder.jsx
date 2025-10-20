@@ -280,6 +280,7 @@ export default function Files() {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+    e.target.link.value=""
     fetchData();
 
   }
