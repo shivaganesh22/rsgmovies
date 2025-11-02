@@ -6,6 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './views/other/AuthContext';
 import { ScrollToTop } from './views/ScrollToTop';
+import { Analytics } from "@vercel/analytics/react";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
@@ -14,6 +15,7 @@ root.render(
       < ScrollToTop/>
        
         <App/>
+        <Analytics />
         </AuthProvider>
 
     </BrowserRouter>
