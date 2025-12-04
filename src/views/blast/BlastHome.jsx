@@ -569,8 +569,8 @@ const handleViewAll = () => {
         )}
         
         {data?.latest_movies && <MovieSection title="Latest Movies" items={data.latest_movies} sectionKey="latest-movies" />}
-        {data?.latest_episodes && <MovieSection title="Latest Series Episodes" items={data.latest_episodes} sectionKey="latest-episodes" isEpisodeSection={true} />}
-        {data?.recommended && <MovieSection title="Recommended For You" items={data.recommended} sectionKey="recommended" />}
+        {data?.latest_episodes && <MovieSection title="Latest Episodes" items={data.latest_episodes} sectionKey="latest-episodes" isEpisodeSection={true} />}
+        {data?.recommended && <MovieSection title="Recommended" items={data.recommended} sectionKey="recommended" />}
         {data?.trending && <MovieSection title="Trending Now" items={data.trending} sectionKey="trending" />}
         {data?.choosed && <MovieSection title="Choosed For You" items={data.choosed} sectionKey="choosed" />}
         {data?.popularSeries && <MovieSection title="Popular Series" items={data.popularSeries} sectionKey="popular-series" />}
