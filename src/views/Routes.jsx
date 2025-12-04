@@ -27,17 +27,25 @@ import Episodes from "./allmovies/Episodes";
 import Player1 from "./files/Player1";
 import GetShare from "./files/GetShare";
 import SharePlayer from "./files/SharePlayer";
+import BlastHome from "./blast/BlastHome";
+import MovieDetailPage from "./blast/BlastMoviePage";
+import SeriesDetailPage from "./blast/BlastSeriePage";
+import ViewAllPage from "./blast/ViewAllPage";
 export const AllRoutes = () => {
  
   return (
     <div className="dark:bg-darkbg">
         <Routes>
             {/* <Route path="" element={<Navigate to="/allmovies" />} /> */}
-            <Route path="" element={<Movierulz />} />
-            <Route path="movie/:id" element={<MovierulzMovie />} />
+            <Route path="" element={<BlastHome />} />
+            <Route path="movie/:id" element={<MovieDetailPage />} />
+            <Route path="series/:id" element={<SeriesDetailPage />} />
+            <Route path="/view-all/:category" element={<ViewAllPage />} />
+          <Route path="movierulz" element={<Movierulz />} />
+          <Route path="movierulz/movie/:id" element={<MovierulzMovie />} /> 
             
-            <Route path="movie/:id/:slug" element={<MovierulzMovie />} />
-            <Route path="movierulz/special/:id/:slug" element={<Special />} />
+            {/* <Route path="movie/:id/:slug" element={<MovierulzMovie />} /> */}
+            {/* <Route path="movierulz/special/:id/:slug" element={<Special />} /> */}
 
             <Route path="allmovies" element={<AllMoviesPage />} />
             <Route path="allmovies/:id" element={<AllMoviesLinks />} />

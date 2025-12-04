@@ -94,12 +94,13 @@ export default function Header() {
         <NavLink to="/allmovies" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>Allmovies</NavLink>
       </li>
       <li>
-
-        <NavLink to="/ibomma" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>IBomma</NavLink>
-      </li>
-      <li>
         <NavLink to="/tamilmv" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>Tamilmv</NavLink>
       </li>
+      <li>
+        {/* <NavLink to="/ibomma" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>IBomma</NavLink> */}
+        <NavLink to="/movierulz" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>Movierulz</NavLink>
+      </li>
+      
       <li>
         <NavLink to="/tv" className={({isActive}) => isActive ? activeClass : inActiveClass } onClick={()=>setHidden(!hidden)}>TV Channels</NavLink>
       </li>

@@ -8,9 +8,28 @@ main{
     min-height: 90vh;
     padding: 10px;
 }
+
 .header2{
     max-width: 1280px;
     margin: auto;
     min-height: 90vh;
    
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-visible::-webkit-scrollbar {
+  height: 6px;
+}
+.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 10px;
+}
+.scrollbar-visible {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 transparent;
 }
