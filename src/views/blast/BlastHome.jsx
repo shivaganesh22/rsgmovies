@@ -15,15 +15,11 @@ export default function MovieHomepage() {
   useEffect(() => {
     // Load data from localStorage or fetch from API
     const storedData = localStorage.getItem('movieHomeData');
-    const alreadyFetchedThisSession = sessionStorage.getItem('movieHomeFetched');
     if (storedData) {
       setData(JSON.parse(storedData));
       setLoading(false);
     } 
-    if (!alreadyFetchedThisSession) {
-      fetchData();
-      sessionStorage.setItem('movieHomeFetched', 'true');
-    }
+    fetchData();
   }, []);
 const searchFetch = async () => {
       try {
@@ -80,8 +76,10 @@ const searchFetch = async () => {
     try {
       const response = await fetch('https://rsg-movies.vercel.app/react/blast/home/');
       const result = await response.json();
+      if(!data.message){
       setData(result);
       localStorage.setItem('movieHomeData', JSON.stringify(result));
+    }
       setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
