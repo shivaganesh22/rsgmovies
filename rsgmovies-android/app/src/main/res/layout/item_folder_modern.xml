@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/nav_item_selector"
+    android:padding="16dp"
+    android:layout_marginBottom="10dp"
+    android:focusable="true"
+    android:clickable="true">
+
+    <!-- Folder Icon -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📁"
+        android:textSize="24sp"
+        android:layout_marginEnd="16dp" />
+
+    <!-- Name & Size -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_folder_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Folder Name"
+            android:textColor="@color/text_white"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/tv_folder_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2.76 GB • Click to open"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- Delete Trash Button -->
+    <ImageButton
+        android:id="@+id/btn_folder_delete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:src="@android:drawable/ic_menu_delete"
+        android:tint="@color/text_secondary"
+        android:focusable="true"
+        android:contentDescription="Delete Folder" />
+
+</LinearLayout>

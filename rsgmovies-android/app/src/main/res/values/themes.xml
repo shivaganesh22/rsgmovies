@@ -1,0 +1,22 @@
+<resources>
+
+    <style name="Theme.RSGMOVIES" parent="@style/Theme.Leanback" >
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+    <style name="Theme.RSGMOVIES.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <!-- Other theme attributes -->
+
+    </style>
+
+    <style name="Theme.RSGMOVIES.TransparentDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+</resources>

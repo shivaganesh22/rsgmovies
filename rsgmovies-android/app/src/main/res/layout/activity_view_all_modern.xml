@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:paddingStart="24dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tv_view_all_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category Title"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_white"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 5-Column Grid -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_view_all_grid"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="40dp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_view_all_loading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/primary_light"
+        android:visibility="visible" />
+
+</FrameLayout>

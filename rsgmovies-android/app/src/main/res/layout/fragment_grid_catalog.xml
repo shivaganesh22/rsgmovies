@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:paddingStart="24dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Header Row -->
+        <TextView
+            android:id="@+id/tv_catalog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Explore Movies"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_white"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Genre Filter Chips List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_genre_chips"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:orientation="horizontal"
+            android:clipToPadding="false"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 5-Column Grid -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_catalog_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/rv_genre_chips"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp" />
+    </LinearLayout>
+
+    <!-- Loading -->
+    <ProgressBar
+        android:id="@+id/pb_catalog_loading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/primary_light"
+        android:visibility="visible" />
+
+    <!-- Error State -->
+    <LinearLayout
+        android:id="@+id/ll_catalog_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_catalog_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Could not load titles."
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btn_catalog_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/btn_primary_selector"
+            android:paddingHorizontal="24dp"
+            android:text="Retry"
+            android:textColor="@color/text_white"
+            android:focusable="true" />
+    </LinearLayout>
+
+</FrameLayout>

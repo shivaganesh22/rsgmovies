@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="380dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/media_card_focus_bg"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/tv_modal_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stream Playback"
+        android:textColor="@color/text_white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_modal_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Server 1 (Default)"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 1. VLC Player -->
+    <Button
+        android:id="@+id/btn_modal_vlc"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@drawable/btn_primary_selector"
+        android:text="📺  VLC Player"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- 2. MX Player -->
+    <Button
+        android:id="@+id/btn_modal_mx"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="🎬  MX Player"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- 3. Built-in App Player (Moved down to MX player as requested) -->
+    <Button
+        android:id="@+id/btn_modal_play_app"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="▶  Play in App Player"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- 4. Copy URL -->
+    <Button
+        android:id="@+id/btn_modal_copy"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="🔗  Copy Stream URL"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- 5. Download (Browser) -->
+    <Button
+        android:id="@+id/btn_modal_download"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="⬇  Download (Browser)"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- 6. Cancel -->
+    <Button
+        android:id="@+id/btn_modal_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="Cancel"
+        android:textColor="@color/text_muted"
+        android:textSize="11sp"
+        android:focusable="true" />
+
+</LinearLayout>

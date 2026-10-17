@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="#0b0f19"
+    android:padding="48dp"
+    android:gravity="center">
+
+    <!-- Left Brand Column -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingEnd="40dp">
+
+        <ImageView
+            android:id="@+id/iv_logo"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:src="@drawable/coverlogo"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/tv_brand_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RSG MOVIES"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#3b82f6"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/tv_brand_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stream Premium Movies, Series, and Cloud Torrents on Your TV"
+            android:textSize="15sp"
+            android:textColor="#94a3b8"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="4dp" />
+    </LinearLayout>
+
+    <!-- Right QR Card -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.2"
+        android:orientation="vertical"
+        android:background="@drawable/card_rounded_bg"
+        android:padding="28dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/tv_qr_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign In with Phone"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:id="@+id/tv_qr_expiry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scan this QR code with your phone to sign in."
+            android:textSize="13sp"
+            android:textColor="#94a3b8"
+            android:layout_marginTop="6dp" />
+
+        <TextView
+            android:id="@+id/tv_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Code expires in 5:00"
+            android:textSize="12sp"
+            android:textColor="#60a5fa"
+            android:layout_marginTop="2dp" />
+
+        <FrameLayout
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_marginTop="16dp"
+            android:background="#ffffff"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/iv_qr_code"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter" />
+
+            <ProgressBar
+                android:id="@+id/pb_qr_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+        </FrameLayout>
+
+        <!-- Instructions -->
+        <TextView
+            android:id="@+id/tv_instructions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1. Open RSG Movies on your phone\n2. Go to Profile / Settings → Approve TV\n3. Scan this QR code"
+            android:textSize="12sp"
+            android:textColor="#cbd5e1"
+            android:layout_marginTop="16dp"
+            android:lineSpacingExtra="3dp"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/btn_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Try Again"
+            android:textColor="#ffffff"
+            android:background="@drawable/pink_button_selector"
+            android:paddingHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            android:focusable="true" />
+    </LinearLayout>
+
+</LinearLayout>

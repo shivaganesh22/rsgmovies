@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="380dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/media_card_focus_bg"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/tv_trailer_modal_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Watch Trailer"
+        android:textColor="@color/text_white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_trailer_modal_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose how you would like to view the trailer"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Option 1: SmartTube (Top choice) -->
+    <Button
+        android:id="@+id/btn_trailer_smarttube"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/btn_primary_selector"
+        android:text="▶  SmartTube"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- Option 2: In-App WebView -->
+    <Button
+        android:id="@+id/btn_trailer_inapp"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="📺  In-App Player (WebView)"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- Option 3: YouTube -->
+    <Button
+        android:id="@+id/btn_trailer_youtube"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="🔴  YouTube App"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- Option 4: Browser -->
+    <Button
+        android:id="@+id/btn_trailer_browser"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="🌐  Web Browser"
+        android:textColor="@color/text_white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:focusable="true" />
+
+    <!-- Cancel -->
+    <Button
+        android:id="@+id/btn_trailer_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="@drawable/btn_secondary_selector"
+        android:text="Cancel"
+        android:textColor="@color/text_muted"
+        android:textSize="11sp"
+        android:focusable="true" />
+
+</LinearLayout>

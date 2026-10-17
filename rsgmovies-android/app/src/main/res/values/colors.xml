@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand -->
+    <color name="primary">#2563eb</color>
+    <color name="primary_light">#3b82f6</color>
+    <color name="primary_dark">#1d4ed8</color>
+    <color name="primary_glow">#592563eb</color>
+
+    <!-- Backgrounds -->
+    <color name="background">#0a0a0f</color>
+    <color name="surface">#111118</color>
+    <color name="surface_elevated">#1a1a24</color>
+    <color name="surface_card">#14141e</color>
+
+    <!-- Text -->
+    <color name="text_white">#ffffff</color>
+    <color name="text_secondary">#9ca3af</color>
+    <color name="text_muted">#6b7280</color>
+    <color name="text_accent">#60a5fa</color>
+
+    <!-- Badges & Accents -->
+    <color name="badge_hd">#2563eb</color>
+    <color name="badge_cam">#d97706</color>
+    <color name="badge_new">#dc2626</color>
+    <color name="rating_gold">#f59e0b</color>
+    <color name="rating_bg">#d9000000</color>
+
+    <!-- Focus -->
+    <color name="focus_border">#3b82f6</color>
+    <color name="focus_bg">#382563eb</color>
+
+    <!-- Status -->
+    <color name="success">#10b981</color>
+    <color name="error">#ef4444</color>
+    <color name="warning">#f59e0b</color>
+
+    <!-- Borders -->
+    <color name="border_subtle">#14ffffff</color>
+    <color name="border_light">#26ffffff</color>
+
+    <!-- Legacy aliases for safety -->
+    <color name="card_background">#14141e</color>
+    <color name="slate_900">#0a0a0f</color>
+    <color name="slate_800">#111118</color>
+    <color name="slate_400">#9ca3af</color>
+    <color name="red_500">#ef4444</color>
+    <color name="red_600">#dc2626</color>
+    <color name="transparent_overlay">#cc0a0a0f</color>
+</resources>

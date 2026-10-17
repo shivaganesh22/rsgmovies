@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rsg.movies">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <queries>
+        <package android:name="com.google.android.youtube.tv" />
+        <package android:name="com.google.android.youtube" />
+        <package android:name="org.smarttube.stable" />
+        <package android:name="org.smarttube.beta" />
+        <package android:name="com.liskovsoft.videomanager" />
+        <package android:name="com.liskovsoft.smarttubetv.beta" />
+        <package android:name="com.teamsmart.videomanager.tv" />
+        <package android:name="com.amazon.firetv.youtube" />
+        <package android:name="org.videolan.vlc" />
+        <package android:name="com.mxtech.videoplayer.ad" />
+        <package android:name="com.mxtech.videoplayer.pro" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="vnd.youtube" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="video/*" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".RSGApplication"
+        android:allowBackup="true"
+        android:banner="@mipmap/banner"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:theme="@style/Theme.RSGMOVIES">
+
+        <!-- Splash Launcher Activity -->
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- QR Phone Login Activity -->
+        <activity
+            android:name=".ui.auth.QRLoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <!-- Main Leanback Browse Activity -->
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name=".ui.files.FolderDetailActivity"
+            android:theme="@style/Theme.RSGMOVIES.TransparentDialog"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.viewall.ViewAllActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
+
+        <activity
+            android:name=".ui.player.PlayerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
+
+        <activity
+            android:name=".ui.player.TrailerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar"
+            android:hardwareAccelerated="true" />
+
+        <activity
+            android:name=".ui.search.SearchActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Leanback"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.details.DetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
+
+        <activity
+            android:name=".ui.system.MaintenanceActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
+
+        <activity
+            android:name=".ui.system.UpdateActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
+
+        <activity
+            android:name=".ui.person.PersonActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
+
+    </application>
+</manifest>

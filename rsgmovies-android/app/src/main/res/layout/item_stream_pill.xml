@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="36dp"
+    android:layout_marginEnd="8dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/stream_pill_selector"
+    android:paddingHorizontal="12dp"
+    android:focusable="true"
+    android:clickable="true">
+
+    <!-- Bolt Icon -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚡"
+        android:textColor="@color/rating_gold"
+        android:textSize="12sp"
+        android:layout_marginEnd="6dp" />
+
+    <!-- Server Name -->
+    <TextView
+        android:id="@+id/tv_stream_server_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Server 1"
+        android:textColor="@color/text_white"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- Language / Quality Tag -->
+    <TextView
+        android:id="@+id/tv_stream_lang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="9sp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+</LinearLayout>

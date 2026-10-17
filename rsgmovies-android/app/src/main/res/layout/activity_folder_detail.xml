@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/black">
+
+    <!-- PlayerView for video playback -->
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        app:controller_layout_id="@layout/custom_playback_control_view"
+         />
+
+    <!-- Custom control buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:orientation="horizontal"
+        android:padding="8dp">
+        <ImageButton
+            android:id="@+id/exo_aspect_ratio"
+            style="@style/ExoMediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Aspect Ratio"
+            android:src="@drawable/exo_icon_fullscreen"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/pink_button_selector"
+            android:padding="8dp" />
+        <ImageButton
+            android:id="@+id/exo_track_selection"
+            style="@style/ExoMediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Track Selection"
+            android:src="@drawable/exo_icon_tracks"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/pink_button_selector"
+            android:padding="8dp" />
+        <!-- Playback Speed Button -->
+        <ImageButton
+            android:id="@+id/exo_playback_speed"
+            style="@style/ExoMediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Playback Speed"
+            android:src="@drawable/exo_icon_speed"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/pink_button_selector"
+            android:padding="8dp" />
+
+        <!-- Track Selection Button -->
+
+
+        <!-- Aspect Ratio Button -->
+
+
+        <!-- Volume Control Button -->
+        <ImageButton
+            android:id="@+id/exo_volume_control"
+            style="@style/ExoMediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Volume Control"
+            android:src="@drawable/ic_volume"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/pink_button_selector"
+            android:padding="8dp" />
+    </LinearLayout>
+
+</FrameLayout>

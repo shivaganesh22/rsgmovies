@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/hero_container"
+    android:layout_width="match_parent"
+    android:layout_height="320dp"
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="20dp"
+    android:background="@drawable/media_card_focus_bg"
+    android:padding="2dp"
+    android:focusable="true"
+    android:clickable="true">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#0a0f1d">
+
+        <!-- Full Backdrop Image -->
+        <ImageView
+            android:id="@+id/iv_hero_backdrop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder" />
+
+        <!-- Smooth Dark Dim Overlay across backdrop -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#d1050812" />
+
+        <!-- Main Content Row: Poster on left + Info on right -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="16dp">
+
+            <!-- 2:3 Poster Card on Left -->
+            <FrameLayout
+                android:layout_width="140dp"
+                android:layout_height="210dp"
+                android:background="@drawable/card_rounded_bg">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/surface_card">
+
+                    <ImageView
+                        android:id="@+id/iv_hero_poster"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_placeholder" />
+
+                    <!-- Top Left Quality Badge -->
+                    <TextView
+                        android:id="@+id/tv_hero_badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|start"
+                        android:layout_margin="6dp"
+                        android:background="@drawable/badge_bg"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:text="HD"
+                        android:textColor="@color/text_white"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <!-- Top Right Rating Badge -->
+                    <LinearLayout
+                        android:id="@+id/ll_hero_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|end"
+                        android:layout_margin="6dp"
+                        android:background="@drawable/badge_bg"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="★"
+                            android:textColor="@color/rating_gold"
+                            android:textSize="10sp" />
+
+                        <TextView
+                            android:id="@+id/tv_hero_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="3dp"
+                            android:text="8.5"
+                            android:textColor="@color/text_white"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </FrameLayout>
+
+            <!-- Right Info Column -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="24dp">
+
+                <!-- Title -->
+                <TextView
+                    android:id="@+id/tv_hero_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="Featured Title"
+                    android:textColor="@color/text_white"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <!-- Meta Chips Row -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/tv_hero_year"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/card_rounded_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="3dp"
+                        android:text="2026"
+                        android:textColor="@color/text_accent"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_hero_genre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/card_rounded_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="3dp"
+                        android:text="Action"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- Overview Synopsis -->
+                <TextView
+                    android:id="@+id/tv_hero_overview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:text="Synopsis overview describing the featured title storyline."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:lineSpacingExtra="3dp" />
+
+                <!-- Watch Action Prompt -->
+                <LinearLayout
+                    android:id="@+id/ll_hero_watch_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/btn_primary_selector"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginTop="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="▶"
+                        android:textColor="@color/text_white"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Watch"
+                        android:textColor="@color/text_white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Slide Indicator Dots -->
+                <LinearLayout
+                    android:id="@+id/ll_hero_dots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout>

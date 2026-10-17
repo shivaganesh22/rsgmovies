@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="24dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="16dp">
+
+    <!-- Header Row: Title on Left, View All on Right -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/tv_category_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Category Title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_white" />
+
+        <TextView
+            android:id="@+id/tv_view_all_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View All →"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_accent"
+            android:background="@drawable/nav_item_selector"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
+            android:focusable="true"
+            android:clickable="true" />
+    </LinearLayout>
+
+    <!-- Horizontal Cards List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_category_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:clipToPadding="false"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

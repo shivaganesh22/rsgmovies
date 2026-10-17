@@ -1,0 +1,44 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://rsg-movies.vercel.app/api/$1"
+    },
+    {
+      "source": "/react/(.*)",
+      "destination": "https://rsg-movies.vercel.app/react/$1"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "https://rsg-movies.vercel.app/admin/$1"
+    },
+    {
+      "source": "/static/(.*)",
+      "destination": "https://rsg-movies.vercel.app/static/$1"
+    },
+    {
+      "source": "/health/(.*)",
+      "destination": "https://rsg-movies.vercel.app/health/$1"
+    },
+    {
+      "source": "/api",
+      "destination": "https://rsg-movies.vercel.app/api"
+    },
+    {
+      "source": "/react",
+      "destination": "https://rsg-movies.vercel.app/react"
+    },
+    {
+      "source": "/admin",
+      "destination": "https://rsg-movies.vercel.app/admin"
+    },
+    {
+      "source": "/health",
+      "destination": "https://rsg-movies.vercel.app/health"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}

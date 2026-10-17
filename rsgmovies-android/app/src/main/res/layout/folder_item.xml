@@ -1,0 +1,30 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:focusable="false"
+
+    android:focusableInTouchMode="false">
+
+    <TextView
+        android:id="@+id/folder_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/pink_button_selector"
+        android:textColor="@android:color/white"/>
+
+    <ImageView
+        android:id="@+id/menu_button"
+        style="@style/ExoMediaButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Menu"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/pink_button_selector"
+        android:src="@drawable/ic_more_vert"
+        android:padding="8dp"/>
+</LinearLayout>

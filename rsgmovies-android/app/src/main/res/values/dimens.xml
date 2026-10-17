@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Kill the top padding that Leanback reserves for the title/search-orb bar -->
+    <dimen name="lb_browse_padding_top">0dp</dimen>
+    <dimen name="lb_browse_rows_margin_top">0dp</dimen>
+    <dimen name="lb_browse_expanded_margin_top">0dp</dimen>
+    <dimen name="lb_browse_headers_padding_top">0dp</dimen>
+
+    <!-- Kill the bottom padding too so nothing is clipped -->
+    <dimen name="lb_browse_padding_bottom">0dp</dimen>
+
+    <!-- Header/nav panel width - keep your original value -->
+    <dimen name="lb_browse_headers_width">260dp</dimen>
+</resources>

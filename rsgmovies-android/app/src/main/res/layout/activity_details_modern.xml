@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- Fullscreen 1080p Backdrop -->
+    <ImageView
+        android:id="@+id/iv_details_backdrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_placeholder" />
+
+    <!-- Dark Gradient / Dimming Layer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#eb070a12" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsv_details"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:paddingHorizontal="28dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="40dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Hero Detail Section: Poster on Left, Info on Right -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <!-- 2:3 Poster Card with Badges -->
+                <FrameLayout
+                    android:layout_width="140dp"
+                    android:layout_height="210dp">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="6dp"
+                        app:cardBackgroundColor="@color/surface_card">
+
+                        <ImageView
+                            android:id="@+id/iv_details_poster"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_placeholder" />
+
+                        <!-- Top-Left Quality Badge -->
+                        <TextView
+                            android:id="@+id/tv_details_badge_quality"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top|start"
+                            android:layout_margin="6dp"
+                            android:background="@drawable/badge_bg"
+                            android:paddingHorizontal="6dp"
+                            android:paddingVertical="2dp"
+                            android:text=""
+                            android:textColor="@color/text_white"
+                            android:textSize="9sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <!-- Top-Right Rating Badge -->
+                        <LinearLayout
+                            android:id="@+id/ll_details_rating_badge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="6dp"
+                            android:background="@drawable/badge_bg"
+                            android:paddingHorizontal="6dp"
+                            android:paddingVertical="2dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="★"
+                                android:textColor="@color/rating_gold"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/tv_details_rating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="3dp"
+                                android:text=""
+                                android:textColor="@color/text_white"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </FrameLayout>
+
+                <!-- Details Column -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="24dp">
+
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/tv_details_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/text_white"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+
+                    <!-- Tagline -->
+                    <TextView
+                        android:id="@+id/tv_details_tagline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/primary_light"
+                        android:textSize="13sp"
+                        android:textStyle="italic"
+                        android:layout_marginTop="2dp"
+                        android:visibility="gone" />
+
+                    <!-- Meta Chips Row (Year, Runtime/Seasons, Views) -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="8dp">
+
+                        <TextView
+                            android:id="@+id/tv_details_year"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/card_rounded_bg"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="3dp"
+                            android:text=""
+                            android:textColor="@color/text_accent"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tv_details_runtime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/card_rounded_bg"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="3dp"
+                            android:text=""
+                            android:textColor="@color/text_secondary"
+                            android:textSize="11sp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tv_details_views"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/card_rounded_bg"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="3dp"
+                            android:text=""
+                            android:textColor="@color/text_secondary"
+                            android:textSize="11sp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <!-- Genre Chips Horizontal Container (Individual Badges) -->
+                    <LinearLayout
+                        android:id="@+id/ll_details_genres_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp" />
+
+                    <!-- Languages Row -->
+                    <TextView
+                        android:id="@+id/tv_details_languages"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text=""
+                        android:textColor="@color/text_muted"
+                        android:textSize="11sp"
+                        android:visibility="gone" />
+
+                    <!-- Overview Synopsis -->
+                    <TextView
+                        android:id="@+id/tv_details_overview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:ellipsize="end"
+                        android:maxLines="3"
+                        android:text=""
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:lineSpacingExtra="2dp" />
+
+                    <!-- Primary Action Buttons Row -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="14dp">
+
+                        <Button
+                            android:id="@+id/btn_details_play"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:background="@drawable/btn_primary_selector"
+                            android:text="▶  Watch Movie"
+                            android:textColor="@color/text_white"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="22dp"
+                            android:focusable="true" />
+
+                        <Button
+                            android:id="@+id/btn_details_trailer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="10dp"
+                            android:background="@drawable/btn_secondary_selector"
+                            android:text="🎬  Trailer"
+                            android:textColor="@color/text_white"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="18dp"
+                            android:focusable="true" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- TV Series Section: Seasons & Episodes -->
+            <LinearLayout
+                android:id="@+id/ll_series_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_seasons_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Seasons"
+                    android:textColor="@color/text_white"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_details_seasons"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/tv_episodes_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Episodes"
+                    android:textColor="@color/text_white"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_details_episodes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false" />
+            </LinearLayout>
+
+            <!-- Available Servers / Streams (1-Line Horizontal Selector) -->
+            <LinearLayout
+                android:id="@+id/ll_streams_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Available Servers / Streams"
+                    android:textColor="@color/text_white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_details_streams"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false" />
+            </LinearLayout>
+
+            <!-- Cast & Crew -->
+            <LinearLayout
+                android:id="@+id/ll_cast_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cast &amp; Crew"
+                    android:textColor="@color/text_white"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="10dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_details_cast"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false" />
+            </LinearLayout>
+
+            <!-- Related Content -->
+            <LinearLayout
+                android:id="@+id/ll_related_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_related_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Related Movies"
+                    android:textColor="@color/text_white"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="10dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_details_related"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:id="@+id/pb_details_loading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/primary_light"
+        android:visibility="visible" />
+
+</FrameLayout>

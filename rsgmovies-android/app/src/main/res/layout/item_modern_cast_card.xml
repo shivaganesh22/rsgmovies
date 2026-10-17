@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:layout_marginEnd="12dp"
+    android:focusable="true"
+    android:clickable="true"
+    android:background="@drawable/nav_item_selector"
+    android:padding="6dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/surface_card">
+
+        <ImageView
+            android:id="@+id/iv_cast_profile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tv_cast_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:gravity="center"
+        android:text="Actor Name"
+        android:textColor="@color/text_white"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:layout_marginTop="6dp" />
+
+    <TextView
+        android:id="@+id/tv_cast_character"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:gravity="center"
+        android:text="Role"
+        android:textColor="@color/text_muted"
+        android:textSize="9sp" />
+
+</LinearLayout>

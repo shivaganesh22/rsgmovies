@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+    android:layout_marginBottom="10dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:descendantFocusability="afterDescendants">
+
+    <!-- Folder Clickable Container -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_folder_content"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/surface_card"
+        android:foreground="@drawable/card_focus_border"
+        android:focusable="true"
+        android:clickable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📁"
+                android:textSize="26sp"
+                android:layout_marginEnd="14dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_folder_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Folder Name"
+                    android:textColor="@color/text_white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_folder_meta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cloud Torrent Folder"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Separate Focusable Delete Button -->
+    <Button
+        android:id="@+id/btn_delete_folder"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/delete_button_focus_selector"
+        android:text="🗑 Delete"
+        android:textColor="@color/text_white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="16dp"
+        android:focusable="true"
+        android:clickable="true" />
+
+</LinearLayout>

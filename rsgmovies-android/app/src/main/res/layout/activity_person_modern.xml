@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:paddingStart="24dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Cast Profile Container Card matching Screenshot 6 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/media_card_focus_bg"
+            android:padding="18dp"
+            android:layout_marginBottom="20dp">
+
+            <!-- Circular Avatar with Blue Border -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                app:cardCornerRadius="36dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/surface_elevated">
+
+                <ImageView
+                    android:id="@+id/iv_person_avatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- Info Column -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✨  CAST PROFILE"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_light" />
+
+                <TextView
+                    android:id="@+id/tv_person_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Actor Name"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_white"
+                    android:layout_marginTop="2dp" />
+
+                <TextView
+                    android:id="@+id/tv_person_role"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="as Character Name"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="2dp" />
+
+                <TextView
+                    android:id="@+id/tv_person_appearances"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Filmography &amp; Appearances"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_muted"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Section Title: Filmography & Related Titles -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filmography &amp; Related Titles"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_white"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 6-Column Filmography Grid -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_person_grid"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="40dp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_person_loading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/primary_light"
+        android:visibility="visible" />
+
+</FrameLayout>
