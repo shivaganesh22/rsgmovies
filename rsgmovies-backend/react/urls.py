@@ -1,3 +1,4 @@
+from react import moviebox
 from django.urls import path,re_path
 from react.views import (
     FilesApi,
@@ -180,6 +181,13 @@ urlpatterns = [
     path('istream/proxy/<str:encoded_cdn>/<path:segment_path>', istream.segment_proxy, name='istream-proxy-segment'),
     re_path(r'^istream/segment_proxy/(?P<video_id>[^/]+)/(?P<segment_path>.+)$', istream.segment_proxy, name='istream-segment-proxy'),
     path('istream/playlist.m3u', istream.playlist_m3u),
+
+    #Moviebox
+    path('moviebox/home/',moviebox.moviebox_home),
+    path('moviebox/search/',moviebox.moviebox_search),
+    path('moviebox/detail/<str:subject_id>/',moviebox.moviebox_details),
+    path('moviebox/episode/<str:subject_id>/',moviebox.moviebox_episodes),
+    path('moviebox/streams/<str:subject_id>/<int:season>/<int:episode>/',moviebox.moviebox_streams),
 
     # Live TV Channels
     path('livetv/channels/', LiveTVChannelsView.as_view(), name='react-livetv-channels'),
