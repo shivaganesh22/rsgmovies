@@ -139,13 +139,23 @@ export const TrailerModal = ({ isOpen, onClose, previewPath, trailerUrl, title }
         }`}
       >
         {embedUrl ? (
-          <iframe
-            src={embedUrl}
-            title={title || 'Trailer'}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-            allowFullScreen
-            className="w-full h-full border-0"
-          />
+          embedUrl.includes('.mp4') ? (
+            <video
+              src={embedUrl}
+              controls
+              autoPlay
+              playsInline
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <iframe
+              src={embedUrl}
+              title={title || 'Trailer'}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              className="w-full h-full border-0"
+            />
+          )
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400">
             Trailer is not available for this title.

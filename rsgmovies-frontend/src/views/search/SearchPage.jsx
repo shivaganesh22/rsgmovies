@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import blastApi from '../../api/blast';
 import istreamApi from '../../api/istream';
+import movieboxApi from '../../api/moviebox';
 import scrapersApi from '../../api/scrapers';
 import seedrApi from '../../api/seedr';
 import MediaCard from '../../components/media/MediaCard';
@@ -58,6 +59,12 @@ export const SearchPage = () => {
     queryKey: ['searchIstream', initialQuery],
     queryFn: () => istreamApi.search(initialQuery),
     enabled: Boolean(initialQuery),
+  });
+
+  const { data: movieboxData, isLoading: isMovieboxLoading } = useQuery({
+    queryKey: ['searchMoviebox', initialQuery],
+    queryFn: () => movieboxApi.search(initialQuery),
+    enabled: Boolean(initialQuery) && activeTab === 'moviebox',
   });
 
   const { data: movierulzData, isLoading: isMovierulzLoading } = useQuery({
@@ -157,6 +164,7 @@ export const SearchPage = () => {
   const istreamResults = Array.isArray(istreamData)
     ? istreamData
     : istreamData?.search || istreamData?.movies || istreamData?.data || [];
+  const movieboxResults = Array.isArray(movieboxData) ? movieboxData : [];
   const movierulzResults = movierulzData?.movies || [];
   const torrentResults = torrentData?.torrents || torrentData?.links || [];
   const totalTorrentsFound = torrentData?.total_results || torrentResults.length;
@@ -209,8 +217,19 @@ export const SearchPage = () => {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Sparkles size={14} className="text-amber-400" />
+              <Sparkles size={14} className="text-blue-400" />
               <span>iStreamFlare ({istreamResults.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('moviebox')}
+              className={`px-4 sm:px-5 py-2 text-xs font-bold rounded-xl transition flex items-center gap-2 ${
+                activeTab === 'moviebox'
+                  ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20 font-bold'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Sparkles size={14} className="text-amber-400" />
+              <span>Moviebox ({movieboxResults.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('movierulz')}
@@ -294,6 +313,36 @@ export const SearchPage = () => {
                 {...item}
                 targetLink={getIStreamLink(item)}
                 badge={item.custom_tag?.custom_tags_name || item.custom_tags_name || item.quality}
+              />
+            ))}
+          </div>
+        )
+      ) : activeTab === 'moviebox' ? (
+        isMovieboxLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <MediaCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : movieboxResults.length === 0 ? (
+          <EmptyState
+            title="No Moviebox results"
+            message={`No titles matched "${initialQuery}" on Moviebox.`}
+          />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+            {movieboxResults.map((item, idx) => (
+              <MediaCard
+                key={item.subject_id || idx}
+                title={item.title}
+                poster={item.cover}
+                image={item.cover}
+                rating={item.imdb_rating}
+                vote_average={item.imdb_rating}
+                badge={item.type && item.type.toLowerCase() !== 'hindi' ? item.type : ''}
+                year={item.release_date ? item.release_date.substring(0, 4) : ''}
+                targetLink={`/moviebox/detail/${item.subject_id}`}
+                type={item.subject_type === 2 ? 'series' : 'movie'}
               />
             ))}
           </div>

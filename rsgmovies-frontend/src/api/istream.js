@@ -1,5 +1,45 @@
 import apiClient from './client';
 
+export const ISTREAM_VPS_PROXY = import.meta.env.VITE_ISTREAM_PROXY_URL || import.meta.env.VITE_MOVIEBOX_PROXY_URL || 'http://129.225.111.76:5000';
+
+export const encodeHeaders = (headersObj) => {
+  if (!headersObj) return '';
+  try {
+    const jsonStr = JSON.stringify(headersObj);
+    const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  } catch (e) {
+    return '';
+  }
+};
+
+export const resolveIStreamSourceUrl = (videoId) => {
+  if (!videoId) return '';
+  let raw = String(videoId).trim();
+  if (raw.includes('id=http')) {
+    raw = decodeURIComponent(raw.split('id=')[1].split('&')[0]);
+  } else if (raw.includes('url=http')) {
+    raw = decodeURIComponent(raw.split('url=')[1].split('&')[0]);
+  }
+  if (raw.startsWith('http://') || raw.startsWith('https://')) {
+    return raw;
+  }
+  const cleanId = raw.replace('istream_', '').trim();
+  return `http://exposeworld.art/oxx/ox.php?id=${cleanId}`;
+};
+
+export const getIStreamVpsProxyUrl = (videoId, proxyBase = ISTREAM_VPS_PROXY) => {
+  const sourceUrl = resolveIStreamSourceUrl(videoId);
+  if (!sourceUrl) return '';
+  const base = (proxyBase || ISTREAM_VPS_PROXY).replace(/\/+$/, '');
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Cookie': 'tstc=p',
+  };
+  const h = encodeHeaders(headers);
+  return `${base}/stream?url=${encodeURIComponent(sourceUrl)}&h=${h}`;
+};
+
 export const istreamApi = {
   async getHomeSlider() {
     const res = await apiClient.get('/react/istream/home_slider/');
@@ -153,11 +193,12 @@ export const istreamApi = {
   },
 
   getManifestUrl(videoId) {
-    return `/react/istream/manifest/?id=${videoId}`;
+    return getIStreamVpsProxyUrl(videoId);
   },
 
   getM3uUrl(videoId) {
-    return `/react/istream/playlist.m3u?id=${videoId}`;
+    const vps = (ISTREAM_VPS_PROXY || 'http://129.225.111.76:5000').replace(/\/+$/, '');
+    return `${vps}/istream/playlist.m3u?id=${videoId}`;
   },
 };
 

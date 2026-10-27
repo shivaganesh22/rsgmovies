@@ -65,8 +65,8 @@ export const Navbar = () => {
               <NavLink to="/series" className={navLinkClass}>
                 Series
               </NavLink>
-              <NavLink to="/istream" className={navLinkClass}>
-                iStreamFlare
+              <NavLink to="/moviebox" className={navLinkClass}>
+                Moviebox
               </NavLink>
               <NavLink to="/files" className={navLinkClass}>
                 Files
@@ -113,6 +113,14 @@ export const Navbar = () => {
                     >
                       <Film size={15} className="text-blue-400" />
                       <span>Movierulz</span>
+                    </Link>
+                    <Link
+                      to="/istream"
+                      onClick={() => setIsScraperOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2 text-sm text-blue-400 font-semibold hover:text-blue-300 hover:bg-blue-600/20"
+                    >
+                      <Globe size={15} className="text-blue-400" />
+                      <span>iStreamFlare</span>
                     </Link>
                     <Link
                       to="/tamilmv"

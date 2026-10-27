@@ -111,6 +111,16 @@ export const BottomNav = () => {
                 <p className="text-[10px] text-gray-400">Tamil & Multi</p>
               </NavLink>
 
+              <NavLink
+                to="/istream"
+                onClick={() => setIsStreamsOpen(false)}
+                className="p-4 rounded-2xl bg-surface-card border border-white/5 hover:border-blue-500/40 text-center space-y-1 block"
+              >
+                <Globe size={22} className="mx-auto text-blue-400" />
+                <p className="text-sm font-semibold text-white">iStreamFlare</p>
+                <p className="text-[10px] text-gray-400">Global Hub</p>
+              </NavLink>
+
               {/* AllMovies & IBomma commented out per user preference
               <NavLink
                 to="/allmovies"
@@ -178,13 +188,13 @@ export const BottomNav = () => {
             <span>Movies</span>
           </NavLink>
 
-          {/* iFlare */}
+          {/* Moviebox */}
           <NavLink
-            to="/istream"
+            to="/moviebox"
             className={({ isActive }) => navItemClass(isActive)}
           >
-            <Sparkles size={20} className="mb-0.5 text-blue-400" />
-            <span>iStream</span>
+            <Sparkles size={20} className="mb-0.5 text-amber-400" />
+            <span>Moviebox</span>
           </NavLink>
 
           {/* Series */}

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import Hls from 'hls.js';
+import dashjs from 'dashjs';
 import {
   Play,
   Pause,
@@ -22,6 +23,7 @@ import {
   PictureInPicture2,
 } from 'lucide-react';
 import { toastSuccess } from '../ui/Notifications';
+import { getIStreamVpsProxyUrl } from '../../api/istream';
 
 export const IStreamPlayer = ({
   src,
@@ -82,24 +84,24 @@ export const IStreamPlayer = ({
 
   const isLiveTv = mediaType === 'livetv' || String(genre || '').toLowerCase().includes('live tv');
 
-  // Compute safe stream URL (Direct for Live TV, Proxied for iStream Movies & Web Series)
+  // Compute safe stream URL (Direct for Live TV, Proxied directly via VPS for iStream Movies & Web Series)
   const safeSrc = useMemo(() => {
-    const rawUrl = src || (mediaId ? `/react/istream/manifest/?id=${encodeURIComponent(mediaId)}` : '');
+    const rawUrl = src || mediaId || '';
     if (!rawUrl) return '';
 
-    let url = rawUrl;
-    if (url.startsWith('http://') && window.location.protocol === 'https:') {
-      url = url.replace('http://', 'https://');
+    if (isLiveTv) {
+      if (rawUrl.startsWith('http://') && window.location.protocol === 'https:') {
+        return rawUrl.replace('http://', 'https://');
+      }
+      return rawUrl;
     }
 
-    if (isLiveTv) {
-      return url;
-    } else {
-      // iStream Movies & Web Series DASH manifest handling: always proxy=1
-      const cleanUrl = url.replace(/([?&])proxy=[01]/g, '').replace(/[?&]$/, '');
-      const sep = cleanUrl.includes('?') ? '&' : '?';
-      return `${cleanUrl}${sep}proxy=1`;
+    if (rawUrl.includes(':5000/stream') || rawUrl.includes(':5000/proxy')) {
+      return rawUrl;
     }
+
+    // Directly proxy through VPS server, completely bypassing Django backend
+    return getIStreamVpsProxyUrl(rawUrl);
   }, [src, mediaId, isLiveTv]);
 
   // Selected stream label for bottom bar
@@ -184,13 +186,12 @@ export const IStreamPlayer = ({
       dashRef.current = null;
     }
 
-    const isHls = safeSrc.includes('.m3u8') || safeSrc.includes('/hls/') || isLiveTv;
-    const isDash = !isLiveTv && (safeSrc.includes('.mpd') || safeSrc.includes('/manifest/') || safeSrc.includes('/react/istream/'));
+    const isHls = !isLiveTv ? (safeSrc.includes('.m3u8') || safeSrc.includes('/hls/')) : true;
+    const isDash = !isLiveTv && !isHls;
 
     const initDashPlayer = () => {
-      if (!window.dashjs) return;
       try {
-        const dashPlayer = window.dashjs.MediaPlayer().create();
+        const dashPlayer = dashjs.MediaPlayer().create();
         dashPlayer.updateSettings({
           streaming: {
             buffer: {
@@ -232,12 +233,17 @@ export const IStreamPlayer = ({
           updateDetectedTracks();
         };
 
-        dashPlayer.on(window.dashjs.MediaPlayer.events.STREAM_INITIALIZED, populateDashBitrates);
-        dashPlayer.on(window.dashjs.MediaPlayer.events.CAN_PLAY, populateDashBitrates);
-        dashPlayer.on(window.dashjs.MediaPlayer.events.TEXT_TRACKS_ADDED, updateDetectedTracks);
-        dashPlayer.on(window.dashjs.MediaPlayer.events.ERROR, (err) => {
+        dashPlayer.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, () => {
+          setHasError(false);
+          populateDashBitrates();
+        });
+        dashPlayer.on(dashjs.MediaPlayer.events.CAN_PLAY, populateDashBitrates);
+        dashPlayer.on(dashjs.MediaPlayer.events.TEXT_TRACKS_ADDED, updateDetectedTracks);
+        dashPlayer.on(dashjs.MediaPlayer.events.ERROR, (err) => {
           console.warn('DASH stream error:', err);
-          setHasError(true);
+          if (err && (err.error === 'capability' || err.error === 'mediasource')) {
+            setHasError(true);
+          }
         });
       } catch (err) {
         console.warn('DASH player initialization error:', err);
@@ -246,19 +252,7 @@ export const IStreamPlayer = ({
     };
 
     if (isDash) {
-      if (window.dashjs) {
-        initDashPlayer();
-      } else {
-        const existingScript = document.querySelector('script[src*="dash.all.min.js"]');
-        if (existingScript) {
-          existingScript.addEventListener('load', initDashPlayer);
-        } else {
-          const script = document.createElement('script');
-          script.src = 'https://cdn.dashjs.org/v4.7.4/dash.all.min.js';
-          script.onload = initDashPlayer;
-          document.head.appendChild(script);
-        }
-      }
+      initDashPlayer();
     } else if (isHls && Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: true,
@@ -609,24 +603,29 @@ export const IStreamPlayer = ({
       }
     }
 
-    let streamUrl = '';
+    let directUrl = '';
+    let proxyUrl = '';
     try {
       const res = await fetch(`/react/istream/vlc-info/?url=${encodeURIComponent(targetUrl)}`);
       if (res.ok) {
         const data = await res.json();
-        streamUrl = data.direct_url || data.proxy_url;
+        directUrl = data.direct_url;
+        proxyUrl = data.proxy_url || data.vps_proxy_url;
       }
     } catch (e) {
       console.warn('Failed to fetch vlc-info:', e);
     }
 
-    if (!streamUrl) {
-      streamUrl = safeSrc;
+    if (!directUrl) {
+      directUrl = targetUrl;
     }
-    if (streamUrl && streamUrl.startsWith('/')) {
-      streamUrl = window.location.origin + streamUrl;
+    if (directUrl && directUrl.startsWith('/')) {
+      directUrl = window.location.origin + directUrl;
     }
-    return streamUrl;
+    if (!proxyUrl) {
+      proxyUrl = getIStreamVpsProxyUrl(directUrl || targetUrl);
+    }
+    return { directUrl, proxyUrl };
   };
 
   const pauseVideo = () => {
@@ -637,43 +636,57 @@ export const IStreamPlayer = ({
     }
   };
 
-  const handleOpenVlc = async () => {
+  const handleOpenVlc = async (useProxy = false) => {
     pauseVideo();
-    const streamUrl = await fetchStreamUrl();
+    const { directUrl, proxyUrl } = await fetchStreamUrls();
+    const streamUrl = useProxy ? proxyUrl : directUrl;
     if (!streamUrl) return;
 
     const isAndroid = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent);
     const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     if (isAndroid) {
-      const chromeUa = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-      const cookie = 'tstc=p';
-      const intentUri =
-        `intent:${streamUrl}#Intent;` +
-        `package=org.videolan.vlc;` +
-        `type=video/*;` +
-        `S.title=Direct%20Stream;` +
-        `S.http-user-agent=${encodeURIComponent(chromeUa)};` +
-        `S.http-cookie=${encodeURIComponent(cookie)};` +
-        `S.headers=${encodeURIComponent("User-Agent: " + chromeUa + "\\r\\nCookie: " + cookie)};` +
-        `S.extra_headers=${encodeURIComponent("User-Agent: " + chromeUa + "\\r\\nCookie: " + cookie)};` +
-        `end`;
-      window.location.href = intentUri;
+      if (useProxy) {
+        // Proxied stream through VPS proxy does not need complex cookies in VLC
+        const intentUri =
+          `intent:${streamUrl}#Intent;` +
+          `package=org.videolan.vlc;` +
+          `type=video/*;` +
+          `S.title=${encodeURIComponent((title || 'iStream') + ' (Proxy)')};` +
+          `end`;
+        window.location.href = intentUri;
+      } else {
+        const chromeUa = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+        const cookie = 'tstc=p';
+        const intentUri =
+          `intent:${streamUrl}#Intent;` +
+          `package=org.videolan.vlc;` +
+          `type=video/*;` +
+          `S.title=${encodeURIComponent((title || 'iStream') + ' (Direct)')};` +
+          `S.http-user-agent=${encodeURIComponent(chromeUa)};` +
+          `S.http-cookie=${encodeURIComponent(cookie)};` +
+          `S.headers=${encodeURIComponent("User-Agent: " + chromeUa + "\\r\\nCookie: " + cookie)};` +
+          `S.extra_headers=${encodeURIComponent("User-Agent: " + chromeUa + "\\r\\nCookie: " + cookie)};` +
+          `end`;
+        window.location.href = intentUri;
+      }
     } else if (isIOS) {
       window.location.href = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(streamUrl)}`;
     } else {
-      // Desktop M3U File Download with full direct URL and headers
+      // Desktop M3U File Download
       try {
-        let m3uContent = `#EXTM3U\n#EXTINF:-1,Direct Stream\n`;
-        m3uContent += `#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\n`;
-        m3uContent += `#EXTVLCOPT:http-cookie=tstc=p\n`;
+        let m3uContent = `#EXTM3U\n#EXTINF:-1,${title || 'iStream'} (${useProxy ? 'VPS Proxy' : 'Direct'})\n`;
+        if (!useProxy) {
+          m3uContent += `#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\n`;
+          m3uContent += `#EXTVLCOPT:http-cookie=tstc=p\n`;
+        }
         m3uContent += `${streamUrl}\n`;
 
         const blob = new Blob([m3uContent], { type: 'audio/x-mpegurl;charset=utf-8' });
         const blobUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = blobUrl;
-        link.download = `stream_direct.m3u`;
+        link.download = `istream_${useProxy ? 'proxy' : 'direct'}.m3u`;
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -684,9 +697,10 @@ export const IStreamPlayer = ({
     }
   };
 
-  const handleOpenMx = async () => {
+  const handleOpenMx = async (useProxy = false) => {
     pauseVideo();
-    const streamUrl = await fetchStreamUrl();
+    const { directUrl, proxyUrl } = await fetchStreamUrls();
+    const streamUrl = useProxy ? proxyUrl : directUrl;
     if (!streamUrl) return;
 
     const isAndroid = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent);
@@ -695,16 +709,21 @@ export const IStreamPlayer = ({
       return;
     }
 
-    const headers = 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\r\nCookie: tstc=p';
-    window.location.href = `intent:${streamUrl}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;S.headers=${encodeURIComponent(headers)};end`;
+    if (useProxy) {
+      window.location.href = `intent:${streamUrl}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;S.title=${encodeURIComponent((title || 'iStream') + ' (Proxy)')};end`;
+    } else {
+      const headers = 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\r\nCookie: tstc=p';
+      window.location.href = `intent:${streamUrl}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;S.title=${encodeURIComponent((title || 'iStream') + ' (Direct)')};S.headers=${encodeURIComponent(headers)};end`;
+    }
   };
 
-  const handleCopyLink = async () => {
-    const streamUrl = await fetchStreamUrl();
+  const handleCopyLink = async (useProxy = false) => {
+    const { directUrl, proxyUrl } = await fetchStreamUrls();
+    const streamUrl = useProxy ? proxyUrl : directUrl;
     if (!streamUrl) return;
 
     navigator.clipboard.writeText(streamUrl).then(() => {
-      toastSuccess('Copied Direct Stream URL!');
+      toastSuccess(useProxy ? 'Copied Proxied Stream URL (VPS)!' : 'Copied Direct CDN Stream URL!');
     });
   };
 
@@ -853,7 +872,7 @@ export const IStreamPlayer = ({
           onClick={() => setActiveMenu(null)}
         >
           <div
-            className="w-full sm:w-72 max-h-[82vh] overflow-y-auto glass-dropdown rounded-3xl sm:rounded-2xl shadow-2xl p-3 sm:p-3 bg-darkbg border border-gray-700 animate-fade-in no-scrollbar"
+            className="w-full sm:w-80 max-h-[85vh] overflow-y-auto glass-dropdown rounded-3xl sm:rounded-2xl shadow-2xl p-3 sm:p-3.5 bg-darkbg border border-gray-700 animate-fade-in no-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-2.5 py-1.5 border-b border-white/10 mb-2 sticky top-0 bg-darkbg backdrop-blur-md z-10">
@@ -861,36 +880,77 @@ export const IStreamPlayer = ({
               <button onClick={() => setActiveMenu(null)} className="text-xs sm:text-[10px] text-gray-400 hover:text-white px-2 py-0.5 rounded-lg bg-white/5">Close</button>
             </div>
 
-            <div className="space-y-2 pt-0.5">
-              <button
-                onClick={() => { setActiveMenu(null); handleOpenMx(); }}
-                className="w-full text-left px-3.5 py-2.5 text-xs text-gray-200 hover:text-white hover:bg-white/10 bg-white/5 rounded-xl transition flex items-center justify-between"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Tv size={15} className="text-sky-400" />
-                  <span className="font-semibold">MX Player</span>
-                </div>
-                <span className="text-[10px] text-gray-400">Android</span>
-              </button>
-
-              <button
-                onClick={() => { setActiveMenu(null); handleOpenVlc(); }}
-                className="w-full text-left px-3.5 py-2.5 text-xs text-gray-200 hover:text-white hover:bg-white/10 bg-white/5 rounded-xl transition flex items-center justify-between"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Tv size={15} className="text-orange-400" />
-                  <span className="font-semibold">VLC Player</span>
-                </div>
-                <span className="text-[10px] text-gray-400">Desktop / Mobile</span>
-              </button>
-
-              <div className="border-t border-white/10 pt-2">
+            <div className="space-y-3 pt-0.5">
+              {/* Direct CDN Streams Section */}
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 block">Direct CDN Stream</span>
                 <button
-                  onClick={() => { handleCopyLink(); }}
-                  className="w-full text-left px-3.5 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition flex items-center gap-2"
+                  onClick={() => { setActiveMenu(null); handleOpenMx(false); }}
+                  className="w-full text-left px-3 py-2 text-xs text-gray-200 hover:text-white hover:bg-white/10 bg-white/5 rounded-xl transition flex items-center justify-between"
                 >
-                  <Copy size={14} className="text-gray-400" />
+                  <div className="flex items-center gap-2">
+                    <Tv size={14} className="text-sky-400" />
+                    <span className="font-semibold">MX Player (Direct)</span>
+                  </div>
+                  <span className="text-[10px] text-gray-400">Android</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveMenu(null); handleOpenVlc(false); }}
+                  className="w-full text-left px-3 py-2 text-xs text-gray-200 hover:text-white hover:bg-white/10 bg-white/5 rounded-xl transition flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <Tv size={14} className="text-orange-400" />
+                    <span className="font-semibold">VLC Player (Direct)</span>
+                  </div>
+                  <span className="text-[10px] text-gray-400">Desktop / Mobile</span>
+                </button>
+              </div>
+
+              {/* Proxied Streams Section (VPS Proxy) */}
+              <div className="space-y-1.5 border-t border-white/10 pt-2">
+                <div className="flex items-center justify-between px-2">
+                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">VPS Proxy Server</span>
+                  <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[9px] font-semibold">Recommended</span>
+                </div>
+                <button
+                  onClick={() => { setActiveMenu(null); handleOpenMx(true); }}
+                  className="w-full text-left px-3 py-2 text-xs text-gray-200 hover:text-white hover:bg-amber-500/20 bg-amber-500/10 border border-amber-500/20 rounded-xl transition flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <Tv size={14} className="text-sky-400" />
+                    <span className="font-semibold">MX Player (Proxy)</span>
+                  </div>
+                  <span className="text-[10px] text-amber-400">VPS Fast</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveMenu(null); handleOpenVlc(true); }}
+                  className="w-full text-left px-3 py-2 text-xs text-gray-200 hover:text-white hover:bg-amber-500/20 bg-amber-500/10 border border-amber-500/20 rounded-xl transition flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <Tv size={14} className="text-orange-400" />
+                    <span className="font-semibold">VLC Player (Proxy)</span>
+                  </div>
+                  <span className="text-[10px] text-amber-400">VPS Fast</span>
+                </button>
+              </div>
+
+              {/* Copy Links Section */}
+              <div className="border-t border-white/10 pt-2 space-y-1">
+                <button
+                  onClick={() => { handleCopyLink(false); }}
+                  className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition flex items-center gap-2"
+                >
+                  <Copy size={13} className="text-gray-400" />
                   <span>Copy Direct CDN Stream Link</span>
+                </button>
+                <button
+                  onClick={() => { handleCopyLink(true); }}
+                  className="w-full text-left px-3 py-1.5 text-xs text-amber-300 hover:text-white hover:bg-white/10 rounded-xl transition flex items-center gap-2"
+                >
+                  <Copy size={13} className="text-amber-400" />
+                  <span>Copy Proxied Stream Link (VPS)</span>
                 </button>
               </div>
             </div>

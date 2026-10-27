@@ -23,6 +23,10 @@ const IStreamMovieDetails = lazy(() => import('./views/istream/IStreamMovieDetai
 const IStreamSeriesDetails = lazy(() => import('./views/istream/IStreamSeriesDetails'));
 const IStreamViewAll = lazy(() => import('./views/istream/IStreamViewAll'));
 
+// Moviebox
+const MovieboxHome = lazy(() => import('./views/moviebox/MovieboxHome'));
+const MovieboxDetail = lazy(() => import('./views/moviebox/MovieboxDetail'));
+
 // Seedr Cloud Files
 const FilesPage = lazy(() => import('./views/files/FilesPage'));
 const OpenFolderPage = lazy(() => import('./views/files/OpenFolderPage'));
@@ -184,6 +188,24 @@ export const AppRoutes = () => {
             element={
               <Suspense fallback={<PageLoader />}>
                 <IStreamViewAll />
+              </Suspense>
+            }
+          />
+
+          {/* Moviebox Routes */}
+          <Route
+            path="/moviebox"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <MovieboxHome />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/moviebox/detail/:id"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <MovieboxDetail />
               </Suspense>
             }
           />
