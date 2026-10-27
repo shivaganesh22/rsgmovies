@@ -483,13 +483,21 @@ engine = MovieBoxEngine.get_instance()
 
 def moviebox_home(request):
     url = f"{API_BASE}/home?host=moviebox.ph"
-    resp = engine.session.get(url, headers={"User-Agent": WEB_USER_AGENT, "Referer": "https://moviebox.ph/"}, timeout=20)
-    return JsonResponse(resp.json())
+    try:
+        resp = engine.session.get(url, headers={"User-Agent": WEB_USER_AGENT, "Referer": "https://moviebox.ph/"}, timeout=20)
+        if resp.status_code == 200:
+            return JsonResponse(resp.json())
+        return JsonResponse({"error": f"Moviebox upstream returned {resp.status_code}"}, status=resp.status_code)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=502)
 
 def moviebox_search(request):
     query = request.GET.get("query", "")
-    page = request.GET.get("page", 1)
-    per_page = request.GET.get("per_page", 20)
+    page = int(request.GET.get("page", 1))
+    per_page = int(request.GET.get("per_page", 20))
+    data = engine.search(query, page, per_page)
+    if isinstance(data, JsonResponse):
+        return data
     if getattr(request, 'user', None) and request.user.is_authenticated and query:
         log_activity_event(
             event_type='MOVIE_SEARCHED',
@@ -499,10 +507,12 @@ def moviebox_search(request):
             resource_id="Moviebox",
             metadata={"query":query}
         )
-    return JsonResponse(engine.search(query, page, per_page),safe=False)
+    return JsonResponse(data, safe=False)
 
 def moviebox_details(request,subject_id:str):
     data = engine.get_details(subject_id)
+    if isinstance(data, JsonResponse):
+        return data
     if getattr(request, 'user', None) and request.user.is_authenticated and isinstance(data, dict):
         log_activity_event(
             event_type='MOVIE_VIEWED',
@@ -515,10 +525,15 @@ def moviebox_details(request,subject_id:str):
     return JsonResponse(data)
 
 def moviebox_episodes(request,subject_id:str):
-    return JsonResponse(engine.get_episodes(subject_id))
+    data = engine.get_episodes(subject_id)
+    if isinstance(data, JsonResponse):
+        return data
+    return JsonResponse(data, safe=False)
 
 def moviebox_streams(request,subject_id:str,season:int=0,episode:int=0):
     data=engine.get_streams(subject_id, season, episode)
+    if isinstance(data, JsonResponse):
+        return data
     if getattr(request, 'user', None) and request.user.is_authenticated and isinstance(data, dict):
         log_activity_event(
             event_type='MOVIE_STREAMING',

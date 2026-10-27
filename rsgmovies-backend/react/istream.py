@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 KEY = bytes.fromhex(os.getenv("ISTREAM_AES_KEY", "b35e6555ed48c0ade48c10bc1d4030cf9cc5768bff444a959048ce9a228b5746"))
 BASE_URL = os.getenv("ISTREAM_PANEL_URL", "https://panel.hippitunes.pro/android/")
 STREAM_URL_PREFIX = os.getenv("ISTREAM_STREAM_URL_PREFIX", "http://exposeworld.art/oxx/ox.php?id=")
+ISTREAM_VPS_PROXY = os.getenv("ISTREAM_VPS_PROXY", "http://129.225.111.76:5000").rstrip("/")
 HEADERS = {
     "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 13; GM1917 Build/TKQ1.221013.002)",
     "Connection": "Keep-Alive",
@@ -343,7 +344,7 @@ def resolve_source_url(target_url, video_id):
 
 
 def vlc_info(request):
-    """Returns direct CDN manifest URL and local proxy manifest URL."""
+    """Returns direct CDN manifest URL and VPS / local proxy manifest URLs."""
     target_url = request.GET.get('url', '')
     raw_video_id = request.GET.get('id', '')
     source_url = resolve_source_url(target_url, raw_video_id)
@@ -356,19 +357,27 @@ def vlc_info(request):
     except Exception:
         direct_cdn_manifest = source_url
 
-    encoded_url = urllib.parse.quote(source_url, safe="")
-    proxy_manifest = request.build_absolute_uri(f"/react/istream/manifest/?url={encoded_url}")
+    encoded_source = urllib.parse.quote(source_url, safe="")
+    headers_dict = {
+        "User-Agent": USER_AGENT,
+        "Cookie": "tstc=p",
+    }
+    headers_b64 = base64.urlsafe_b64encode(json.dumps(headers_dict).encode("utf-8")).decode("ascii").rstrip("=")
+    vps_proxy_url = f"{ISTREAM_VPS_PROXY}/stream?url={encoded_source}&h={headers_b64}"
+    local_proxy_manifest = request.build_absolute_uri(f"/react/istream/manifest/?url={encoded_source}")
 
     return JsonResponse({
         "direct_url": direct_cdn_manifest,
-        "proxy_url": proxy_manifest
+        "proxy_url": vps_proxy_url,
+        "vps_proxy_url": vps_proxy_url,
+        "local_proxy_url": local_proxy_manifest,
     })
 
 
 def manifest_proxy(request):
     """
     Proxy view serving rewritten MPD manifests with full CORS headers.
-    Embeds CDN base dynamically into rewritten BaseURL for stateless segment routing.
+    Embeds CDN base dynamically into rewritten BaseURL for stateless segment routing via VPS.
     """
     target_url = request.GET.get('url', '')
     raw_video_id = request.GET.get('id', '')
@@ -392,9 +401,9 @@ def manifest_proxy(request):
             parsed = urllib.parse.urlparse(final_url)
             cdn_base = f"{parsed.scheme}://{parsed.netloc}{parsed.path.rsplit('/', 1)[0]}/"
 
-        # Embed the CDN base directly into the rewritten BaseURL (stateless proxy)
+        # Embed the CDN base directly into the rewritten BaseURL pointing to VPS proxy
         encoded_cdn = encode_b64(cdn_base)
-        proxy_base = f"/react/istream/proxy/{encoded_cdn}/"
+        proxy_base = f"{ISTREAM_VPS_PROXY}/react/istream/proxy/{encoded_cdn}/"
 
         ET.register_namespace("", "urn:mpeg:DASH:schema:MPD:2011")
         try:
