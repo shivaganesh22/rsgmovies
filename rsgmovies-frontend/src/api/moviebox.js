@@ -1,7 +1,17 @@
 import apiClient from './client';
 
-// VPS Proxy base URL for Moviebox streams
-export const MOVIEBOX_PROXY_BASE = import.meta.env.VITE_MOVIEBOX_PROXY_URL || 'http://129.225.111.76:5000';
+// VPS Proxy base URL for Moviebox streams (dynamically HTTPS-aware to prevent blocked:mixed-content)
+export const getMovieboxProxyBase = () => {
+  if (import.meta.env.VITE_MOVIEBOX_PROXY_URL) {
+    return import.meta.env.VITE_MOVIEBOX_PROXY_URL;
+  }
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    return `${window.location.origin}/stream-proxy`;
+  }
+  return 'http://129.225.111.76:5000';
+};
+
+export const MOVIEBOX_PROXY_BASE = getMovieboxProxyBase();
 
 /**
  * Encodes headers dictionary into URL-safe base64 string
@@ -20,9 +30,12 @@ export const encodeHeaders = (headersObj) => {
 /**
  * Builds proxied stream URL with upstream headers encoded in query string
  */
-export const getProxiedStreamUrl = (targetUrl, headers, proxyBase = MOVIEBOX_PROXY_BASE) => {
+export const getProxiedStreamUrl = (targetUrl, headers, proxyBase) => {
   if (!targetUrl) return '';
-  const base = (proxyBase || MOVIEBOX_PROXY_BASE).replace(/\/+$/, '');
+  let base = (proxyBase || getMovieboxProxyBase()).replace(/\/+$/, '');
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.111.76:5000')) {
+    base = `${window.location.origin}/stream-proxy`;
+  }
   const encodedTarget = encodeURIComponent(targetUrl);
   const h = encodeHeaders(headers);
   return `${base}/stream?url=${encodedTarget}${h ? `&h=${h}` : ''}`;
@@ -31,9 +44,12 @@ export const getProxiedStreamUrl = (targetUrl, headers, proxyBase = MOVIEBOX_PRO
 /**
  * Builds direct download URL with Content-Disposition attachment and filename
  */
-export const getProxiedDownloadUrl = (targetUrl, headers, filename = '', proxyBase = MOVIEBOX_PROXY_BASE) => {
+export const getProxiedDownloadUrl = (targetUrl, headers, filename = '', proxyBase) => {
   if (!targetUrl) return '';
-  const base = (proxyBase || MOVIEBOX_PROXY_BASE).replace(/\/+$/, '');
+  let base = (proxyBase || getMovieboxProxyBase()).replace(/\/+$/, '');
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.111.76:5000')) {
+    base = `${window.location.origin}/stream-proxy`;
+  }
   const encodedTarget = encodeURIComponent(targetUrl);
   const h = encodeHeaders(headers);
   const cleanName = filename ? encodeURIComponent(filename) : '';

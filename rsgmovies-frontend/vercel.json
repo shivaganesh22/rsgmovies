@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/stream-proxy/(.*)",
+      "destination": "http://129.225.111.76:5000/$1"
+    },
+    {
+      "source": "/stream-proxy",
+      "destination": "http://129.225.111.76:5000"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "https://rsg-movies.vercel.app/api/$1"
     },

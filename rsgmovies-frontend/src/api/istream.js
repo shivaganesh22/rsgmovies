@@ -1,6 +1,19 @@
 import apiClient from './client';
 
-export const ISTREAM_VPS_PROXY = import.meta.env.VITE_ISTREAM_PROXY_URL || import.meta.env.VITE_MOVIEBOX_PROXY_URL || 'http://129.225.111.76:5000';
+export const getIStreamProxyBase = () => {
+  if (import.meta.env.VITE_ISTREAM_PROXY_URL) {
+    return import.meta.env.VITE_ISTREAM_PROXY_URL;
+  }
+  if (import.meta.env.VITE_MOVIEBOX_PROXY_URL) {
+    return import.meta.env.VITE_MOVIEBOX_PROXY_URL;
+  }
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    return `${window.location.origin}/stream-proxy`;
+  }
+  return 'http://129.225.111.76:5000';
+};
+
+export const ISTREAM_VPS_PROXY = getIStreamProxyBase();
 
 export const encodeHeaders = (headersObj) => {
   if (!headersObj) return '';
@@ -28,10 +41,13 @@ export const resolveIStreamSourceUrl = (videoId) => {
   return `http://exposeworld.art/oxx/ox.php?id=${cleanId}`;
 };
 
-export const getIStreamVpsProxyUrl = (videoId, proxyBase = ISTREAM_VPS_PROXY) => {
+export const getIStreamVpsProxyUrl = (videoId, proxyBase) => {
   const sourceUrl = resolveIStreamSourceUrl(videoId);
   if (!sourceUrl) return '';
-  const base = (proxyBase || ISTREAM_VPS_PROXY).replace(/\/+$/, '');
+  let base = (proxyBase || getIStreamProxyBase()).replace(/\/+$/, '');
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.111.76:5000')) {
+    base = `${window.location.origin}/stream-proxy`;
+  }
   const headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Cookie': 'tstc=p',
@@ -197,7 +213,10 @@ export const istreamApi = {
   },
 
   getM3uUrl(videoId) {
-    const vps = (ISTREAM_VPS_PROXY || 'http://129.225.111.76:5000').replace(/\/+$/, '');
+    let vps = (getIStreamProxyBase()).replace(/\/+$/, '');
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && vps.startsWith('http://129.225.111.76:5000')) {
+      vps = `${window.location.origin}/stream-proxy`;
+    }
     return `${vps}/istream/playlist.m3u?id=${videoId}`;
   },
 };

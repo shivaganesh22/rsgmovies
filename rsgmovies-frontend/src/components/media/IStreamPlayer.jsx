@@ -96,7 +96,11 @@ export const IStreamPlayer = ({
       return rawUrl;
     }
 
-    if (rawUrl.includes(':5000/stream') || rawUrl.includes(':5000/proxy')) {
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && rawUrl.startsWith('http://129.225.111.76:5000')) {
+      return rawUrl.replace('http://129.225.111.76:5000', `${window.location.origin}/stream-proxy`);
+    }
+
+    if (rawUrl.includes(':5000/stream') || rawUrl.includes(':5000/proxy') || rawUrl.includes('/stream-proxy/')) {
       return rawUrl;
     }
 

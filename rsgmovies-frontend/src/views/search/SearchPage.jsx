@@ -64,7 +64,7 @@ export const SearchPage = () => {
   const { data: movieboxData, isLoading: isMovieboxLoading } = useQuery({
     queryKey: ['searchMoviebox', initialQuery],
     queryFn: () => movieboxApi.search(initialQuery),
-    enabled: Boolean(initialQuery) && activeTab === 'moviebox',
+    enabled: Boolean(initialQuery),
   });
 
   const { data: movierulzData, isLoading: isMovierulzLoading } = useQuery({
@@ -177,7 +177,7 @@ export const SearchPage = () => {
           Find Movies, Series & Media
         </h1>
         <p className="text-sm text-gray-400">
-          Search across our streaming catalog, iStreamFlare, Movierulz database, and live multi-tracker torrent engine.
+          Search across MovieBlast, Moviebox, iStreamFlare, Movierulz, and live multi-tracker torrent engine.
         </p>
 
         <form onSubmit={handleSearch} className="flex gap-2 max-w-lg mx-auto pt-2">
@@ -207,18 +207,7 @@ export const SearchPage = () => {
               }`}
             >
               <Sparkles size={14} />
-              <span>Streaming Catalog ({blastResults.length})</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('istream')}
-              className={`px-4 sm:px-5 py-2 text-xs font-bold rounded-xl transition flex items-center gap-2 ${
-                activeTab === 'istream'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <Sparkles size={14} className="text-blue-400" />
-              <span>iStreamFlare ({istreamResults.length})</span>
+              <span>MovieBlast ({blastResults.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('moviebox')}
@@ -232,16 +221,17 @@ export const SearchPage = () => {
               <span>Moviebox ({movieboxResults.length})</span>
             </button>
             <button
-              onClick={() => setActiveTab('movierulz')}
+              onClick={() => setActiveTab('istream')}
               className={`px-4 sm:px-5 py-2 text-xs font-bold rounded-xl transition flex items-center gap-2 ${
-                activeTab === 'movierulz'
+                activeTab === 'istream'
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Film size={14} />
-              <span>Movierulz ({movierulzResults.length})</span>
+              <Sparkles size={14} className="text-blue-400" />
+              <span>iStreamFlare ({istreamResults.length})</span>
             </button>
+           
             <button
               onClick={() => setActiveTab('torrents')}
               className={`px-4 sm:px-5 py-2 text-xs font-bold rounded-xl transition flex items-center gap-2 ${
@@ -252,6 +242,17 @@ export const SearchPage = () => {
             >
               <Download size={14} />
               <span>Torrents & Magnets ({totalTorrentsFound})</span>
+            </button>
+             <button
+              onClick={() => setActiveTab('movierulz')}
+              className={`px-4 sm:px-5 py-2 text-xs font-bold rounded-xl transition flex items-center gap-2 ${
+                activeTab === 'movierulz'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Film size={14} />
+              <span>Movierulz ({movierulzResults.length})</span>
             </button>
           </div>
         </div>
@@ -293,30 +294,6 @@ export const SearchPage = () => {
             ))}
           </div>
         )
-      ) : activeTab === 'istream' ? (
-        isIStreamLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <MediaCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : istreamResults.length === 0 ? (
-          <EmptyState
-            title="No iStreamFlare results"
-            message={`No titles matched "${initialQuery}" on iStreamFlare.`}
-          />
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-            {istreamResults.map((item, idx) => (
-              <MediaCard
-                key={item?.id || idx}
-                {...item}
-                targetLink={getIStreamLink(item)}
-                badge={item.custom_tag?.custom_tags_name || item.custom_tags_name || item.quality}
-              />
-            ))}
-          </div>
-        )
       ) : activeTab === 'moviebox' ? (
         isMovieboxLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
@@ -343,6 +320,30 @@ export const SearchPage = () => {
                 year={item.release_date ? item.release_date.substring(0, 4) : ''}
                 targetLink={`/moviebox/detail/${item.subject_id}`}
                 type={item.subject_type === 2 ? 'series' : 'movie'}
+              />
+            ))}
+          </div>
+        )
+      ) : activeTab === 'istream' ? (
+        isIStreamLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <MediaCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : istreamResults.length === 0 ? (
+          <EmptyState
+            title="No iStreamFlare results"
+            message={`No titles matched "${initialQuery}" on iStreamFlare.`}
+          />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+            {istreamResults.map((item, idx) => (
+              <MediaCard
+                key={item?.id || idx}
+                {...item}
+                targetLink={getIStreamLink(item)}
+                badge={item.custom_tag?.custom_tags_name || item.custom_tags_name || item.quality}
               />
             ))}
           </div>
