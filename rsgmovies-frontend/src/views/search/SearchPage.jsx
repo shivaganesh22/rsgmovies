@@ -52,26 +52,30 @@ export const SearchPage = () => {
   const { data: blastData, isLoading: isBlastLoading } = useQuery({
     queryKey: ['searchBlast', initialQuery],
     queryFn: () => blastApi.search(initialQuery),
-    enabled: Boolean(initialQuery),
-  });
-
-  const { data: istreamData, isLoading: isIStreamLoading } = useQuery({
-    queryKey: ['searchIstream', initialQuery],
-    queryFn: () => istreamApi.search(initialQuery),
-    enabled: Boolean(initialQuery),
+    enabled: Boolean(initialQuery) && activeTab === 'blast',
   });
 
   const { data: movieboxData, isLoading: isMovieboxLoading } = useQuery({
     queryKey: ['searchMoviebox', initialQuery],
     queryFn: () => movieboxApi.search(initialQuery),
-    enabled: Boolean(initialQuery),
+    enabled: Boolean(initialQuery) && activeTab === 'moviebox',
   });
 
+  const { data: istreamData, isLoading: isIStreamLoading } = useQuery({
+    queryKey: ['searchIstream', initialQuery],
+    queryFn: () => istreamApi.search(initialQuery),
+    enabled: Boolean(initialQuery) && activeTab === 'istream',
+  });
+
+  /*
   const { data: movierulzData, isLoading: isMovierulzLoading } = useQuery({
     queryKey: ['searchMovierulz', initialQuery],
     queryFn: () => scrapersApi.searchMovierulz(initialQuery),
     enabled: Boolean(initialQuery) && activeTab === 'movierulz',
   });
+  */
+  const movierulzData = null;
+  const isMovierulzLoading = false;
 
   const { data: torrentData, isLoading: isTorrentLoading } = useQuery({
     queryKey: ['searchTorrents', initialQuery],
@@ -207,7 +211,7 @@ export const SearchPage = () => {
               }`}
             >
               <Sparkles size={14} />
-              <span>MovieBlast ({blastResults.length})</span>
+              <span>MovieBlast {isBlastLoading ? '(…)' : blastData ? `(${blastResults.length})` : ''}</span>
             </button>
             <button
               onClick={() => setActiveTab('moviebox')}
@@ -218,7 +222,7 @@ export const SearchPage = () => {
               }`}
             >
               <Sparkles size={14} className="text-amber-400" />
-              <span>Moviebox ({movieboxResults.length})</span>
+              <span>Moviebox {isMovieboxLoading ? '(…)' : movieboxData ? `(${movieboxResults.length})` : ''}</span>
             </button>
             <button
               onClick={() => setActiveTab('istream')}
@@ -229,7 +233,7 @@ export const SearchPage = () => {
               }`}
             >
               <Sparkles size={14} className="text-blue-400" />
-              <span>iStreamFlare ({istreamResults.length})</span>
+              <span>iStreamFlare {isIStreamLoading ? '(…)' : istreamData ? `(${istreamResults.length})` : ''}</span>
             </button>
            
             <button
@@ -241,18 +245,20 @@ export const SearchPage = () => {
               }`}
             >
               <Download size={14} />
-              <span>Torrents & Magnets ({totalTorrentsFound})</span>
+              <span>Torrents & Magnets {isTorrentLoading ? '(…)' : torrentData ? `(${totalTorrentsFound})` : ''}</span>
             </button>
              <button
-              onClick={() => setActiveTab('movierulz')}
-              className={`px-4 sm:px-5 py-2 text-xs font-bold rounded-xl transition flex items-center gap-2 ${
-                activeTab === 'movierulz'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                  : 'text-gray-400 hover:text-white'
-              }`}
+              onClick={() => {
+                const query = initialQuery || queryInput || '';
+                const movierulzUrl = `https://www.5movierulz.green/search_movies?s=${encodeURIComponent(query)}`;
+                window.open(movierulzUrl, '_blank', 'noopener,noreferrer');
+              }}
+              title="Open search on Movierulz in a new tab"
+              className="px-4 sm:px-5 py-2 text-xs font-bold rounded-xl transition flex items-center gap-2 text-gray-400 hover:text-white hover:bg-white/5"
             >
               <Film size={14} />
-              <span>Movierulz ({movierulzResults.length})</span>
+              <span>Movierulz</span>
+              <ExternalLink size={12} className="text-gray-400" />
             </button>
           </div>
         </div>
@@ -281,8 +287,18 @@ export const SearchPage = () => {
                 <Button variant="secondary" size="sm" onClick={() => setActiveTab('istream')}>
                   Search iStreamFlare
                 </Button>
-                <Button variant="secondary" size="sm" onClick={() => setActiveTab('movierulz')}>
-                  Search Movierulz
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    const query = initialQuery || queryInput || '';
+                    const movierulzUrl = `https://www.5movierulz.green/search_movies?s=${encodeURIComponent(query)}`;
+                    window.open(movierulzUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="flex items-center gap-1.5"
+                >
+                  <span>Search Movierulz</span>
+                  <ExternalLink size={12} />
                 </Button>
               </div>
             }
@@ -349,49 +365,26 @@ export const SearchPage = () => {
           </div>
         )
       ) : activeTab === 'movierulz' ? (
-        isMovierulzLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <MediaCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : movierulzResults.length === 0 ? (
-          <EmptyState
-            title="No Movierulz results"
-            message={`No releases found on Movierulz matching "${initialQuery}".`}
-          />
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {movierulzResults.map((item, idx) => {
-              const cleanSlug = (item.link || '').replace(/^\/+/, '').replace(/\.html$/, '') || `movie-${idx}`;
-              return (
-                <Link
-                  key={idx}
-                  to={`/movierulz/movie/${encodeURIComponent(cleanSlug)}`}
-                  className="group relative rounded-2xl overflow-hidden glass-panel border border-white/5 hover:border-blue-500/40 p-2.5 flex flex-col transition hover:-translate-y-1.5 duration-200 shadow hover:shadow-xl"
-                >
-                  <div className="aspect-[2/3] w-full rounded-xl overflow-hidden bg-surface mb-2.5 relative">
-                    <img
-                      src={item.image || 'https://via.placeholder.com/300x450?text=Movierulz'}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.src = 'https://via.placeholder.com/300x450?text=No+Poster';
-                      }}
-                    />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-lg bg-black/70 backdrop-blur-md text-[10px] font-bold text-blue-400 border border-blue-500/30">
-                      Movierulz
-                    </div>
-                  </div>
-                  <h4 className="text-xs font-bold text-white line-clamp-2 group-hover:text-blue-400 leading-snug">
-                    {item.name}
-                  </h4>
-                </Link>
-              );
-            })}
-          </div>
-        )
+        <EmptyState
+          title="Search on Movierulz"
+          message={`Click below to open Movierulz directly and view search results for "${initialQuery}".`}
+          icon={<Film size={36} className="text-blue-400" />}
+          action={
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                const query = initialQuery || queryInput || '';
+                const movierulzUrl = `https://www.5movierulz.green/search_movies?s=${encodeURIComponent(query)}`;
+                window.open(movierulzUrl, '_blank', 'noopener,noreferrer');
+              }}
+              className="flex items-center gap-2"
+            >
+              <span>Open Movierulz for "{initialQuery}"</span>
+              <ExternalLink size={14} />
+            </Button>
+          }
+        />
       ) : isTorrentLoading ? (
         <div className="space-y-3 max-w-4xl mx-auto">
           {Array.from({ length: 6 }).map((_, i) => (
