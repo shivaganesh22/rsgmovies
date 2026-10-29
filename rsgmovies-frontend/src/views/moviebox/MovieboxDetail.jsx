@@ -196,30 +196,41 @@ export const MovieboxDetail = () => {
     const isAndroid = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent);
     const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
+    const referer = headers['Referer'] || '';
+    const ua = headers['User-Agent'] || 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36';
+    const cookie = headers['Cookie'] || '';
+
     if (isAndroid) {
-      const referer = headers['Referer'] || 'https://sflix.film/';
-      const ua = headers['User-Agent'] || 'Mozilla/5.0';
-      const extraHeaders = `--http-referrer=${referer};--http-user-agent=${ua}`;
-      const intentUri = `intent:${target}#Intent;package=org.videolan.vlc;type=video/*;S.extra_headers=${encodeURIComponent(extraHeaders)};end`;
+      // In Android VLC, official builds do not parse intent headers. Proxied streams work without 403.
+      const extraHeaders = [
+        referer ? `--http-referrer=${referer}` : null,
+        ua ? `--http-user-agent=${ua}` : null,
+        cookie ? `--http-cookie=${cookie}` : null,
+      ].filter(Boolean).join(';');
+
+      const intentUri = `intent:${target}#Intent;package=org.videolan.vlc;type=video/*;${extraHeaders ? `S.extra_headers=${encodeURIComponent(extraHeaders)};` : ''}end`;
       window.location.href = intentUri;
     } else if (isIOS) {
       window.location.href = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(target)}`;
     } else {
       try {
         let m3u = `#EXTM3U\n#EXTINF:-1,${details?.title || 'Moviebox Stream'}\n`;
-        if (headers['User-Agent']) m3u += `#EXTVLCOPT:http-user-agent=${headers['User-Agent']}\n`;
-        if (headers['Referer']) m3u += `#EXTVLCOPT:http-referrer=${headers['Referer']}\n`;
+        if (!isProxy) {
+          if (ua) m3u += `#EXTVLCOPT:http-user-agent=${ua}\n`;
+          if (referer) m3u += `#EXTVLCOPT:http-referrer=${referer}\n`;
+          if (cookie) m3u += `#EXTVLCOPT:http-cookie=${cookie}\n`;
+        }
         m3u += `${target}\n`;
         const blob = new Blob([m3u], { type: 'audio/x-mpegurl;charset=utf-8' });
         const blobUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = blobUrl;
-        a.download = `${(details?.title || 'stream').replace(/[^a-zA-Z0-9]/g, '_')}_vlc.m3u`;
+        a.download = `${(details?.title || 'stream').replace(/[^a-zA-Z0-9_-]/g, '_')}_vlc.m3u`;
         document.body.appendChild(a);
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
-        toastSuccess('Downloaded VLC Playlist (.m3u)!');
+        toastSuccess('Downloaded VLC Playlist (.m3u) with stream headers!');
       } catch (e) {
         window.location.href = `vlc://${target}`;
       }
@@ -235,13 +246,35 @@ export const MovieboxDetail = () => {
     }
     const isAndroid = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent);
     if (!isAndroid) {
-      toastWarning('MX Player intents are only supported on Android. Use VLC on Desktop.');
+      toastWarning('MX Player intents are only supported on Android. For desktop, use VLC or PotPlayer.');
       return;
     }
-    const referer = headers['Referer'] || 'https://sflix.film/';
-    const ua = headers['User-Agent'] || 'Mozilla/5.0';
-    const hStr = `Referer:${encodeURIComponent(referer)}|User-Agent:${encodeURIComponent(ua)}`;
-    window.location.href = `intent:${target}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;S.headers=${hStr};end`;
+
+    const referer = headers['Referer'] || '';
+    const ua = headers['User-Agent'] || 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36';
+    const cookie = headers['Cookie'] || '';
+
+    // MX Player pipe syntax <url>|Referer=...&User-Agent=...&Cookie=...
+    let targetWithHeaders = target;
+    if (!isProxy) {
+      const parts = [];
+      if (referer) parts.push(`Referer=${encodeURIComponent(referer)}`);
+      if (ua) parts.push(`User-Agent=${encodeURIComponent(ua)}`);
+      if (cookie) parts.push(`Cookie=${encodeURIComponent(cookie)}`);
+      if (parts.length > 0) {
+        targetWithHeaders = `${target}|${parts.join('&')}`;
+      }
+    }
+
+    const extraHeadersLines = [
+      referer ? `Referer: ${referer}` : null,
+      ua ? `User-Agent: ${ua}` : null,
+      cookie ? `Cookie: ${cookie}` : null,
+    ].filter(Boolean).join('\n');
+
+    const cleanTitle = (details?.title || 'Moviebox Stream').replace(/[^\w\s.-]/gi, '').trim();
+    const intentUri = `intent:${targetWithHeaders}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;S.title=${encodeURIComponent(cleanTitle)};${extraHeadersLines ? `S.headers=${encodeURIComponent(extraHeadersLines)};` : ''}end`;
+    window.location.href = intentUri;
   };
 
   const handleCopyLink = (type) => {
