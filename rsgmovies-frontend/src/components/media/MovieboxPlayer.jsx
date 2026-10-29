@@ -837,82 +837,79 @@ export const MovieboxPlayer = ({
             </div>
 
             <div className="space-y-1.5">
-              {/* MX Player Direct (Pipe Headers) */}
-              <button
-                onClick={() => {
-                  handleOpenMx(false);
-                  setActiveMenu(null);
-                }}
-                className="w-full text-left px-3 py-2.5 rounded-xl bg-sky-600/20 text-sky-200 hover:bg-sky-600/30 flex items-center justify-between text-xs font-medium border border-sky-500/20"
-              >
-                <div>
-                  <span className="block font-bold text-white text-xs">MX Player (Direct + Headers)</span>
-                  <span className="text-[10px] text-sky-300/80">Pipe headers intent for Android</span>
-                </div>
-                <ExternalLink size={13} className="text-sky-400 flex-shrink-0" />
-              </button>
-
-              {/* VLC Player Proxied (Recommended for Mobile - No 403) */}
-              <button
-                onClick={() => {
-                  handleOpenVlc(true);
-                  setActiveMenu(null);
-                }}
-                className="w-full text-left px-3 py-2.5 rounded-xl bg-amber-600/20 text-amber-200 hover:bg-amber-600/30 flex items-center justify-between text-xs font-medium border border-amber-500/30"
-              >
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-white text-xs">VLC Player (Proxy)</span>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/30 text-amber-300 font-semibold uppercase">Mobile Fix</span>
-                  </div>
-                  <span className="text-[10px] text-amber-300/80">Server-injected headers, fixes 403 errors</span>
-                </div>
-                <ExternalLink size={13} className="text-amber-400 flex-shrink-0" />
-              </button>
-
-              {/* VLC Player Direct */}
+              {/* 1. VLC Player Direct */}
               <button
                 onClick={() => {
                   handleOpenVlc(false);
                   setActiveMenu(null);
                 }}
-                className="w-full text-left px-3 py-2 rounded-xl bg-orange-600/20 text-orange-200 hover:bg-orange-600/30 flex items-center justify-between text-xs font-medium"
+                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-orange-600/20 text-orange-200 hover:bg-orange-600/30 flex items-center justify-between text-xs font-medium border border-orange-500/20 transition"
               >
                 <div>
-                  <span className="block font-semibold text-white text-xs">VLC Player (Direct Stream)</span>
-                  <span className="text-[10px] text-orange-300/70">Direct intent (Mobile) / M3U (Desktop)</span>
+                  <span className="block font-semibold text-white text-xs">VLC Player (Direct)</span>
+                  <span className="text-[10px] text-orange-300/70 hidden sm:block">Direct intent (Mobile) / M3U (Desktop)</span>
                 </div>
                 <ExternalLink size={13} className="text-orange-400 flex-shrink-0" />
               </button>
 
-              {/* MX Player Proxied */}
+              {/* 2. MX Player Direct */}
+              <button
+                onClick={() => {
+                  handleOpenMx(false);
+                  setActiveMenu(null);
+                }}
+                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-sky-600/20 text-sky-200 hover:bg-sky-600/30 flex items-center justify-between text-xs font-medium border border-sky-500/20 transition"
+              >
+                <div>
+                  <span className="block font-semibold text-white text-xs">MX Player (Direct)</span>
+                  <span className="text-[10px] text-sky-300/80 hidden sm:block">Direct stream with injected headers</span>
+                </div>
+                <ExternalLink size={13} className="text-sky-400 flex-shrink-0" />
+              </button>
+
+              {/* 3. VLC Player Proxied */}
+              <button
+                onClick={() => {
+                  handleOpenVlc(true);
+                  setActiveMenu(null);
+                }}
+                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-amber-600/20 text-amber-200 hover:bg-amber-600/30 flex items-center justify-between text-xs font-medium border border-amber-500/30 transition"
+              >
+                <div>
+                  <span className="block font-semibold text-white text-xs">VLC Player (Proxy)</span>
+                  <span className="text-[10px] text-amber-300/80 hidden sm:block">Server-injected proxy stream</span>
+                </div>
+                <ExternalLink size={13} className="text-amber-400 flex-shrink-0" />
+              </button>
+
+              {/* 4. MX Player Proxied */}
               <button
                 onClick={() => {
                   handleOpenMx(true);
                   setActiveMenu(null);
                 }}
-                className="w-full text-left px-3 py-2 rounded-xl bg-blue-600/20 text-blue-200 hover:bg-blue-600/30 flex items-center justify-between text-xs font-medium"
+                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-blue-600/20 text-blue-200 hover:bg-blue-600/30 flex items-center justify-between text-xs font-medium border border-blue-500/20 transition"
               >
                 <div>
                   <span className="block font-semibold text-white text-xs">MX Player (Proxy)</span>
-                  <span className="text-[10px] text-blue-300/70">Proxied stream playback</span>
+                  <span className="text-[10px] text-blue-300/70 hidden sm:block">Proxied stream playback</span>
                 </div>
                 <ExternalLink size={13} className="text-blue-400 flex-shrink-0" />
               </button>
 
-              {/* Download VLC M3U Playlist */}
+              {/* 5. Download VLC M3U Playlist */}
               <button
                 onClick={() => {
                   handleDownloadM3u(false);
                   setActiveMenu(null);
                 }}
-                className="w-full text-left px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-200 flex items-center justify-between text-xs font-medium border border-white/5"
+                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-200 flex items-center justify-between text-xs font-medium border border-white/5 transition"
               >
                 <div className="flex items-center gap-2">
                   <FileDown size={14} className="text-amber-400 flex-shrink-0" />
                   <div>
                     <span className="block text-white text-xs">Download VLC Playlist (.m3u)</span>
-                    <span className="text-[10px] text-gray-400">Includes Cookie, Referer & User-Agent</span>
+                    <span className="text-[10px] text-gray-400 hidden sm:block">Includes Cookie, Referer & User-Agent</span>
                   </div>
                 </div>
               </button>
@@ -967,14 +964,19 @@ export const MovieboxPlayer = ({
                       onStreamChange?.(st);
                       setActiveMenu(null);
                     }}
-                    className={`w-full text-left px-3 py-2.5 rounded-xl text-xs flex items-center justify-between transition ${
+                    className={`w-full text-left px-3 py-2 sm:py-2.5 rounded-xl text-xs flex items-center justify-between transition ${
                       isSelected
                         ? 'bg-amber-500 text-black font-bold'
                         : 'text-gray-300 hover:bg-white/10'
                     }`}
                   >
-                    <span>{st.quality || st.resolution_tag || `Stream ${i + 1}`}</span>
-                    <span className="text-[10px] opacity-80 uppercase">
+                    <div>
+                      <span className="block font-semibold">{st.quality || st.resolution_tag || `Stream ${i + 1}`}</span>
+                      <span className={`text-[10px] ${isSelected ? 'text-black/80' : 'text-gray-400'} hidden sm:block`}>
+                        {st.source || st.codec || st.format || 'Standard CDN'}
+                      </span>
+                    </div>
+                    <span className="text-[10px] opacity-80 uppercase font-mono">
                       {st.format} {st.size_mb ? `(${st.size_mb}MB)` : ''}
                     </span>
                   </button>

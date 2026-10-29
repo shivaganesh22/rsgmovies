@@ -293,16 +293,34 @@ export const OpenFolderPage = () => {
                         : 'flex-row items-center justify-between gap-4'
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div
+                      onClick={() => {
+                        if (isVideo) {
+                          navigate(`/player/file/${fileId}`);
+                        }
+                      }}
+                      className={`flex items-center gap-3 min-w-0 flex-1 ${
+                        isVideo ? 'cursor-pointer group/title' : ''
+                      }`}
+                      title={isVideo ? 'Click to play video' : file.name}
+                    >
                       <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                          isVideo ? 'bg-blue-500/10 text-blue-400' : 'bg-surface-elevated text-gray-400'
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform ${
+                          isVideo
+                            ? 'bg-blue-500/10 text-blue-400 group-hover:scale-105 group-hover:bg-blue-500/20'
+                            : 'bg-surface-elevated text-gray-400'
                         }`}
                       >
                         {isVideo ? <Film size={20} /> : <File size={20} />}
                       </div>
                       <div className="min-w-0">
-                        <h4 className="text-sm font-semibold text-white truncate">{file.name}</h4>
+                        <h4
+                          className={`text-sm font-semibold text-white truncate transition-colors ${
+                            isVideo ? 'group-hover/title:text-blue-400 hover:text-blue-400' : ''
+                          }`}
+                        >
+                          {file.name}
+                        </h4>
                         <p className="text-xs text-gray-500">
                           {formatBytes(file.size)}
                           {(file.last_update || file.created) && (

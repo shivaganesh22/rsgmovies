@@ -31,6 +31,7 @@ const MovieboxDetail = lazy(() => import('./views/moviebox/MovieboxDetail'));
 const FilesPage = lazy(() => import('./views/files/FilesPage'));
 const OpenFolderPage = lazy(() => import('./views/files/OpenFolderPage'));
 const PlayerPage = lazy(() => import('./views/files/PlayerPage'));
+const AdvancedPlayerPage = lazy(() => import('./views/files/AdvancedPlayerPage'));
 
 // Live TV, Search & Scrapers
 const LiveTVPage = lazy(() => import('./views/livetv/LiveTVPage'));
@@ -224,6 +225,14 @@ export const AppRoutes = () => {
             element={
               <Suspense fallback={<PageLoader />}>
                 <OpenFolderPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/player/advanced/:mode/:id"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <AdvancedPlayerPage />
               </Suspense>
             }
           />
