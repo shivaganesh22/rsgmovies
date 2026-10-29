@@ -343,6 +343,14 @@ class MovieBoxEngine:
                             if str(q) in res_str:
                                 quality_val = q
                                 break
+                        cookie = st.get("signCookie")
+                        stream_headers = {
+                            "User-Agent": WEB_USER_AGENT,
+                            "Referer": f"{domain}/",
+                            "Origin": domain,
+                        }
+                        if cookie:
+                            stream_headers["Cookie"] = cookie
                         streams.append({
                             "source": f"mp4",
                             "format": st.get("format", "MP4"),
@@ -353,11 +361,8 @@ class MovieBoxEngine:
                             "size_mb": round(size_mb, 1),
                             "codec": st.get("codecName"),
                             "duration_sec": st.get("duration"),
-                            "headers": {
-                                "User-Agent": "Mozilla/5.0",
-                                "Referer": f"{domain}/",
-                                "Origin": domain,
-                            }
+                            "cookie": cookie,
+                            "headers": stream_headers,
                         })
 
                     for d in dash_items:
@@ -368,6 +373,13 @@ class MovieBoxEngine:
                         if final_url and final_url not in seen_urls:
                             seen_urls.add(final_url)
                             res_tag = str(d.get("resolutions", "adaptive"))
+                            dash_headers = {
+                                "User-Agent": WEB_USER_AGENT,
+                                "Referer": f"{domain}/",
+                                "Origin": domain,
+                            }
+                            if cookie:
+                                dash_headers["Cookie"] = cookie
                             streams.append({
                                 "source": f"dash",
                                 "format": "DASH",
@@ -379,11 +391,7 @@ class MovieBoxEngine:
                                 "codec": "hevc/h264",
                                 "duration_sec": None,
                                 "cookie": cookie,
-                                "headers": {
-                                    "User-Agent": "Mozilla/5.0",
-                                    "Referer": f"{domain}/",
-                                    "Origin": domain,
-                                }
+                                "headers": dash_headers,
                             })
                     break
             except Exception:
@@ -410,6 +418,12 @@ class MovieBoxEngine:
                         break
                 size_bytes = int(st.get("size") or 0)
                 size_mb = size_bytes / (1024 * 1024) if size_bytes else 0
+                native_headers = {
+                    "User-Agent": MODERN_USER_AGENT,
+                    "Referer": "https://api3.aoneroom.com/",
+                }
+                if cookie:
+                    native_headers["Cookie"] = cookie
                 streams.append({
                     "source": "Mobile Native CDN",
                     "format": "DASH" if (policy_url or ".mpd" in final_url) else st.get("format", "MP4"),
@@ -420,10 +434,8 @@ class MovieBoxEngine:
                     "size_mb": round(size_mb, 1),
                     "codec": st.get("codecName"),
                     "duration_sec": st.get("duration"),
-                    "headers": {
-                        "User-Agent": MODERN_USER_AGENT,
-                        "Referer": "https://api3.aoneroom.com/",
-                    }
+                    "cookie": cookie,
+                    "headers": native_headers,
                 })
         except Exception:
             pass
