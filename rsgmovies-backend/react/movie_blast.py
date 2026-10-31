@@ -12,18 +12,18 @@ from activity.services import log_activity_event
 logger = logging.getLogger(__name__)
 
 def test(request):
-
-    url = "https://panel.hippitunes.pro/android/getTrending"
-
+    url = "https://net52.cc/mobile/home"
+    params = {'app': '1'}
     headers = {
-    'User-Agent': "Dalvik/2.1.0 (Linux; U; Android 13; GM1917 Build/TKQ1.221013.002)",
-    'Connection': "Keep-Alive",
-    'Accept-Encoding': "gzip",
-    'x-api-key': "kC7V1f8QRaZyvYnh"
+        'User-Agent': "Mozilla/5.0 (Linux; Android 13; GM1917 Build/TKQ1.221013.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/151.0.7922.199 Mobile Safari/537.36 /OS.Gatu v3.1",
+        'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        'accept-language': "en-IN,en-US;q=0.9,en;q=0.8"
     }
 
-    response = requests.get(url, headers=headers)
-    return JsonResponse({"status": "success", "data": response.json()})
+    session = requests.Session()
+    response = session.get(url, params=params, headers=headers)
+    html_data = response.text
+    return JsonResponse({"status": "success", "data": html_data})
 
 def _sort_mkv_streams(videos):
     """Prefer direct MKV streams so normal playback does not consume proxy bandwidth."""
