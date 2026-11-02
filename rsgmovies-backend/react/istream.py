@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 KEY = bytes.fromhex(os.getenv("ISTREAM_AES_KEY", "b35e6555ed48c0ade48c10bc1d4030cf9cc5768bff444a959048ce9a228b5746"))
 BASE_URL = os.getenv("ISTREAM_PANEL_URL", "https://panel.hippitunes.pro/android/")
 STREAM_URL_PREFIX = os.getenv("ISTREAM_STREAM_URL_PREFIX", "http://exposeworld.art/oxx/ox.php?id=")
-ISTREAM_VPS_PROXY = os.getenv("ISTREAM_VPS_PROXY", "http://129.225.111.76:5000").rstrip("/")
+ISTREAM_VPS_PROXY = os.getenv("ISTREAM_VPS_PROXY", "http://129.225.115.187:5000").rstrip("/")
 HEADERS = {
     "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 13; GM1917 Build/TKQ1.221013.002)",
     "Connection": "Keep-Alive",

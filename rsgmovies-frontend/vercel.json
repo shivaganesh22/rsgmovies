@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/stream-proxy/(.*)",
-      "destination": "http://129.225.111.76:5000/$1"
+      "destination": "http://129.225.115.187:5000/$1"
     },
     {
       "source": "/stream-proxy",
-      "destination": "http://129.225.111.76:5000"
+      "destination": "http://129.225.115.187:5000"
     },
     {
       "source": "/api/(.*)",

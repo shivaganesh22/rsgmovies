@@ -55,6 +55,7 @@ export const OpenFolderPage = () => {
   const files = data?.files || [];
   const subfolders = data?.folders || [];
   const folderName = data?.name || 'Folder';
+  const folderSize = data?.size ?? files.reduce((acc, f) => acc + (f.size || 0), 0);
 
   // Delete Mutation
   const deleteMutation = useMutation({
@@ -151,27 +152,35 @@ export const OpenFolderPage = () => {
     <div className="space-y-8 animate-fade-in pb-16">
       {/* Breadcrumb & Navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-panel p-5 rounded-3xl border border-white/10 shadow-xl bg-surface">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => navigate('/files')}
-            className="p-2 rounded-xl bg-surface-elevated hover:bg-gray-700 text-gray-300 hover:text-white transition border border-white/5"
+            className="p-2 rounded-xl bg-surface-elevated hover:bg-gray-700 text-gray-300 hover:text-white transition border border-white/5 flex-shrink-0"
             title="Back to Files"
           >
             <ArrowLeft size={18} />
           </button>
-          <div>
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              <Link to="/files" className="hover:text-white transition">Root Files</Link>
-              <span>/</span>
-              <span className="text-white font-medium">{folderName}</span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-base sm:text-lg font-bold font-display text-white">
+              <Link to="/files" className="text-gray-400 hover:text-white transition font-medium flex-shrink-0">
+                Root Files
+              </Link>
+              <span className="text-gray-600 font-normal">/</span>
+              <span className="text-white truncate">{folderName}</span>
             </div>
-            <h1 className="text-xl font-bold font-display text-white mt-0.5">
-              {folderName}
-            </h1>
+            {(folderSize > 0 || data?.last_update || data?.created) && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                {folderSize > 0 && <span className="font-semibold text-gray-300">{formatBytes(folderSize)}</span>}
+                {folderSize > 0 && (data?.last_update || data?.created) && <span> • </span>}
+                {(data?.last_update || data?.created) && (
+                  <span>{formatDateTimeIST(data.last_update || data.created)}</span>
+                )}
+              </p>
+            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {/* View Mode Toggle */}
           <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-gray-700">
             <button
@@ -254,11 +263,14 @@ export const OpenFolderPage = () => {
                         <h4 className="text-sm font-semibold text-white truncate hover:text-blue-400">
                           {folder.name}
                         </h4>
-                        {(folder.last_update || folder.created) && (
-                          <p className="text-[11px] text-gray-500 mt-0.5">
-                            {formatDateTimeIST(folder.last_update || folder.created)}
-                          </p>
-                        )}
+                        <p className="text-[11px] text-gray-500 mt-0.5">
+                          {folder.size !== undefined && folder.size !== null && (
+                            <span className="text-gray-400 font-medium">{formatBytes(folder.size)} • </span>
+                          )}
+                          {(folder.last_update || folder.created) && (
+                            <span>{formatDateTimeIST(folder.last_update || folder.created)}</span>
+                          )}
+                        </p>
                       </div>
                     </Link>
                   </div>

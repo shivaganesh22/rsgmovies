@@ -451,6 +451,9 @@ export const FilesPage = () => {
                           {folder.name}
                         </h4>
                         <p className="text-[11px] text-gray-500">
+                          {folder.size !== undefined && folder.size !== null && (
+                            <span className="text-gray-400 font-medium">{formatBytes(folder.size)} • </span>
+                          )}
                           {formatDateTimeIST(folder.last_update || folder.created) || 'Folder'}
                         </p>
                       </div>

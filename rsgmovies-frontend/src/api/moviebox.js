@@ -8,7 +8,7 @@ export const getMovieboxProxyBase = () => {
   if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
     return `${window.location.origin}/stream-proxy`;
   }
-  return 'http://129.225.111.76:5000';
+  return 'http://129.225.115.187:5000';
 };
 
 export const MOVIEBOX_PROXY_BASE = getMovieboxProxyBase();
@@ -33,7 +33,7 @@ export const encodeHeaders = (headersObj) => {
 export const getProxiedStreamUrl = (targetUrl, headers, proxyBase) => {
   if (!targetUrl) return '';
   let base = (proxyBase || getMovieboxProxyBase()).replace(/\/+$/, '');
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.111.76:5000')) {
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.115.187:5000')) {
     base = `${window.location.origin}/stream-proxy`;
   }
   const encodedTarget = encodeURIComponent(targetUrl);
@@ -47,7 +47,7 @@ export const getProxiedStreamUrl = (targetUrl, headers, proxyBase) => {
 export const getProxiedDownloadUrl = (targetUrl, headers, filename = '', proxyBase) => {
   if (!targetUrl) return '';
   let base = (proxyBase || getMovieboxProxyBase()).replace(/\/+$/, '');
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.111.76:5000')) {
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.115.187:5000')) {
     base = `${window.location.origin}/stream-proxy`;
   }
   const encodedTarget = encodeURIComponent(targetUrl);

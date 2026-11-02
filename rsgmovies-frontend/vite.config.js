@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/stream-proxy': {
-        target: 'http://129.225.111.76:5000',
+        target: 'http://129.225.115.187:5000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/stream-proxy/, ''),
       },

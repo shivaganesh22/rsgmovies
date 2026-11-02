@@ -51,6 +51,7 @@ export const VideoPlayer = ({
   const hlsRef = useRef(null);
   const clickTimerRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
+  const touchStartControlsVisibleRef = useRef(false);
   const doubleClickCountRef = useRef(0);
   const lastSaveRef = useRef(0);
   const initialSeekDoneRef = useRef(false);
@@ -284,17 +285,27 @@ export const VideoPlayer = ({
     };
   }, [safeSrc, updateDetectedTracks]);
 
-  // Auto-hide controls effect whenever showControls is true and video is playing
-  useEffect(() => {
+  // Auto-hide controls effect with configurable timeout (6s fullscreen, 5s windowed)
+  const resetControlsTimeout = useCallback(() => {
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
       controlsTimeoutRef.current = null;
     }
 
-    if (showControls && isPlaying && !activeMenu) {
+    if (isPlaying && !activeMenu) {
+      const timeoutMs = isFullscreen ? 6000 : 5000;
       controlsTimeoutRef.current = setTimeout(() => {
         setShowControls(false);
-      }, 3000);
+      }, timeoutMs);
+    }
+  }, [isPlaying, activeMenu, isFullscreen]);
+
+  useEffect(() => {
+    if (showControls) {
+      resetControlsTimeout();
+    } else if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+      controlsTimeoutRef.current = null;
     }
 
     return () => {
@@ -302,11 +313,19 @@ export const VideoPlayer = ({
         clearTimeout(controlsTimeoutRef.current);
       }
     };
-  }, [showControls, isPlaying, activeMenu]);
+  }, [showControls, resetControlsTimeout]);
 
-  const handleUserActivity = () => {
+  const handleUserActivity = useCallback(() => {
     setShowControls(true);
-  };
+    resetControlsTimeout();
+  }, [resetControlsTimeout]);
+
+  const handlePointerDown = useCallback(() => {
+    // Record if controls were ALREADY visible before this pointer/touch began
+    touchStartControlsVisibleRef.current = showControls;
+    setShowControls(true);
+    resetControlsTimeout();
+  }, [showControls, resetControlsTimeout]);
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
@@ -430,12 +449,13 @@ export const VideoPlayer = ({
 
     if (doubleClickCountRef.current === 1) {
       clickTimerRef.current = setTimeout(() => {
-        if (clickRatio >= 0.30 && clickRatio <= 0.70) {
-          // Center: Single tap pause or resume
-          togglePlay();
+        if (!touchStartControlsVisibleRef.current) {
+          // Controls were hidden when touch/click began -> Reveal them and keep visible for full autohide duration
+          setShowControls(true);
+          resetControlsTimeout();
         } else {
-          // Left or Right: Single tap show or hide controls
-          setShowControls((prev) => !prev);
+          // Controls were already visible -> Single tap anywhere on screen dismisses controls
+          setShowControls(false);
         }
         doubleClickCountRef.current = 0;
       }, 250);
@@ -642,9 +662,10 @@ export const VideoPlayer = ({
     <div
       ref={containerRef}
       onMouseMove={handleUserActivity}
-      onTouchStart={handleUserActivity}
+      onTouchStart={handlePointerDown}
       onTouchMove={handleUserActivity}
-      onMouseLeave={() => isPlaying && !activeMenu && setShowControls(false)}
+      onPointerDown={handlePointerDown}
+      onMouseLeave={() => !isFullscreen && isPlaying && !activeMenu && setShowControls(false)}
       className={`relative w-full aspect-video bg-black rounded-2xl ${activeMenu ? 'overflow-visible' : 'overflow-hidden'} shadow-2xl group select-none border border-white/5`}
     >
       {/* Video Element */}
@@ -748,6 +769,7 @@ export const VideoPlayer = ({
 
       {/* Screen Clickable Area with Double-Tap Detection */}
       <div
+        onPointerDown={handlePointerDown}
         onClick={handleScreenClick}
         className="absolute inset-0 z-0 cursor-pointer"
       />

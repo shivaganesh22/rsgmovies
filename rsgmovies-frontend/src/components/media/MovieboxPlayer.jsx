@@ -43,6 +43,7 @@ export const MovieboxPlayer = ({
   const clickTimerRef = useRef(null);
   const doubleClickCountRef = useRef(0);
   const controlsTimeoutRef = useRef(null);
+  const touchStartControlsVisibleRef = useRef(false);
 
   // Playback state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -233,17 +234,27 @@ export const MovieboxPlayer = ({
     };
   }, []);
 
-  // Auto-hide controls effect
-  useEffect(() => {
+  // Auto-hide controls with configurable timeout (6s in fullscreen, 5s windowed)
+  const resetControlsTimeout = useCallback(() => {
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
       controlsTimeoutRef.current = null;
     }
 
-    if (showControls && isPlaying && !activeMenu) {
+    if (isPlaying && !activeMenu) {
+      const timeoutMs = isFullscreen ? 6000 : 5000;
       controlsTimeoutRef.current = setTimeout(() => {
         setShowControls(false);
-      }, 3500);
+      }, timeoutMs);
+    }
+  }, [isPlaying, activeMenu, isFullscreen]);
+
+  useEffect(() => {
+    if (showControls) {
+      resetControlsTimeout();
+    } else if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+      controlsTimeoutRef.current = null;
     }
 
     return () => {
@@ -251,11 +262,19 @@ export const MovieboxPlayer = ({
         clearTimeout(controlsTimeoutRef.current);
       }
     };
-  }, [showControls, isPlaying, activeMenu]);
+  }, [showControls, resetControlsTimeout]);
 
-  const handleUserActivity = () => {
+  const handleUserActivity = useCallback(() => {
     setShowControls(true);
-  };
+    resetControlsTimeout();
+  }, [resetControlsTimeout]);
+
+  const handlePointerDown = useCallback(() => {
+    // Record if controls were ALREADY visible before this pointer/touch began
+    touchStartControlsVisibleRef.current = showControls;
+    setShowControls(true);
+    resetControlsTimeout();
+  }, [showControls, resetControlsTimeout]);
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
@@ -438,8 +457,8 @@ export const MovieboxPlayer = ({
   }, [isDraggingSeek, getSeekTimeFromEvent, seek]);
 
   // Screen Click & Gesture Handling (Movieblast feature clone):
-  // 1. Single tap center (30% - 70%) -> Play / Pause
-  // 2. Single tap edges (< 30% or > 70%) -> Toggle controls visibility
+  // 1. Single tap when controls hidden -> Reveal controls and reset autohide timer
+  // 2. Single tap when controls visible -> Dismiss controls
   // 3. Double tap left (< 30%) -> Seek backward 10s with ripple
   // 4. Double tap right (> 70%) -> Seek forward 10s with ripple
   // 5. Double tap center (30% - 70%) -> Fullscreen landscape toggle
@@ -458,10 +477,13 @@ export const MovieboxPlayer = ({
 
     if (doubleClickCountRef.current === 1) {
       clickTimerRef.current = setTimeout(() => {
-        if (clickRatio >= 0.30 && clickRatio <= 0.70) {
-          togglePlay();
+        if (!touchStartControlsVisibleRef.current) {
+          // Controls were hidden when touch/click began -> Reveal them and keep visible for full autohide duration
+          setShowControls(true);
+          resetControlsTimeout();
         } else {
-          setShowControls((prev) => !prev);
+          // Controls were already visible -> Single tap anywhere on screen toggles/dismisses them
+          setShowControls(false);
         }
         doubleClickCountRef.current = 0;
       }, 250);
@@ -716,9 +738,10 @@ export const MovieboxPlayer = ({
     <div
       ref={containerRef}
       onMouseMove={handleUserActivity}
-      onTouchStart={handleUserActivity}
+      onTouchStart={handlePointerDown}
       onTouchMove={handleUserActivity}
-      onMouseLeave={() => isPlaying && !activeMenu && setShowControls(false)}
+      onPointerDown={handlePointerDown}
+      onMouseLeave={() => !isFullscreen && isPlaying && !activeMenu && setShowControls(false)}
       className={`relative w-full ${
         isFullscreen
           ? 'fixed inset-0 z-[9999] rounded-none aspect-auto w-screen h-screen'
@@ -735,6 +758,7 @@ export const MovieboxPlayer = ({
 
       {/* Screen Click & Double-Tap Area */}
       <div
+        onPointerDown={handlePointerDown}
         onClick={handleScreenClick}
         className="absolute inset-0 z-0 cursor-pointer"
       />

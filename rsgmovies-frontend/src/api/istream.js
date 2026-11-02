@@ -10,7 +10,7 @@ export const getIStreamProxyBase = () => {
   if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
     return `${window.location.origin}/stream-proxy`;
   }
-  return 'http://129.225.111.76:5000';
+  return 'http://129.225.115.187:5000';
 };
 
 export const ISTREAM_VPS_PROXY = getIStreamProxyBase();
@@ -45,7 +45,7 @@ export const getIStreamVpsProxyUrl = (videoId, proxyBase) => {
   const sourceUrl = resolveIStreamSourceUrl(videoId);
   if (!sourceUrl) return '';
   let base = (proxyBase || getIStreamProxyBase()).replace(/\/+$/, '');
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.111.76:5000')) {
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://129.225.115.187:5000')) {
     base = `${window.location.origin}/stream-proxy`;
   }
   const headers = {
@@ -214,7 +214,7 @@ export const istreamApi = {
 
   getM3uUrl(videoId) {
     let vps = (getIStreamProxyBase()).replace(/\/+$/, '');
-    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && vps.startsWith('http://129.225.111.76:5000')) {
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && vps.startsWith('http://129.225.115.187:5000')) {
       vps = `${window.location.origin}/stream-proxy`;
     }
     return `${vps}/istream/playlist.m3u?id=${videoId}`;
