@@ -49,6 +49,7 @@ from react.all_movies import (
 from react.loaderr import youtube, youtube_progress, youtube_info, youtube_stream, media_proxy
 from react import movie_blast
 from react import istream
+from react import netmirror
 
 urlpatterns = [
     # Seedr Files Endpoints (Session Authenticated)
@@ -198,4 +199,24 @@ urlpatterns = [
     path('contact/', contact),
     
     path('test/', movie_blast.test),
+
+    # NetMirror Endpoints
+    path("netmirror/", netmirror.netmirror_index, name="netmirror-index"),
+    path("netmirror/verify", netmirror.netmirror_verify, name="netmirror-verify"),
+    path("netmirror/verify/", netmirror.netmirror_verify),
+    path("netmirror/new-session", netmirror.netmirror_new_session, name="netmirror-new-session"),
+    path("netmirror/new-session/", netmirror.netmirror_new_session),
+    path("netmirror/status", netmirror.netmirror_status, name="netmirror-status"),
+    path("netmirror/status/", netmirror.netmirror_status),
+    path("netmirror/subtitle", netmirror.netmirror_subtitle, name="netmirror-subtitle"),
+    path("netmirror/api/init", netmirror.netmirror_api_init, name="netmirror-api-init"),
+    path("netmirror/mobile/setting.php", netmirror.netmirror_setting),
+    path("netmirror/mobile/hs/setting.php", netmirror.netmirror_setting),
+    path("netmirror/mobile/post.php", netmirror.netmirror_post),
+    path("netmirror/mobile/hs/post.php", netmirror.netmirror_post),
+    path("netmirror/mobile/playlist.php", netmirror.netmirror_playlist),
+    path("netmirror/mobile/hs/playlist.php", netmirror.netmirror_playlist),
+    path("netmirror/mobile/hls/<path:subpath>", netmirror.netmirror_hls),
+    path("netmirror/mobile/hs/hls/<path:subpath>", netmirror.netmirror_hls),
+    path("netmirror/mobile/<path:subpath>", netmirror.netmirror_general_mobile),
 ]

@@ -9,6 +9,7 @@ from django.urls import path, include, re_path
 from django.views.static import serve
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from react.loaderr import media_proxy
+from react import netmirror
 
 urlpatterns = [
     # Static files direct route for serverless / production environments
@@ -37,4 +38,19 @@ urlpatterns = [
 
     # New React Native TV App APIs (QR Auth, Device Session, Config, Updates)
     path('api/tv/', include('tv.urls')),
+
+    # Direct NetMirror Mobile Proxy Routes
+    path("mobile/setting.php", netmirror.netmirror_setting),
+    path("mobile/hs/setting.php", netmirror.netmirror_setting),
+    path("mobile/post.php", netmirror.netmirror_post),
+    path("mobile/hs/post.php", netmirror.netmirror_post),
+    path("mobile/playlist.php", netmirror.netmirror_playlist),
+    path("mobile/hs/playlist.php", netmirror.netmirror_playlist),
+    path("mobile/hls/<path:subpath>", netmirror.netmirror_hls),
+    path("mobile/hs/hls/<path:subpath>", netmirror.netmirror_hls),
+    path("mobile/<path:subpath>", netmirror.netmirror_general_mobile),
+    path("verify", netmirror.netmirror_verify),
+    path("verify/", netmirror.netmirror_verify),
+    path("new-session", netmirror.netmirror_new_session),
+    path("new-session/", netmirror.netmirror_new_session),
 ]

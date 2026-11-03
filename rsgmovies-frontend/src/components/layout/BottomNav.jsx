@@ -197,13 +197,13 @@ export const BottomNav = () => {
             <span>Moviebox</span>
           </NavLink>
 
-          {/* Series */}
+          {/* Netmirror */}
           <NavLink
-            to="/series"
+            to="/netmirror"
             className={({ isActive }) => navItemClass(isActive)}
           >
-            <Tv size={20} className="mb-0.5" />
-            <span>Series</span>
+            <Tv size={20} className="mb-0.5 text-blue-400" />
+            <span>Netmirror</span>
           </NavLink>
 
           {/* Streams (Pop-up sheet) */}

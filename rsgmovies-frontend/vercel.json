@@ -17,6 +17,14 @@
       "destination": "https://rsg-movies.vercel.app/react/$1"
     },
     {
+      "source": "/mobile/(.*)",
+      "destination": "https://rsg-movies.vercel.app/mobile/$1"
+    },
+    {
+      "source": "/mobile",
+      "destination": "https://rsg-movies.vercel.app/mobile"
+    },
+    {
       "source": "/admin/(.*)",
       "destination": "https://rsg-movies.vercel.app/admin/$1"
     },

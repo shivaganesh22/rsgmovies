@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 import os
 import time
 import hmac
@@ -8,9 +9,29 @@ from urllib.parse import urlparse, quote
 from django.http import JsonResponse
 import requests
 from activity.services import log_activity_event
-
+import random,re
 logger = logging.getLogger(__name__)
-
+PROXY_LIST=[
+"45.38.107.97:6014",
+"64.137.96.74:6641",
+"198.23.243.226:6361",
+"38.154.185.97:6370",
+"84.247.60.125:6095",
+"191.96.254.138:6185",
+"198.46.161.42:5092",
+"64.137.10.153:5803",
+"104.164.49.38:7693",
+"23.26.71.145:5628"
+]
+USER="shivaganesh"
+PASS="Shiva123"
+# Step 1: Request initial home page
+chosen_ip = random.choice(PROXY_LIST)
+formatted_proxy = f"http://{USER}:{PASS}@{chosen_ip}"
+proxies = {
+    "http": formatted_proxy,
+    "https": formatted_proxy,
+}
 def test(request):
     url = "https://net52.cc/mobile/home"
     params = {'app': '1'}
@@ -21,9 +42,28 @@ def test(request):
     }
 
     session = requests.Session()
-    response = session.get(url, params=params, headers=headers)
+    response = session.get(url, params=params, headers=headers,proxies=proxies)
     html_data = response.text
-    return JsonResponse({"status": "success", "data": html_data})
+    soup = BeautifulSoup(html_data, 'html.parser')
+    body_tag = soup.find('body')
+
+    # Extract data-addhash dynamically from <body> tag
+    addhash2 = body_tag.get('data-addhash', '') if body_tag else ''
+
+    # Extract JS variables dynamically from script content
+    vsite2_match = re.search(r'var\s+Vsite2\s*=\s*["\']([^"\']+)["\']', html_data)
+    qury_match = re.search(r'var\s+Qury\s*=\s*["\']([^"\']+)["\']', html_data)
+    
+    vsite2 = vsite2_match.group(1) if vsite2_match else "userver"
+    qury = qury_match.group(1) if qury_match else "hee5"
+
+    # Step 3: Reconstruct the JS formula dynamically in Python
+    # JS Formula: Msite + '?' + Qury + '=' + addhash2 + "&a=y&t=" + Math.random()
+    msite = f"https://{vsite2}.net52.cc/"
+    rand_t = random.random()
+
+    final_url = f"{msite}?{qury}={addhash2}&a=y&t={rand_t}"
+    return JsonResponse({"status": "success","url":final_url,"data": html_data})
 
 def _sort_mkv_streams(videos):
     """Prefer direct MKV streams so normal playback does not consume proxy bandwidth."""

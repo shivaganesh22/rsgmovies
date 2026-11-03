@@ -68,6 +68,9 @@ export const Navbar = () => {
               <NavLink to="/moviebox" className={navLinkClass}>
                 Moviebox
               </NavLink>
+              <NavLink to="/netmirror" className={navLinkClass}>
+                Netmirror
+              </NavLink>
               <NavLink to="/files" className={navLinkClass}>
                 Files
               </NavLink>

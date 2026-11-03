@@ -27,6 +27,9 @@ const IStreamViewAll = lazy(() => import('./views/istream/IStreamViewAll'));
 const MovieboxHome = lazy(() => import('./views/moviebox/MovieboxHome'));
 const MovieboxDetail = lazy(() => import('./views/moviebox/MovieboxDetail'));
 
+// NetMirror
+const NetmirrorHome = lazy(() => import('./views/netmirror/NetmirrorHome'));
+
 // Seedr Cloud Files
 const FilesPage = lazy(() => import('./views/files/FilesPage'));
 const OpenFolderPage = lazy(() => import('./views/files/OpenFolderPage'));
@@ -207,6 +210,16 @@ export const AppRoutes = () => {
             element={
               <Suspense fallback={<PageLoader />}>
                 <MovieboxDetail />
+              </Suspense>
+            }
+          />
+
+          {/* NetMirror Route */}
+          <Route
+            path="/netmirror"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <NetmirrorHome />
               </Suspense>
             }
           />
