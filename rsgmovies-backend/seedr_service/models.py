@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from seedr_service.crypto import encrypt_value, decrypt_value
-from auditlog.registry import auditlog
 
 
 class SeedrAccount(models.Model):
@@ -189,13 +188,3 @@ class SeedrAccount(models.Model):
     def device_code(self, raw_code: str):
         self.encrypted_device_code = encrypt_value(raw_code)
 
-
-auditlog.register(
-    SeedrAccount,
-    exclude_fields=[
-        'encrypted_password',
-        'encrypted_access_token',
-        'encrypted_refresh_token',
-        'encrypted_device_code'
-    ]
-)

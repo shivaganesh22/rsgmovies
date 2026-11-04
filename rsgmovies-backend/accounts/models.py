@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from auditlog.registry import auditlog
 
 
 class UserProfile(models.Model):
@@ -84,5 +83,3 @@ class UserProfile(models.Model):
     def is_admin(self) -> bool:
         return self.role == 'Admin' or (self.user and self.user.is_superuser)
 
-
-auditlog.register(UserProfile, exclude_fields=['active_session_key'])

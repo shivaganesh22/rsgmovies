@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'mozilla_django_oidc',
     'drf_spectacular',
-    'auditlog',
 
     # Internal applications
     'core',
@@ -63,7 +62,6 @@ MIDDLEWARE = [
     'core.middleware.MaintenanceModeMiddleware',     # Server-enforced maintenance mode
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'auditlog.middleware.AuditlogMiddleware',
 ]
 
 ROOT_URLCONF = 'seed.urls'

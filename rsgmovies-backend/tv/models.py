@@ -3,7 +3,6 @@ import secrets
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from auditlog.registry import auditlog
 
 
 def generate_secure_token():
@@ -192,6 +191,3 @@ class AppVersionConfig(models.Model):
     def __str__(self):
         return f"{self.platform} v{self.latest_version} (Min: {self.min_supported_version})"
 
-
-auditlog.register(TVDeviceSession, exclude_fields=['session_token'])
-auditlog.register(AppVersionConfig)

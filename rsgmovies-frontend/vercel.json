@@ -13,6 +13,14 @@
       "destination": "https://rsg-movies.vercel.app/api/$1"
     },
     {
+      "source": "/react/moviebox/(.*)",
+      "destination": "https://rsgmovies-moviebox.vercel.app/react/moviebox/$1"
+    },
+    {
+      "source": "/react/moviebox",
+      "destination": "https://rsgmovies-moviebox.vercel.app/react/moviebox"
+    },
+    {
       "source": "/react/(.*)",
       "destination": "https://rsg-movies.vercel.app/react/$1"
     },

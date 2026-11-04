@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from auditlog.registry import auditlog
 
 
 class MaintenanceConfig(models.Model):
@@ -53,5 +52,3 @@ class MaintenanceConfig(models.Model):
         )
         return obj
 
-
-auditlog.register(MaintenanceConfig)

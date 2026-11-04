@@ -1,4 +1,17 @@
+import axios from 'axios';
 import apiClient from './client';
+
+export const MOVIEBOX_API_URL = (import.meta.env.VITE_MOVIEBOX_API_URL || 'https://rsgmovies-moviebox.vercel.app').replace(/\/+$/, '');
+
+const movieboxClient = axios.create({
+  baseURL: MOVIEBOX_API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  timeout: 20000,
+});
 
 // VPS Proxy base URL for Moviebox streams (dynamically HTTPS-aware to prevent blocked:mixed-content)
 export const getMovieboxProxyBase = () => {
@@ -58,28 +71,28 @@ export const getProxiedDownloadUrl = (targetUrl, headers, filename = '', proxyBa
 
 export const movieboxApi = {
   async getHome() {
-    const res = await apiClient.get('/react/moviebox/home/');
+    const res = await movieboxClient.get('/react/moviebox/home/');
     return res.data;
   },
 
   async search(query, page = 1, perPage = 20) {
     if (!query) return [];
-    const res = await apiClient.get(`/react/moviebox/search/?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}`);
+    const res = await movieboxClient.get(`/react/moviebox/search/?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}`);
     return res.data;
   },
 
   async getDetails(subjectId) {
-    const res = await apiClient.get(`/react/moviebox/detail/${subjectId}/`);
+    const res = await movieboxClient.get(`/react/moviebox/detail/${subjectId}/`);
     return res.data;
   },
 
   async getEpisodes(subjectId) {
-    const res = await apiClient.get(`/react/moviebox/episode/${subjectId}/`);
+    const res = await movieboxClient.get(`/react/moviebox/episode/${subjectId}/`);
     return res.data;
   },
 
   async getStreams(subjectId, season = 0, episode = 0) {
-    const res = await apiClient.get(`/react/moviebox/streams/${subjectId}/${season}/${episode}/`);
+    const res = await movieboxClient.get(`/react/moviebox/streams/${subjectId}/${season}/${episode}/`);
     return res.data;
   },
 
