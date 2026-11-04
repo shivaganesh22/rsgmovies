@@ -10,9 +10,13 @@ from urllib.parse import quote, urljoin
 import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.clickjacking import xframe_options_exempt, xframe_options_sameorigin
 from django.views.decorators.csrf import csrf_exempt
+
+from activity.services import log_activity_event
+from react.models import NetmirrorSession
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +24,12 @@ logger = logging.getLogger(__name__)
 DEFAULT_PROXY = "http://shivaganesh:Shiva123@198.23.243.226:6361"
 PROXY_URL = os.getenv("NETMIRROR_PROXY", os.getenv("PROXY_URL", DEFAULT_PROXY))
 BASE_TARGET_DOMAIN = os.getenv("NETMIRROR_DOMAIN", os.getenv("DOMAIN", "https://net52.cc")).rstrip("/")
-STREAM_PROXY_URL = os.getenv("STREAM_PROXY_URL", "http://129.225.115.187:5000/netmirror").rstrip("/")
+
+# HTTPS-safe stream proxy path matching moviebox (/stream-proxy) to prevent blocked:mixed-content
+DEFAULT_STREAM_PROXY = "/stream-proxy/netmirror"
+STREAM_PROXY_URL = os.getenv("STREAM_PROXY_URL", DEFAULT_STREAM_PROXY).rstrip("/")
+if STREAM_PROXY_URL.startswith("http://129.225.115.187:5000"):
+    STREAM_PROXY_URL = "/stream-proxy/netmirror"
 
 PROXIES = {
     "http": PROXY_URL,
@@ -36,48 +45,118 @@ _NETMIRROR_SESSION = {
     "cookie": "",
 }
 
-# Lightweight local cache file to survive process reloads without DB overhead
 SESSION_FILE_PATH = Path("/tmp/netmirror_session.json")
 
 
 def load_session():
-    """Loads session from in-memory cache or fallback file."""
+    """
+    Loads session with multi-layer fallback:
+    1. In-memory dictionary _NETMIRROR_SESSION (fastest)
+    2. Django cache (shared across local threads)
+    3. PostgreSQL NetmirrorSession DB table (permanent persistence across reboots & workers)
+    4. /tmp/ local file fallback
+    """
     global _NETMIRROR_SESSION
-    if not _NETMIRROR_SESSION.get("cookie") and SESSION_FILE_PATH.exists():
+    if _NETMIRROR_SESSION.get("cookie"):
+        return _NETMIRROR_SESSION
+
+    # 1. Try Django Cache
+    try:
+        cached = cache.get("netmirror:session")
+        if isinstance(cached, dict) and cached.get("cookie"):
+            _NETMIRROR_SESSION.update(cached)
+            return _NETMIRROR_SESSION
+    except Exception:
+        pass
+
+    # 2. Try PostgreSQL Database
+    try:
+        obj = NetmirrorSession.objects.filter(user="admin").first()
+        if obj and (obj.cookie_val or obj.hash_val):
+            _NETMIRROR_SESSION["hash"] = obj.hash_val or ""
+            _NETMIRROR_SESSION["cookie"] = obj.cookie_val or ""
+            try:
+                cache.set("netmirror:session", _NETMIRROR_SESSION, timeout=86400)
+            except Exception:
+                pass
+            logger.info("Loaded NetMirror session from DB.")
+            return _NETMIRROR_SESSION
+    except Exception as e:
+        logger.warning(f"Could not load netmirror session from DB: {e}")
+
+    # 3. Fallback to local file
+    if SESSION_FILE_PATH.exists():
         try:
             with open(SESSION_FILE_PATH, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, dict):
                     _NETMIRROR_SESSION.update(data)
-        except Exception as e:
-            logger.warning(f"Could not load netmirror session file: {e}")
+        except Exception:
+            pass
+
     return _NETMIRROR_SESSION
 
 
 def save_session(hash_val=None, cookie_val=None):
-    """Updates in-memory session and persists to lightweight local cache."""
+    """
+    Updates in-memory session and permanently persists to DB, Django cache, and local file.
+    """
     global _NETMIRROR_SESSION
     if hash_val is not None:
         _NETMIRROR_SESSION["hash"] = hash_val
     if cookie_val is not None:
         _NETMIRROR_SESSION["cookie"] = cookie_val
+
+    # Persist to Django Cache
+    try:
+        cache.set("netmirror:session", _NETMIRROR_SESSION, timeout=86400)
+    except Exception:
+        pass
+
+    # Persist to PostgreSQL Database
+    try:
+        NetmirrorSession.objects.update_or_create(
+            user="admin",
+            defaults={
+                "hash_val": _NETMIRROR_SESSION.get("hash", ""),
+                "cookie_val": _NETMIRROR_SESSION.get("cookie", ""),
+            },
+        )
+        
+    except Exception as e:
+        logger.warning(f"Could not persist NetMirror session to DB: {e}")
+
+    # Persist to local file
     try:
         with open(SESSION_FILE_PATH, "w", encoding="utf-8") as f:
             json.dump(_NETMIRROR_SESSION, f)
-    except Exception as e:
-        logger.warning(f"Could not save netmirror session file: {e}")
+    except Exception:
+        pass
+
     return _NETMIRROR_SESSION
 
 
 def clear_session():
-    """Resets session store and removes cache file."""
+    """Resets session store in DB, Django cache, memory, and local file."""
     global _NETMIRROR_SESSION
     _NETMIRROR_SESSION = {"hash": "", "cookie": ""}
+    try:
+        cache.delete("netmirror:session")
+    except Exception:
+        pass
+
+    try:
+        NetmirrorSession.objects.filter(user="admin").update(hash_val="", cookie_val="")
+        logger.info("Cleared NetMirror session in DB.")
+    except Exception as e:
+        logger.warning(f"Could not clear NetMirror session in DB: {e}")
+
     try:
         if SESSION_FILE_PATH.exists():
             SESSION_FILE_PATH.unlink()
     except Exception:
         pass
+
     return _NETMIRROR_SESSION
 
 
@@ -262,12 +341,14 @@ def render_wait_page(message="Initializing session...", status="Connecting...", 
             color: #e2e8f0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start;
+            min-height: 100vh;
             margin: 0;
-            padding: 16px;
-            overflow: hidden;
+            padding: 32px 16px 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
             -webkit-font-smoothing: antialiased;
         }}
         .box {{
@@ -285,7 +366,7 @@ def render_wait_page(message="Initializing session...", status="Connecting...", 
             padding: 24px 22px 20px;
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
             animation: fadeIn 0.25s ease-out;
-            transform: translateY(-50px);
+            margin-top: 10px;
         }}
         @keyframes fadeIn {{
             from {{ opacity: 0; transform: scale(0.97); }}
@@ -716,12 +797,29 @@ def netmirror_setting(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-
 @csrf_exempt
 def netmirror_post(request):
-    """Proxies movie/show metadata and enriches suggested items."""
+    """Proxies movie/show metadata with caching and audit logging."""
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Unauthorized"}, status=401)
+
+    post_id = request.GET.get("id", "")
+    cache_key = f"netmirror:post:{post_id}" if post_id else None
+
+    # Check cache first for GET requests
+    if cache_key and request.method == "GET":
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            if getattr(request, "user", None) and request.user.is_authenticated and isinstance(cached_data, dict):
+                log_activity_event(
+                    event_type="MOVIE_VIEWED",
+                    request=request,
+                    user=request.user,
+                    resource_type=cached_data.get("type", "Movie"),
+                    resource_id="NetMirror",
+                    metadata={"id": post_id, "title":cached_data.get("title", post_id)},
+                )
+            return JsonResponse(cached_data, safe=False)
 
     url = f"{BASE_TARGET_DOMAIN}{request.path}"
     headers = get_api_headers()
@@ -729,10 +827,10 @@ def netmirror_post(request):
 
     try:
         if request.method == "POST":
-            data = request.POST.dict() if request.POST else request.body
+            data_payload = request.POST.dict() if request.POST else request.body
             resp = requests.post(
                 url,
-                data=data,
+                data=data_payload,
                 params=request.GET,
                 headers=headers,
                 cookies=cookies,
@@ -756,6 +854,21 @@ def netmirror_post(request):
                     if isinstance(item, dict) and "id" in item:
                         item["img"] = f"https://imgcdn.kim/nf/v/200/{item['id']}.jpg"
                         item["poster"] = f"https://imgcdn.kim/nf/v/200/{item['id']}.jpg"
+
+            # Cache enriched post metadata for 30 minutes
+            if cache_key and isinstance(data, dict):
+                cache.set(cache_key, data, timeout=1800)
+
+            # Log audit activity
+            if getattr(request, "user", None) and request.user.is_authenticated and isinstance(data, dict):
+                log_activity_event(
+                    event_type="MOVIE_VIEWED",
+                    request=request,
+                    user=request.user,
+                    resource_type=data.get("type", "Movie"),
+                    resource_id="NetMirror",
+                    metadata={"id": post_id, "title": data.get("title", post_id)},
+                )
             return JsonResponse(data, safe=False)
         except Exception:
             return HttpResponse(
@@ -764,17 +877,39 @@ def netmirror_post(request):
                 content_type=resp.headers.get("Content-Type", "application/json"),
             )
     except Exception as e:
+        logger.error(f"Error fetching netmirror post: {e}")
         return JsonResponse({"error": str(e)}, status=500)
 
 
 @csrf_exempt
 def netmirror_playlist(request):
     """
-    Proxies stream playlist metadata.
-    Rewrites stream URLs to dedicated proxy server and defaults to Auto (1080p enabled).
+    Proxies stream playlist metadata with caching and audit logging.
+    Rewrites stream URLs to HTTPS-safe /stream-proxy/netmirror path.
     """
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Unauthorized"}, status=401)
+
+    post_id = request.GET.get("id", "")
+    cache_key = f"netmirror:playlist:{post_id}" if post_id else None
+
+    # Check cache first for GET requests
+    if cache_key and request.method == "GET":
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            if getattr(request, "user", None) and request.user.is_authenticated:
+                title_val = request.GET.get("t", post_id)
+                log_activity_event(
+                    event_type="MOVIE_STREAMING",
+                    request=request,
+                    user=request.user,
+                    resource_type="Stream",
+                    resource_id="NetMirror",
+                    metadata={"id": post_id, "title": title_val},
+                )
+            django_resp = JsonResponse(cached_data, safe=False)
+            django_resp.set_cookie("hd", "on", path="/", max_age=30 * 86400)
+            return django_resp
 
     url = f"{BASE_TARGET_DOMAIN}{request.path}"
     headers = get_api_headers()
@@ -783,10 +918,10 @@ def netmirror_playlist(request):
 
     try:
         if request.method == "POST":
-            data = request.POST.dict() if request.POST else request.body
+            data_payload = request.POST.dict() if request.POST else request.body
             resp = requests.post(
                 url,
-                data=data,
+                data=data_payload,
                 params=request.GET,
                 headers=headers,
                 cookies=cookies,
@@ -818,6 +953,21 @@ def netmirror_playlist(request):
                                 s["default"] = "true"
                             else:
                                 s.pop("default", None)
+
+            if cache_key and isinstance(data, list):
+                cache.set(cache_key, data, timeout=600)  # 10 min cache
+
+            if getattr(request, "user", None) and request.user.is_authenticated:
+                title_val = request.GET.get("t", post_id)
+                log_activity_event(
+                    event_type="MOVIE_STREAMING",
+                    request=request,
+                    user=request.user,
+                    resource_type="Stream",
+                    resource_id="NetMirror",
+                    metadata={"id": post_id, "title": title_val},
+                )
+
             django_resp = JsonResponse(data, safe=False)
             django_resp.set_cookie("hd", "on", path="/", max_age=30 * 86400)
             return django_resp
@@ -830,6 +980,7 @@ def netmirror_playlist(request):
             django_resp.set_cookie("hd", "on", path="/", max_age=30 * 86400)
             return django_resp
     except Exception as e:
+        logger.error(f"Error fetching netmirror playlist: {e}")
         return JsonResponse({"error": str(e)}, status=500)
 
 

@@ -54,3 +54,19 @@ class UserToken(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.key[:8]}..."
+
+class NetmirrorSession(models.Model):
+    """
+    Persists the single shared NetMirror streaming session across all users,
+    Django workers, and restarts to prevent session loss.
+    """
+    user = models.CharField(max_length=100, default="admin", unique=True)
+    hash_val = models.CharField(max_length=255, blank=True, default="")
+    cookie_val = models.CharField(max_length=255, blank=True, default="")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "netmirror_session"
+
+    def __str__(self):
+        return f"NetMirror Session ({self.user}) - {self.updated_at}"
