@@ -239,13 +239,6 @@ export const MovieboxDetail = () => {
           if (referer) m3u += `#EXTVLCOPT:http-referrer=${referer}\n`;
           if (cookie) m3u += `#EXTVLCOPT:http-cookie=${cookie}\n`;
         }
-        if (caps.length > 0) {
-          caps.forEach((c, idx) => {
-            if (c.url) {
-              m3u += `#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",NAME="${c.language || `Sub ${idx + 1}`}",DEFAULT=${idx === 0 ? 'YES' : 'NO'},AUTOSELECT=YES,URI="${c.url}"\n`;
-            }
-          });
-        }
         m3u += `${target}\n`;
         const blob = new Blob([m3u], { type: 'audio/x-mpegurl;charset=utf-8' });
         const blobUrl = URL.createObjectURL(blob);
@@ -256,7 +249,7 @@ export const MovieboxDetail = () => {
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
-        toastSuccess('Downloaded VLC Playlist (.m3u) with stream & subtitle links!');
+        toastSuccess('Downloaded VLC Playlist (.m3u)!');
       } catch (e) {
         window.location.href = `vlc://${target}`;
       }

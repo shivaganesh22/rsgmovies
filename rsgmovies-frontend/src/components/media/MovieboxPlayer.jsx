@@ -734,13 +734,6 @@ export const MovieboxPlayer = ({
         if (referer) m3u += `#EXTVLCOPT:http-referrer=${referer}\n`;
         if (cookie) m3u += `#EXTVLCOPT:http-cookie=${cookie}\n`;
       }
-      if (captions && captions.length > 0) {
-        captions.forEach((c, idx) => {
-          if (c.url) {
-            m3u += `#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",NAME="${c.language || `Sub ${idx + 1}`}",DEFAULT=${idx === 0 ? 'YES' : 'NO'},AUTOSELECT=YES,URI="${c.url}"\n`;
-          }
-        });
-      }
       m3u += `${target}\n`;
 
       const blob = new Blob([m3u], { type: 'audio/x-mpegurl;charset=utf-8' });
@@ -755,6 +748,31 @@ export const MovieboxPlayer = ({
       toastSuccess('Downloaded VLC Playlist (.m3u)!');
     } catch (e) {
       window.location.href = `vlc://${target}`;
+    }
+  };
+
+  const handleDownloadSubtitle = async (cap = null) => {
+    const targetCap = cap || activeCaption || (captions && captions.length > 0 ? captions[0] : null);
+    if (!targetCap?.url) {
+      toastWarning('No subtitle available to download.');
+      return;
+    }
+    try {
+      const resp = await fetch(targetCap.url);
+      const text = await resp.text();
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const cleanTitle = (title || 'subtitle').replace(/[^a-zA-Z0-9_-]/g, '_');
+      a.download = `${cleanTitle}_${targetCap.language || targetCap.code || 'sub'}.srt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      toastSuccess(`Downloaded ${targetCap.language || 'English'} Subtitle (.srt)`);
+    } catch (e) {
+      window.open(targetCap.url, '_blank');
     }
   };
 
@@ -1036,6 +1054,22 @@ export const MovieboxPlayer = ({
                   <span>Download VLC Playlist (.m3u)</span>
                 </div>
               </button>
+
+              {/* 6. Download Subtitles (.srt) if available */}
+              {captions && captions.length > 0 && (
+                <button
+                  onClick={() => {
+                    handleDownloadSubtitle();
+                    setActiveMenu(null);
+                  }}
+                  className="w-full text-left px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-200 flex items-center justify-between text-xs font-semibold border border-white/5 transition"
+                >
+                  <div className="flex items-center gap-2">
+                    <Subtitles size={14} className="text-amber-400 flex-shrink-0" />
+                    <span>Download Subtitles (.srt)</span>
+                  </div>
+                </button>
+              )}
             </div>
 
             <div className="pt-2 border-t border-white/10 space-y-1 text-xs">
@@ -1244,7 +1278,20 @@ export const MovieboxPlayer = ({
                           </span>
                         )}
                       </div>
-                      {isSelected && <Check size={14} className="text-amber-400 flex-shrink-0" />}
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {isSelected && <Check size={14} className="text-amber-400" />}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownloadSubtitle(cap);
+                          }}
+                          className="p-1 rounded-md text-gray-400 hover:text-white hover:bg-white/10"
+                          title="Download SRT"
+                        >
+                          <FileDown size={13} />
+                        </button>
+                      </div>
                     </button>
                   );
                 })}
