@@ -735,13 +735,6 @@ export const MovieboxPlayer = ({
         if (cookie) m3u += `#EXTVLCOPT:http-cookie=${cookie}\n`;
       }
       if (captions && captions.length > 0) {
-        const subUrls = captions.map((c) => c.url).filter(Boolean);
-        if (subUrls.length > 0) {
-          m3u += `#EXTVLCOPT:sub-file=${subUrls[0]}\n`;
-          m3u += `#EXTVLCOPT:input-slave=${subUrls[0]}\n`;
-          m3u += `#EXTVLCOPT:sub-autodetect-file=true\n`;
-          m3u += `#EXTVLCOPT:sub-track=0\n`;
-        }
         captions.forEach((c, idx) => {
           if (c.url) {
             m3u += `#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",NAME="${c.language || `Sub ${idx + 1}`}",DEFAULT=${idx === 0 ? 'YES' : 'NO'},AUTOSELECT=YES,URI="${c.url}"\n`;
@@ -759,7 +752,7 @@ export const MovieboxPlayer = ({
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
-      toastSuccess('Downloaded VLC Playlist (.m3u) with stream & subtitle links!');
+      toastSuccess('Downloaded VLC Playlist (.m3u)!');
     } catch (e) {
       window.location.href = `vlc://${target}`;
     }
@@ -982,36 +975,27 @@ export const MovieboxPlayer = ({
             </div>
 
             <div className="space-y-1.5">
-              {/* 1. VLC Player Proxied (Recommended) */}
+              {/* 1. VLC Player Proxy */}
               <button
                 onClick={() => {
                   handleOpenVlc(true);
                   setActiveMenu(null);
                 }}
-                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-amber-600/20 text-amber-200 hover:bg-amber-600/30 flex items-center justify-between text-xs font-medium border border-amber-500/30 transition"
+                className="w-full text-left px-3 py-2.5 rounded-xl bg-amber-600/20 text-amber-200 hover:bg-amber-600/30 flex items-center justify-between text-xs font-semibold border border-amber-500/30 transition"
               >
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-white text-xs">VLC Player (Proxy)</span>
-                    <span className="text-[10px] bg-amber-500 text-black font-bold px-1.5 rounded">Recommended</span>
-                  </div>
-                  <span className="text-[10px] text-amber-300/80 hidden sm:block">Plays with subtitles • Bypasses CDN blocks</span>
-                </div>
+                <span>VLC (Proxy)</span>
                 <ExternalLink size={13} className="text-amber-400 flex-shrink-0" />
               </button>
 
-              {/* 2. MX Player Proxied */}
+              {/* 2. MX Player Proxy */}
               <button
                 onClick={() => {
                   handleOpenMx(true);
                   setActiveMenu(null);
                 }}
-                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-blue-600/20 text-blue-200 hover:bg-blue-600/30 flex items-center justify-between text-xs font-medium border border-blue-500/20 transition"
+                className="w-full text-left px-3 py-2.5 rounded-xl bg-blue-600/20 text-blue-200 hover:bg-blue-600/30 flex items-center justify-between text-xs font-semibold border border-blue-500/20 transition"
               >
-                <div>
-                  <span className="block font-semibold text-white text-xs">MX Player (Proxy)</span>
-                  <span className="text-[10px] text-blue-300/70 hidden sm:block">Proxied stream playback with subtitles</span>
-                </div>
+                <span>MX Player (Proxy)</span>
                 <ExternalLink size={13} className="text-blue-400 flex-shrink-0" />
               </button>
 
@@ -1021,12 +1005,9 @@ export const MovieboxPlayer = ({
                   handleOpenVlc(false);
                   setActiveMenu(null);
                 }}
-                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-orange-600/20 text-orange-200 hover:bg-orange-600/30 flex items-center justify-between text-xs font-medium border border-orange-500/20 transition"
+                className="w-full text-left px-3 py-2.5 rounded-xl bg-orange-600/20 text-orange-200 hover:bg-orange-600/30 flex items-center justify-between text-xs font-semibold border border-orange-500/20 transition"
               >
-                <div>
-                  <span className="block font-semibold text-white text-xs">VLC Player (Direct)</span>
-                  <span className="text-[10px] text-orange-300/70 hidden sm:block">Direct CDN stream (may require referer)</span>
-                </div>
+                <span>VLC (Direct)</span>
                 <ExternalLink size={13} className="text-orange-400 flex-shrink-0" />
               </button>
 
@@ -1036,29 +1017,23 @@ export const MovieboxPlayer = ({
                   handleOpenMx(false);
                   setActiveMenu(null);
                 }}
-                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-sky-600/20 text-sky-200 hover:bg-sky-600/30 flex items-center justify-between text-xs font-medium border border-sky-500/20 transition"
+                className="w-full text-left px-3 py-2.5 rounded-xl bg-sky-600/20 text-sky-200 hover:bg-sky-600/30 flex items-center justify-between text-xs font-semibold border border-sky-500/20 transition"
               >
-                <div>
-                  <span className="block font-semibold text-white text-xs">MX Player (Direct)</span>
-                  <span className="text-[10px] text-sky-300/80 hidden sm:block">Direct stream with injected headers</span>
-                </div>
+                <span>MX Player (Direct)</span>
                 <ExternalLink size={13} className="text-sky-400 flex-shrink-0" />
               </button>
 
-              {/* 5. Download VLC M3U Playlist (Proxy with Subtitles) */}
+              {/* 5. Download VLC M3U Playlist */}
               <button
                 onClick={() => {
                   handleDownloadM3u(true);
                   setActiveMenu(null);
                 }}
-                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-200 flex items-center justify-between text-xs font-medium border border-white/5 transition"
+                className="w-full text-left px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-200 flex items-center justify-between text-xs font-semibold border border-white/5 transition"
               >
                 <div className="flex items-center gap-2">
                   <FileDown size={14} className="text-amber-400 flex-shrink-0" />
-                  <div>
-                    <span className="block text-white text-xs font-semibold">Download VLC Playlist (.m3u)</span>
-                    <span className="text-[10px] text-gray-400 hidden sm:block">Includes Proxy stream & Subtitles</span>
-                  </div>
+                  <span>Download VLC Playlist (.m3u)</span>
                 </div>
               </button>
             </div>

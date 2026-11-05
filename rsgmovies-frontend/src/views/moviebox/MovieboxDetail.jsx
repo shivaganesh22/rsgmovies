@@ -240,13 +240,6 @@ export const MovieboxDetail = () => {
           if (cookie) m3u += `#EXTVLCOPT:http-cookie=${cookie}\n`;
         }
         if (caps.length > 0) {
-          const subUrls = caps.map((c) => c.url).filter(Boolean);
-          if (subUrls.length > 0) {
-            m3u += `#EXTVLCOPT:sub-file=${subUrls[0]}\n`;
-            m3u += `#EXTVLCOPT:input-slave=${subUrls[0]}\n`;
-            m3u += `#EXTVLCOPT:sub-autodetect-file=true\n`;
-            m3u += `#EXTVLCOPT:sub-track=0\n`;
-          }
           caps.forEach((c, idx) => {
             if (c.url) {
               m3u += `#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",NAME="${c.language || `Sub ${idx + 1}`}",DEFAULT=${idx === 0 ? 'YES' : 'NO'},AUTOSELECT=YES,URI="${c.url}"\n`;
@@ -752,40 +745,28 @@ export const MovieboxDetail = () => {
                       onClick={() => handleOpenVlc(true)}
                       className="p-3 rounded-2xl bg-amber-600/20 border border-amber-500/30 text-amber-300 hover:bg-amber-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
                     >
-                      <div>
-                        <span>VLC (Proxy)</span>
-                        <span className="block text-[10px] text-amber-400 font-normal">Recommended</span>
-                      </div>
+                      <span>VLC (Proxy)</span>
                       <ExternalLink size={13} />
                     </button>
                     <button
                       onClick={() => handleOpenMx(true)}
                       className="p-3 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
                     >
-                      <div>
-                        <span>MX (Proxy)</span>
-                        <span className="block text-[10px] text-blue-300/80 font-normal">Recommended</span>
-                      </div>
+                      <span>MX (Proxy)</span>
                       <ExternalLink size={13} />
                     </button>
                     <button
                       onClick={() => handleOpenVlc(false)}
                       className="p-3 rounded-2xl bg-orange-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
                     >
-                      <div>
-                        <span>VLC (Direct)</span>
-                        <span className="block text-[10px] text-orange-400/60 font-normal">May require referer</span>
-                      </div>
+                      <span>VLC (Direct)</span>
                       <ExternalLink size={13} />
                     </button>
                     <button
                       onClick={() => handleOpenMx(false)}
                       className="p-3 rounded-2xl bg-sky-600/20 border border-sky-500/30 text-sky-300 hover:bg-sky-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
                     >
-                      <div>
-                        <span>MX (Direct)</span>
-                        <span className="block text-[10px] text-sky-300/80 font-normal">With headers</span>
-                      </div>
+                      <span>MX (Direct)</span>
                       <ExternalLink size={13} />
                     </button>
                   </div>
