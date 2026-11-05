@@ -138,11 +138,11 @@ export const MovieboxDetail = () => {
     staleTime: 1000 * 60 * 10,
   });
 
-  // 4. Fetch Captions for active selection
-  const { data: captionsResponse } = useQuery({
-    queryKey: ['movieboxCaptions', targetSubjectId, reqSeason, reqEpisode, selectedStream?.id || 0],
+  // 4. Fetch Captions for active selection (only once selectedStream is available)
+  const { data: captionsResponse, isLoading: isCaptionsLoading } = useQuery({
+    queryKey: ['movieboxCaptions', targetSubjectId, reqSeason, reqEpisode, selectedStream?.id],
     queryFn: () => movieboxApi.getCaptions(targetSubjectId, reqSeason, reqEpisode, selectedStream?.id || 0),
-    enabled: Boolean(targetSubjectId && (isPlayerOpen || isStreamModalOpen)),
+    enabled: Boolean(targetSubjectId && (isPlayerOpen || isStreamModalOpen) && selectedStream?.id),
     staleTime: 1000 * 60 * 10,
   });
 
@@ -398,6 +398,8 @@ export const MovieboxDetail = () => {
               subjectId={targetSubjectId}
               season={reqSeason}
               episode={reqEpisode}
+              captions={captionsResponse?.captions || []}
+              captionsLoading={isCaptionsLoading}
             />
           ) : (
             <div className="w-full aspect-video bg-surface-card rounded-3xl flex flex-col items-center justify-center p-6 border border-white/10 space-y-3 text-center">

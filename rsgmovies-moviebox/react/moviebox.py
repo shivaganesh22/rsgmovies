@@ -10,6 +10,7 @@ import sys
 import time
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlsplit
 from activity.services import log_activity_event
@@ -558,15 +559,27 @@ def moviebox_streams(request,subject_id:str,season:int=0,episode:int=0):
             metadata={"title":data.get("title","-"),"id":str(subject_id)}
         )
     return JsonResponse(data)
-def get_captions(request,subject_id: str, season:int=0,episode:int=0,stream_id: Optional[str] = None):
-    subs = engine.get_subtitles(subject_id, season=season, episode=episode,stream_id=stream_id)
-    return JsonResponse({
+def get_captions(request, subject_id: str, season: int = 0, episode: int = 0, stream_id: Optional[str] = None):
+    cache_key = f"moviebox:captions:{subject_id}:{season}:{episode}:{stream_id or '0'}"
+    try:
+        cached = cache.get(cache_key)
+        if cached:
+            return JsonResponse(cached)
+    except Exception:
+        pass
+    subs = engine.get_subtitles(subject_id, season=season, episode=episode, stream_id=stream_id)
+    payload = {
         "subject_id": subject_id,
         "season": season,
         "episode": episode,
         "count": len(subs),
         "captions": subs
-    })
+    }
+    try:
+        cache.set(cache_key, payload, timeout=1800)
+    except Exception:
+        pass
+    return JsonResponse(payload)
 
 
 @csrf_exempt

@@ -39,6 +39,8 @@ export const MovieboxPlayer = ({
   subjectId = null,
   season = 0,
   episode = 0,
+  captions: propCaptions = null,
+  captionsLoading: propCaptionsLoading = false,
 }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -181,8 +183,13 @@ export const MovieboxPlayer = ({
     }
   }, []);
 
-  // Fetch Captions when subjectId, season, episode, or streamId changes
+  // Sync or fetch Captions when subjectId, season, episode, or streamId changes
   useEffect(() => {
+    if (propCaptions !== null) {
+      setCaptions(Array.isArray(propCaptions) ? propCaptions : []);
+      setCaptionsLoading(Boolean(propCaptionsLoading));
+      return;
+    }
     if (!subjectId) return;
 
     let isMounted = true;
@@ -205,7 +212,7 @@ export const MovieboxPlayer = ({
     return () => {
       isMounted = false;
     };
-  }, [subjectId, season, episode, stream?.id]);
+  }, [subjectId, season, episode, stream?.id, propCaptions, propCaptionsLoading]);
 
   // Initialize playback engine based on stream type
   useEffect(() => {

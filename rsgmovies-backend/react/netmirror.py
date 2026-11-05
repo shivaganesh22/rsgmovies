@@ -25,8 +25,10 @@ DEFAULT_PROXY = "http://shivaganesh:Shiva123@198.23.243.226:6361"
 PROXY_URL = os.getenv("NETMIRROR_PROXY", os.getenv("PROXY_URL", DEFAULT_PROXY))
 BASE_TARGET_DOMAIN = os.getenv("NETMIRROR_DOMAIN", os.getenv("DOMAIN", "https://net52.cc")).rstrip("/")
 
-# Stream proxy path (relative /stream-proxy/netmirror or custom STREAM_PROXY_URL)
+# Stream proxy path: MUST use /stream-proxy/netmirror relative path in browser to prevent blocked:mixed-content on HTTPS
 STREAM_PROXY_URL = os.getenv("STREAM_PROXY_URL", "/stream-proxy/netmirror").rstrip("/")
+if STREAM_PROXY_URL.startswith("http://129.225.115.187:5000"):
+    STREAM_PROXY_URL = STREAM_PROXY_URL.replace("http://129.225.115.187:5000", "/stream-proxy")
 
 PROXIES = {
     "http": PROXY_URL,
@@ -745,6 +747,8 @@ def _rewrite_sources(data, base_domain=BASE_TARGET_DOMAIN, proxy_url=STREAM_PROX
     - Upgrades protocol-relative (//) and http:// subtitle tracks to https:// to prevent
       Cloudflare 301 redirects and resulting CORS block errors.
     """
+    if proxy_url.startswith("http://129.225.115.187:5000"):
+        proxy_url = proxy_url.replace("http://129.225.115.187:5000", "/stream-proxy")
     items = data if isinstance(data, list) else ([data] if isinstance(data, dict) else [])
     for item in items:
         if isinstance(item, dict):
