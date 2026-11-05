@@ -4,7 +4,6 @@ import logging
 import os
 import random
 import re
-from pathlib import Path
 from urllib.parse import quote, urljoin
 
 import requests
@@ -25,10 +24,8 @@ DEFAULT_PROXY = "http://shivaganesh:Shiva123@198.23.243.226:6361"
 PROXY_URL = os.getenv("NETMIRROR_PROXY", os.getenv("PROXY_URL", DEFAULT_PROXY))
 BASE_TARGET_DOMAIN = os.getenv("NETMIRROR_DOMAIN", os.getenv("DOMAIN", "https://net52.cc")).rstrip("/")
 
-# Stream proxy path: MUST use /stream-proxy/netmirror relative path in browser to prevent blocked:mixed-content on HTTPS
+# Stream proxy path
 STREAM_PROXY_URL = os.getenv("STREAM_PROXY_URL", "/stream-proxy/netmirror").rstrip("/")
-if STREAM_PROXY_URL.startswith("http://129.225.115.187:5000"):
-    STREAM_PROXY_URL = STREAM_PROXY_URL.replace("http://129.225.115.187:5000", "/stream-proxy")
 
 PROXIES = {
     "http": PROXY_URL,
@@ -44,8 +41,6 @@ _NETMIRROR_SESSION = {
     "cookie": "",
 }
 
-SESSION_FILE_PATH = Path("/tmp/netmirror_session.json")
-
 
 def load_session():
     """
@@ -53,7 +48,6 @@ def load_session():
     1. In-memory dictionary _NETMIRROR_SESSION (fastest)
     2. Django cache (shared across local threads)
     3. PostgreSQL NetmirrorSession DB table (permanent persistence across reboots & workers)
-    4. /tmp/ local file fallback
     """
     global _NETMIRROR_SESSION
     if _NETMIRROR_SESSION.get("cookie"):
@@ -83,22 +77,12 @@ def load_session():
     except Exception as e:
         logger.warning(f"Could not load netmirror session from DB: {e}")
 
-    # 3. Fallback to local file
-    if SESSION_FILE_PATH.exists():
-        try:
-            with open(SESSION_FILE_PATH, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if isinstance(data, dict):
-                    _NETMIRROR_SESSION.update(data)
-        except Exception:
-            pass
-
     return _NETMIRROR_SESSION
 
 
 def save_session(hash_val=None, cookie_val=None):
     """
-    Updates in-memory session and permanently persists to DB, Django cache, and local file.
+    Updates in-memory session and permanently persists to DB, Django cache.
     """
     global _NETMIRROR_SESSION
     if hash_val is not None:
@@ -125,18 +109,12 @@ def save_session(hash_val=None, cookie_val=None):
     except Exception as e:
         logger.warning(f"Could not persist NetMirror session to DB: {e}")
 
-    # Persist to local file
-    try:
-        with open(SESSION_FILE_PATH, "w", encoding="utf-8") as f:
-            json.dump(_NETMIRROR_SESSION, f)
-    except Exception:
-        pass
 
     return _NETMIRROR_SESSION
 
 
 def clear_session():
-    """Resets session store in DB, Django cache, memory, and local file."""
+    """Resets session store in DB, Django cache, memory."""
     global _NETMIRROR_SESSION
     _NETMIRROR_SESSION = {"hash": "", "cookie": ""}
     try:
@@ -150,11 +128,6 @@ def clear_session():
     except Exception as e:
         logger.warning(f"Could not clear NetMirror session in DB: {e}")
 
-    try:
-        if SESSION_FILE_PATH.exists():
-            SESSION_FILE_PATH.unlink()
-    except Exception:
-        pass
 
     return _NETMIRROR_SESSION
 
@@ -747,8 +720,6 @@ def _rewrite_sources(data, base_domain=BASE_TARGET_DOMAIN, proxy_url=STREAM_PROX
     - Upgrades protocol-relative (//) and http:// subtitle tracks to https:// to prevent
       Cloudflare 301 redirects and resulting CORS block errors.
     """
-    if proxy_url.startswith("http://129.225.115.187:5000"):
-        proxy_url = proxy_url.replace("http://129.225.115.187:5000", "/stream-proxy")
     items = data if isinstance(data, list) else ([data] if isinstance(data, dict) else [])
     for item in items:
         if isinstance(item, dict):
