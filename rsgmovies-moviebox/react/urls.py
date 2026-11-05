@@ -7,5 +7,7 @@ urlpatterns = [
     path('moviebox/detail/<str:subject_id>/', moviebox.moviebox_details, name='moviebox-details'),
     path('moviebox/episode/<str:subject_id>/', moviebox.moviebox_episodes, name='moviebox-episodes'),
     path('moviebox/streams/<str:subject_id>/<int:season>/<int:episode>/', moviebox.moviebox_streams, name='moviebox-streams'),
-    path('moviebox/captions/<str:subject_id>/<int:season>/<int:episode>/', moviebox.get_captions, name='moviebox-captions'),
+    path('moviebox/captions/<str:subject_id>/<int:season>/<int:episode>/', moviebox.get_captions, name='moviebox-captions-nostream'),
+    path('moviebox/captions/<str:subject_id>/<int:season>/<int:episode>/<str:stream_id>/', moviebox.get_captions, name='moviebox-captions'),
+    path('moviebox/subtitle/', moviebox.moviebox_subtitle, name='moviebox-subtitle'),
 ]

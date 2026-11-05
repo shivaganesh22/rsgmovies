@@ -138,6 +138,14 @@ export const MovieboxDetail = () => {
     staleTime: 1000 * 60 * 10,
   });
 
+  // 4. Fetch Captions for active selection
+  const { data: captionsResponse } = useQuery({
+    queryKey: ['movieboxCaptions', targetSubjectId, reqSeason, reqEpisode, selectedStream?.id || 0],
+    queryFn: () => movieboxApi.getCaptions(targetSubjectId, reqSeason, reqEpisode, selectedStream?.id || 0),
+    enabled: Boolean(targetSubjectId && (isPlayerOpen || isStreamModalOpen)),
+    staleTime: 1000 * 60 * 10,
+  });
+
   const streamsList = useMemo(() => {
     return Array.isArray(streamsResponse?.streams) ? streamsResponse.streams : [];
   }, [streamsResponse]);
@@ -200,6 +208,9 @@ export const MovieboxDetail = () => {
     const ua = headers['User-Agent'] || 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36';
     const cookie = headers['Cookie'] || '';
 
+    const caps = captionsResponse?.captions || [];
+    const primarySub = caps.length > 0 ? caps[0] : null;
+
     if (isAndroid) {
       // In Android VLC, official builds do not parse intent headers. Proxied streams work without 403.
       const extraHeaders = [
@@ -208,7 +219,15 @@ export const MovieboxDetail = () => {
         cookie ? `--http-cookie=${cookie}` : null,
       ].filter(Boolean).join(';');
 
-      const intentUri = `intent:${target}#Intent;package=org.videolan.vlc;type=video/*;${extraHeaders ? `S.extra_headers=${encodeURIComponent(extraHeaders)};` : ''}end`;
+      let intentUri = `intent:${target}#Intent;package=org.videolan.vlc;type=video/*;`;
+      if (extraHeaders) {
+        intentUri += `S.extra_headers=${encodeURIComponent(extraHeaders)};`;
+      }
+      if (primarySub?.url) {
+        intentUri += `S.subtitles_location=${encodeURIComponent(primarySub.url)};`;
+        intentUri += `S.extra_subtitles_location=${encodeURIComponent(primarySub.url)};`;
+      }
+      intentUri += `end`;
       window.location.href = intentUri;
     } else if (isIOS) {
       window.location.href = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(target)}`;
@@ -220,17 +239,31 @@ export const MovieboxDetail = () => {
           if (referer) m3u += `#EXTVLCOPT:http-referrer=${referer}\n`;
           if (cookie) m3u += `#EXTVLCOPT:http-cookie=${cookie}\n`;
         }
+        if (caps.length > 0) {
+          const subUrls = caps.map((c) => c.url).filter(Boolean);
+          if (subUrls.length > 0) {
+            m3u += `#EXTVLCOPT:sub-file=${subUrls[0]}\n`;
+            m3u += `#EXTVLCOPT:input-slave=${subUrls[0]}\n`;
+            m3u += `#EXTVLCOPT:sub-autodetect-file=true\n`;
+            m3u += `#EXTVLCOPT:sub-track=0\n`;
+          }
+          caps.forEach((c, idx) => {
+            if (c.url) {
+              m3u += `#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",NAME="${c.language || `Sub ${idx + 1}`}",DEFAULT=${idx === 0 ? 'YES' : 'NO'},AUTOSELECT=YES,URI="${c.url}"\n`;
+            }
+          });
+        }
         m3u += `${target}\n`;
         const blob = new Blob([m3u], { type: 'audio/x-mpegurl;charset=utf-8' });
         const blobUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = blobUrl;
-        a.download = `${(details?.title || 'stream').replace(/[^a-zA-Z0-9_-]/g, '_')}_vlc.m3u`;
+        a.download = `${(details?.title || 'stream').replace(/[^a-zA-Z0-9_-]/g, '_')}_${isProxy ? 'proxy' : 'direct'}_vlc.m3u`;
         document.body.appendChild(a);
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
-        toastSuccess('Downloaded VLC Playlist (.m3u) with stream headers!');
+        toastSuccess('Downloaded VLC Playlist (.m3u) with stream & subtitle links!');
       } catch (e) {
         window.location.href = `vlc://${target}`;
       }
@@ -376,6 +409,9 @@ export const MovieboxDetail = () => {
               title={`${title}${isSeries ? ` S${selectedSeason}E${selectedEpisode}` : ''}`}
               poster={backdrop}
               onStreamChange={(st) => setSelectedStream(st)}
+              subjectId={targetSubjectId}
+              season={reqSeason}
+              episode={reqEpisode}
             />
           ) : (
             <div className="w-full aspect-video bg-surface-card rounded-3xl flex flex-col items-center justify-center p-6 border border-white/10 space-y-3 text-center">
@@ -713,31 +749,43 @@ export const MovieboxDetail = () => {
                   
                   <div className="grid grid-cols-2 gap-2">
                     <button
-                      onClick={() => handleOpenVlc(false)}
-                      className="p-3 rounded-2xl bg-orange-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
-                    >
-                      <span>VLC (Direct)</span>
-                      <ExternalLink size={13} />
-                    </button>
-                    <button
-                      onClick={() => handleOpenMx(false)}
-                      className="p-3 rounded-2xl bg-sky-600/20 border border-sky-500/30 text-sky-300 hover:bg-sky-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
-                    >
-                      <span>MX Player (Direct)</span>
-                      <ExternalLink size={13} />
-                    </button>
-                    <button
                       onClick={() => handleOpenVlc(true)}
                       className="p-3 rounded-2xl bg-amber-600/20 border border-amber-500/30 text-amber-300 hover:bg-amber-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
                     >
-                      <span>VLC (Proxy)</span>
+                      <div>
+                        <span>VLC (Proxy)</span>
+                        <span className="block text-[10px] text-amber-400 font-normal">Recommended</span>
+                      </div>
                       <ExternalLink size={13} />
                     </button>
                     <button
                       onClick={() => handleOpenMx(true)}
                       className="p-3 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
                     >
-                      <span>MX Player (Proxy)</span>
+                      <div>
+                        <span>MX (Proxy)</span>
+                        <span className="block text-[10px] text-blue-300/80 font-normal">Recommended</span>
+                      </div>
+                      <ExternalLink size={13} />
+                    </button>
+                    <button
+                      onClick={() => handleOpenVlc(false)}
+                      className="p-3 rounded-2xl bg-orange-600/20 border border-orange-500/30 text-orange-300 hover:bg-orange-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
+                    >
+                      <div>
+                        <span>VLC (Direct)</span>
+                        <span className="block text-[10px] text-orange-400/60 font-normal">May require referer</span>
+                      </div>
+                      <ExternalLink size={13} />
+                    </button>
+                    <button
+                      onClick={() => handleOpenMx(false)}
+                      className="p-3 rounded-2xl bg-sky-600/20 border border-sky-500/30 text-sky-300 hover:bg-sky-600/30 text-left font-semibold text-xs flex items-center justify-between transition"
+                    >
+                      <div>
+                        <span>MX (Direct)</span>
+                        <span className="block text-[10px] text-sky-300/80 font-normal">With headers</span>
+                      </div>
                       <ExternalLink size={13} />
                     </button>
                   </div>

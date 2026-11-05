@@ -23,9 +23,11 @@ import {
   Gauge,
   Layers,
   FileDown,
+  Subtitles,
+  Loader2,
 } from 'lucide-react';
 import { toastSuccess, toastWarning } from '../ui/Notifications';
-import { getProxiedStreamUrl, getProxiedDownloadUrl, MOVIEBOX_PROXY_BASE } from '../../api/moviebox';
+import { getProxiedStreamUrl, getProxiedDownloadUrl, MOVIEBOX_PROXY_BASE, MOVIEBOX_API_URL, movieboxApi } from '../../api/moviebox';
 
 export const MovieboxPlayer = ({
   stream,
@@ -34,6 +36,9 @@ export const MovieboxPlayer = ({
   poster = '',
   onStreamChange,
   proxyBase = MOVIEBOX_PROXY_BASE,
+  subjectId = null,
+  season = 0,
+  episode = 0,
 }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -54,9 +59,14 @@ export const MovieboxPlayer = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const [showControls, setShowControls] = useState(true);
-  const [activeMenu, setActiveMenu] = useState(null); // 'streams' | 'apps' | 'settings' | 'speed'
+  const [activeMenu, setActiveMenu] = useState(null); // 'streams' | 'apps' | 'settings' | 'speed' | 'captions'
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [copiedType, setCopiedType] = useState(null);
+
+  // Captions & Subtitles state
+  const [captions, setCaptions] = useState([]);
+  const [captionsLoading, setCaptionsLoading] = useState(false);
+  const [activeCaption, setActiveCaption] = useState(null);
 
   // Double-tap & Scrubbing state
   const [doubleTapFeedback, setDoubleTapFeedback] = useState(null);
@@ -111,6 +121,91 @@ export const MovieboxPlayer = ({
       dashRef.current = null;
     }
   }, []);
+
+  // SRT to WebVTT converter
+  const srtToVtt = (srtText) => {
+    return (
+      'WEBVTT\n\n' +
+      srtText
+        .replace(/\r\n|\r/g, '\n')
+        .replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, '$1.$2')
+    );
+  };
+
+  // Apply Subtitle to video element
+  const applySubtitle = useCallback(async (caption) => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Remove any existing dynamic subtitle tracks
+    const oldTracks = video.querySelectorAll('track[data-moviebox-sub="true"]');
+    oldTracks.forEach((t) => {
+      try {
+        video.removeChild(t);
+      } catch (e) {}
+    });
+
+    if (!caption) {
+      setActiveCaption(null);
+      return;
+    }
+
+    try {
+      let vttUrl = '';
+      try {
+        // Attempt direct fetch and client-side conversion
+        const resp = await fetch(caption.url);
+        if (!resp.ok) throw new Error('Direct fetch failed');
+        const srtText = await resp.text();
+        const vttText = srtToVtt(srtText);
+        const blob = new Blob([vttText], { type: 'text/vtt' });
+        vttUrl = URL.createObjectURL(blob);
+      } catch (err) {
+        // Fallback to backend subtitle proxy (bypasses CORS restrictions)
+        vttUrl = `${MOVIEBOX_API_URL}/react/moviebox/subtitle/?url=${encodeURIComponent(caption.url)}`;
+      }
+
+      const track = document.createElement('track');
+      track.kind = 'subtitles';
+      track.label = caption.language || caption.code || 'Subtitles';
+      track.srclang = caption.code || 'en';
+      track.src = vttUrl;
+      track.default = true;
+      track.setAttribute('data-moviebox-sub', 'true');
+      video.appendChild(track);
+      track.track.mode = 'showing';
+
+      setActiveCaption(caption);
+    } catch (e) {
+      toastWarning('Could not load subtitle track');
+    }
+  }, []);
+
+  // Fetch Captions when subjectId, season, episode, or streamId changes
+  useEffect(() => {
+    if (!subjectId) return;
+
+    let isMounted = true;
+    const fetchCaptions = async () => {
+      try {
+        setCaptionsLoading(true);
+        const streamId = stream?.id || 0;
+        const data = await movieboxApi.getCaptions(subjectId, season || 0, episode || 0, streamId);
+        if (isMounted && data && Array.isArray(data.captions)) {
+          setCaptions(data.captions);
+        }
+      } catch (err) {
+        if (isMounted) setCaptions([]);
+      } finally {
+        if (isMounted) setCaptionsLoading(false);
+      }
+    };
+
+    fetchCaptions();
+    return () => {
+      isMounted = false;
+    };
+  }, [subjectId, season, episode, stream?.id]);
 
   // Initialize playback engine based on stream type
   useEffect(() => {
@@ -548,6 +643,10 @@ export const MovieboxPlayer = ({
           e.preventDefault();
           handlePiP();
           break;
+        case 'c':
+          e.preventDefault();
+          setActiveMenu((prev) => (prev === 'captions' ? null : 'captions'));
+          break;
         default:
           break;
       }
@@ -580,7 +679,7 @@ export const MovieboxPlayer = ({
     setActiveMenu(null);
   };
 
-  // External player launcher handlers with complete header support
+  // External player launcher handlers with complete header & subtitle support
   const handleOpenVlc = (isProxy = false) => {
     const target = isProxy ? proxiedUrl : rawUrl;
     if (!target) return;
@@ -592,22 +691,30 @@ export const MovieboxPlayer = ({
     const ua = streamHeaders['User-Agent'] || 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36';
     const cookie = streamHeaders['Cookie'] || stream?.cookie || '';
 
+    const primarySub = activeCaption || (captions && captions.length > 0 ? captions[0] : null);
+
     if (isAndroid) {
-      // For VLC Android, official builds do not parse intent headers.
-      // Proxied streams play reliably without 403 errors.
-      // For direct streams, we also supply intent extras for custom/patched VLC builds.
+      // For VLC Android: proxied streams play reliably without 403 errors.
       const extraHeaders = [
         referer ? `--http-referrer=${referer}` : null,
         ua ? `--http-user-agent=${ua}` : null,
         cookie ? `--http-cookie=${cookie}` : null,
       ].filter(Boolean).join(';');
 
-      const intentUri = `intent:${target}#Intent;package=org.videolan.vlc;type=video/*;${extraHeaders ? `S.extra_headers=${encodeURIComponent(extraHeaders)};` : ''}end`;
+      let intentUri = `intent:${target}#Intent;package=org.videolan.vlc;type=video/*;`;
+      if (extraHeaders) {
+        intentUri += `S.extra_headers=${encodeURIComponent(extraHeaders)};`;
+      }
+      if (primarySub?.url) {
+        intentUri += `S.subtitles_location=${encodeURIComponent(primarySub.url)};`;
+        intentUri += `S.extra_subtitles_location=${encodeURIComponent(primarySub.url)};`;
+      }
+      intentUri += `end`;
       window.location.href = intentUri;
     } else if (isIOS) {
       window.location.href = `vlc-x-callback://x-callback-url/stream?url=${encodeURIComponent(target)}`;
     } else {
-      // Desktop: Download .m3u playlist with full #EXTVLCOPT
+      // Desktop: Download .m3u playlist with full #EXTVLCOPT & subtitle links
       handleDownloadM3u(isProxy);
     }
   };
@@ -627,18 +734,32 @@ export const MovieboxPlayer = ({
         if (referer) m3u += `#EXTVLCOPT:http-referrer=${referer}\n`;
         if (cookie) m3u += `#EXTVLCOPT:http-cookie=${cookie}\n`;
       }
+      if (captions && captions.length > 0) {
+        const subUrls = captions.map((c) => c.url).filter(Boolean);
+        if (subUrls.length > 0) {
+          m3u += `#EXTVLCOPT:sub-file=${subUrls[0]}\n`;
+          m3u += `#EXTVLCOPT:input-slave=${subUrls[0]}\n`;
+          m3u += `#EXTVLCOPT:sub-autodetect-file=true\n`;
+          m3u += `#EXTVLCOPT:sub-track=0\n`;
+        }
+        captions.forEach((c, idx) => {
+          if (c.url) {
+            m3u += `#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",NAME="${c.language || `Sub ${idx + 1}`}",DEFAULT=${idx === 0 ? 'YES' : 'NO'},AUTOSELECT=YES,URI="${c.url}"\n`;
+          }
+        });
+      }
       m3u += `${target}\n`;
 
       const blob = new Blob([m3u], { type: 'audio/x-mpegurl;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${(title || 'stream').replace(/[^a-zA-Z0-9_-]/g, '_')}_vlc.m3u`;
+      a.download = `${(title || 'stream').replace(/[^a-zA-Z0-9_-]/g, '_')}_${isProxy ? 'proxy' : 'direct'}_vlc.m3u`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
-      toastSuccess('Downloaded VLC Playlist (.m3u) with full stream headers!');
+      toastSuccess('Downloaded VLC Playlist (.m3u) with stream & subtitle links!');
     } catch (e) {
       window.location.href = `vlc://${target}`;
     }
@@ -861,7 +982,40 @@ export const MovieboxPlayer = ({
             </div>
 
             <div className="space-y-1.5">
-              {/* 1. VLC Player Direct */}
+              {/* 1. VLC Player Proxied (Recommended) */}
+              <button
+                onClick={() => {
+                  handleOpenVlc(true);
+                  setActiveMenu(null);
+                }}
+                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-amber-600/20 text-amber-200 hover:bg-amber-600/30 flex items-center justify-between text-xs font-medium border border-amber-500/30 transition"
+              >
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold text-white text-xs">VLC Player (Proxy)</span>
+                    <span className="text-[10px] bg-amber-500 text-black font-bold px-1.5 rounded">Recommended</span>
+                  </div>
+                  <span className="text-[10px] text-amber-300/80 hidden sm:block">Plays with subtitles • Bypasses CDN blocks</span>
+                </div>
+                <ExternalLink size={13} className="text-amber-400 flex-shrink-0" />
+              </button>
+
+              {/* 2. MX Player Proxied */}
+              <button
+                onClick={() => {
+                  handleOpenMx(true);
+                  setActiveMenu(null);
+                }}
+                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-blue-600/20 text-blue-200 hover:bg-blue-600/30 flex items-center justify-between text-xs font-medium border border-blue-500/20 transition"
+              >
+                <div>
+                  <span className="block font-semibold text-white text-xs">MX Player (Proxy)</span>
+                  <span className="text-[10px] text-blue-300/70 hidden sm:block">Proxied stream playback with subtitles</span>
+                </div>
+                <ExternalLink size={13} className="text-blue-400 flex-shrink-0" />
+              </button>
+
+              {/* 3. VLC Player Direct */}
               <button
                 onClick={() => {
                   handleOpenVlc(false);
@@ -871,12 +1025,12 @@ export const MovieboxPlayer = ({
               >
                 <div>
                   <span className="block font-semibold text-white text-xs">VLC Player (Direct)</span>
-                  <span className="text-[10px] text-orange-300/70 hidden sm:block">Direct intent (Mobile) / M3U (Desktop)</span>
+                  <span className="text-[10px] text-orange-300/70 hidden sm:block">Direct CDN stream (may require referer)</span>
                 </div>
                 <ExternalLink size={13} className="text-orange-400 flex-shrink-0" />
               </button>
 
-              {/* 2. MX Player Direct */}
+              {/* 4. MX Player Direct */}
               <button
                 onClick={() => {
                   handleOpenMx(false);
@@ -891,40 +1045,10 @@ export const MovieboxPlayer = ({
                 <ExternalLink size={13} className="text-sky-400 flex-shrink-0" />
               </button>
 
-              {/* 3. VLC Player Proxied */}
+              {/* 5. Download VLC M3U Playlist (Proxy with Subtitles) */}
               <button
                 onClick={() => {
-                  handleOpenVlc(true);
-                  setActiveMenu(null);
-                }}
-                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-amber-600/20 text-amber-200 hover:bg-amber-600/30 flex items-center justify-between text-xs font-medium border border-amber-500/30 transition"
-              >
-                <div>
-                  <span className="block font-semibold text-white text-xs">VLC Player (Proxy)</span>
-                  <span className="text-[10px] text-amber-300/80 hidden sm:block">Server-injected proxy stream</span>
-                </div>
-                <ExternalLink size={13} className="text-amber-400 flex-shrink-0" />
-              </button>
-
-              {/* 4. MX Player Proxied */}
-              <button
-                onClick={() => {
-                  handleOpenMx(true);
-                  setActiveMenu(null);
-                }}
-                className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-blue-600/20 text-blue-200 hover:bg-blue-600/30 flex items-center justify-between text-xs font-medium border border-blue-500/20 transition"
-              >
-                <div>
-                  <span className="block font-semibold text-white text-xs">MX Player (Proxy)</span>
-                  <span className="text-[10px] text-blue-300/70 hidden sm:block">Proxied stream playback</span>
-                </div>
-                <ExternalLink size={13} className="text-blue-400 flex-shrink-0" />
-              </button>
-
-              {/* 5. Download VLC M3U Playlist */}
-              <button
-                onClick={() => {
-                  handleDownloadM3u(false);
+                  handleDownloadM3u(true);
                   setActiveMenu(null);
                 }}
                 className="w-full text-left px-3 py-2 sm:py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-200 flex items-center justify-between text-xs font-medium border border-white/5 transition"
@@ -932,8 +1056,8 @@ export const MovieboxPlayer = ({
                 <div className="flex items-center gap-2">
                   <FileDown size={14} className="text-amber-400 flex-shrink-0" />
                   <div>
-                    <span className="block text-white text-xs">Download VLC Playlist (.m3u)</span>
-                    <span className="text-[10px] text-gray-400 hidden sm:block">Includes Cookie, Referer & User-Agent</span>
+                    <span className="block text-white text-xs font-semibold">Download VLC Playlist (.m3u)</span>
+                    <span className="text-[10px] text-gray-400 hidden sm:block">Includes Proxy stream & Subtitles</span>
                   </div>
                 </div>
               </button>
@@ -1065,6 +1189,95 @@ export const MovieboxPlayer = ({
         </div>
       )}
 
+      {/* Captions Overlay Menu */}
+      {activeMenu === 'captions' && (
+        <div
+          className="absolute inset-0 z-40 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3 sm:p-4 pointer-events-auto"
+          onClick={() => setActiveMenu(null)}
+        >
+          <div
+            className="w-full sm:w-80 max-h-[82vh] overflow-y-auto rounded-3xl sm:rounded-2xl shadow-2xl p-4 bg-darkbg border border-gray-700 animate-fade-in no-scrollbar space-y-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Subtitles size={14} className="text-amber-400" />
+                <span>Subtitles & Captions</span>
+              </span>
+              <button
+                onClick={() => setActiveMenu(null)}
+                className="p-1 rounded-lg text-gray-400 hover:text-white bg-white/5"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+              {/* Off Option */}
+              <button
+                onClick={() => {
+                  applySubtitle(null);
+                  setActiveMenu(null);
+                }}
+                className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center justify-between transition ${
+                  !activeCaption
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                    : 'text-gray-300 hover:bg-white/10 bg-white/5'
+                }`}
+              >
+                <span>Off (Disabled)</span>
+                {!activeCaption && <Check size={14} className="text-amber-400" />}
+              </button>
+
+              {/* Loading State */}
+              {captionsLoading && (
+                <div className="py-4 text-center text-xs text-gray-400 flex items-center justify-center gap-2">
+                  <Loader2 size={14} className="animate-spin text-amber-400" />
+                  <span>Loading captions...</span>
+                </div>
+              )}
+
+              {/* No Captions Available */}
+              {!captionsLoading && captions.length === 0 && (
+                <div className="py-4 text-center text-xs text-gray-400">
+                  No captions available for this stream.
+                </div>
+              )}
+
+              {/* Captions List */}
+              {!captionsLoading &&
+                captions.map((cap) => {
+                  const isSelected = activeCaption?.id === cap.id || (cap.url && activeCaption?.url === cap.url);
+                  return (
+                    <button
+                      key={cap.id || cap.url}
+                      onClick={() => {
+                        applySubtitle(cap);
+                        setActiveMenu(null);
+                      }}
+                      className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center justify-between transition ${
+                        isSelected
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          : 'text-gray-300 hover:bg-white/10 bg-white/5'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span>{cap.language || 'Subtitles'}</span>
+                        {cap.code && (
+                          <span className="text-[10px] uppercase font-mono px-1 py-0.5 rounded bg-white/10 text-gray-400">
+                            {cap.code}
+                          </span>
+                        )}
+                      </div>
+                      {isSelected && <Check size={14} className="text-amber-400 flex-shrink-0" />}
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Controls Bar */}
       <div
         className={`absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent z-30 transition-opacity duration-300 pointer-events-none ${
@@ -1184,6 +1397,26 @@ export const MovieboxPlayer = ({
                 <span className="hidden sm:inline text-xs">{stream?.quality || stream?.format || 'Quality'}</span>
               </button>
             )}
+
+            {/* Captions Button */}
+            <button
+              onClick={() => setActiveMenu(activeMenu === 'captions' ? null : 'captions')}
+              className={`p-1.5 rounded-xl transition flex items-center gap-1 ${
+                activeMenu === 'captions'
+                  ? 'text-amber-400 bg-white/15'
+                  : activeCaption
+                  ? 'text-amber-400 bg-amber-500/20'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+              title="Subtitles & Captions (C)"
+            >
+              <Subtitles size={17} />
+              {activeCaption && (
+                <span className="text-[10px] font-bold font-mono uppercase bg-amber-400 text-black px-1 rounded">
+                  {activeCaption.code || 'CC'}
+                </span>
+              )}
+            </button>
 
             {/* Settings (Speed & Cast) */}
             <button

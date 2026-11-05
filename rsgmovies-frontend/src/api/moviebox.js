@@ -1,7 +1,7 @@
 import axios from 'axios';
 import apiClient from './client';
 
-export const MOVIEBOX_API_URL = (import.meta.env.VITE_MOVIEBOX_API_URL || 'https://rsgmovies-moviebox.vercel.app').replace(/\/+$/, '');
+export const MOVIEBOX_API_URL = (import.meta.env.VITE_MOVIEBOX_API_URL || 'http://localhost:8080').replace(/\/+$/, '');
 
 const movieboxClient = axios.create({
   baseURL: MOVIEBOX_API_URL,
@@ -93,6 +93,12 @@ export const movieboxApi = {
 
   async getStreams(subjectId, season = 0, episode = 0) {
     const res = await movieboxClient.get(`/react/moviebox/streams/${subjectId}/${season}/${episode}/`);
+    return res.data;
+  },
+
+  async getCaptions(subjectId, season = 0, episode = 0, streamId = 0) {
+    const sId = streamId || 0;
+    const res = await movieboxClient.get(`/react/moviebox/captions/${subjectId}/${season}/${episode}/${sId}/`);
     return res.data;
   },
 

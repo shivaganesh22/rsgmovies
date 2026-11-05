@@ -8,7 +8,8 @@ import re
 import secrets
 import sys
 import time
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlsplit
 from activity.services import log_activity_event
@@ -328,7 +329,6 @@ class MovieBoxEngine:
                 data = resp.json().get("data", {})
                 raw_streams = data.get("streams", [])
                 dash_items = data.get("dash", [])
-
                 if raw_streams or dash_items:
                     for st in raw_streams:
                         url = st.get("url")
@@ -352,6 +352,7 @@ class MovieBoxEngine:
                         if cookie:
                             stream_headers["Cookie"] = cookie
                         streams.append({
+                            "id":st.get("id",""),
                             "source": f"mp4",
                             "format": st.get("format", "MP4"),
                             "quality": f"{quality_val}p" if quality_val else res_str,
@@ -381,6 +382,7 @@ class MovieBoxEngine:
                             if cookie:
                                 dash_headers["Cookie"] = cookie
                             streams.append({
+                                "id":d.get("id",""),
                                 "source": f"dash",
                                 "format": "DASH",
                                 "quality": "1080p (Adaptive)" if "1080" in res_tag else "Adaptive",
@@ -425,6 +427,7 @@ class MovieBoxEngine:
                 if cookie:
                     native_headers["Cookie"] = cookie
                 streams.append({
+                    "id":st.get("id",""),
                     "source": "Mobile Native CDN",
                     "format": "DASH" if (policy_url or ".mpd" in final_url) else st.get("format", "MP4"),
                     "quality": f"{quality_val}p" if quality_val else (res_str or "Default"),
@@ -446,8 +449,7 @@ class MovieBoxEngine:
     def get_subtitles(self, subject_id: str, stream_id: Optional[str] = None, season: int = 0, episode: int = 0) -> List[Dict[str, Any]]:
         subs: List[Dict[str, Any]] = []
         seen_urls = set()
-
-        if not stream_id:
+        if not stream_id or stream_id=="0":
             try:
                 native_url = f"/wefeed-mobile-bff/subject-api/play-info?subjectId={subject_id}&se={season}&ep={episode}"
                 raw_streams = self.api_request("GET", native_url).get("data", {}).get("streams", [])
@@ -556,8 +558,8 @@ def moviebox_streams(request,subject_id:str,season:int=0,episode:int=0):
             metadata={"title":data.get("title","-"),"id":str(subject_id)}
         )
     return JsonResponse(data)
-def get_captions(request,subject_id: str, season:int=0,episode:int=0):
-    subs = engine.get_subtitles(subject_id, season=season, episode=episode)
+def get_captions(request,subject_id: str, season:int=0,episode:int=0,stream_id: Optional[str] = None):
+    subs = engine.get_subtitles(subject_id, season=season, episode=episode,stream_id=stream_id)
     return JsonResponse({
         "subject_id": subject_id,
         "season": season,
@@ -565,3 +567,26 @@ def get_captions(request,subject_id: str, season:int=0,episode:int=0):
         "count": len(subs),
         "captions": subs
     })
+
+
+@csrf_exempt
+def moviebox_subtitle(request):
+    """
+    Proxies SRT subtitles from CDN, converts to WebVTT, and returns with CORS headers.
+    Direct CDN fetch with zero residential proxy usage.
+    """
+    sub_url = request.GET.get("url")
+    if not sub_url:
+        return HttpResponse("Missing url parameter", status=400)
+    try:
+        import requests
+        resp = requests.get(sub_url, timeout=15)
+        text = resp.text
+        vtt_text = "WEBVTT\n\n" + re.sub(r"(\d{2}:\d{2}:\d{2}),(\d{3})", r"\1.\2", text)
+        response = HttpResponse(vtt_text, content_type="text/vtt; charset=utf-8")
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "*"
+        return response
+    except Exception as e:
+        return HttpResponse(f"Subtitle error: {e}", status=500)

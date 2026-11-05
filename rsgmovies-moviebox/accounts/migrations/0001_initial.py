@@ -10,7 +10,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('seedr_service', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -29,7 +28,7 @@ class Migration(migrations.Migration):
                 ('last_login', models.DateTimeField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('seedr_account', models.ForeignKey(blank=True, help_text='The Seedr account assigned to this user (defaults to Main Seedr)', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_users', to='seedr_service.seedraccount')),
+                ('seedr_account', models.IntegerField(blank=True, db_column='seedr_account_id', help_text='The Seedr account ID assigned to this user', null=True)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='userprofile', to=settings.AUTH_USER_MODEL)),
             ],
             options={
