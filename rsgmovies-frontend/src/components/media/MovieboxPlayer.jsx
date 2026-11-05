@@ -1262,11 +1262,11 @@ export const MovieboxPlayer = ({
 
               {/* Captions List */}
               {!captionsLoading &&
-                captions.map((cap) => {
+                captions.map((cap, idx) => {
                   const isSelected = activeCaption?.id === cap.id || (cap.url && activeCaption?.url === cap.url);
                   return (
                     <button
-                      key={cap.id || cap.url}
+                      key={`${cap.id || cap.url}-${idx}`}
                       onClick={() => {
                         applySubtitle(cap);
                         setActiveMenu(null);

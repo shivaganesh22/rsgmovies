@@ -449,8 +449,8 @@ class MovieBoxEngine:
 
     def get_subtitles(self, subject_id: str, stream_id: Optional[str] = None, season: int = 0, episode: int = 0) -> List[Dict[str, Any]]:
         subs: List[Dict[str, Any]] = []
-        seen_urls = set()
-        if not stream_id or stream_id=="0":
+        seen_keys = set()
+        if not stream_id or stream_id == "0":
             try:
                 native_url = f"/wefeed-mobile-bff/subject-api/play-info?subjectId={subject_id}&se={season}&ep={episode}"
                 raw_streams = self.api_request("GET", native_url).get("data", {}).get("streams", [])
@@ -461,15 +461,28 @@ class MovieBoxEngine:
 
         def _add_sub(item: Dict[str, Any]):
             u = item.get("url")
-            if u and u not in seen_urls:
-                seen_urls.add(u)
-                subs.append({
-                    "id": str(item.get("id", "")),
-                    "language": item.get("lanName") or item.get("language") or "English",
-                    "code": item.get("lan", ""),
-                    "url": u,
-                    "size": item.get("size")
-                })
+            if not u:
+                return
+            clean_url = u.split("?")[0]
+            sub_id = str(item.get("id") or "").strip()
+            lang = (item.get("lanName") or item.get("language") or "English").strip()
+
+            if sub_id and sub_id != "0":
+                if sub_id in seen_keys:
+                    return
+                seen_keys.add(sub_id)
+            if clean_url:
+                if clean_url in seen_keys:
+                    return
+                seen_keys.add(clean_url)
+
+            subs.append({
+                "id": sub_id or clean_url,
+                "language": lang,
+                "code": item.get("lan", ""),
+                "url": u,
+                "size": item.get("size")
+            })
 
         if stream_id:
             try:
