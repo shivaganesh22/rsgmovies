@@ -39,15 +39,12 @@ urlpatterns = [
     # New React Native TV App APIs (QR Auth, Device Session, Config, Updates)
     path('api/tv/', include('tv.urls')),
 
-    # Direct NetMirror Mobile Proxy Routes
-    path("mobile/setting.php", netmirror.netmirror_setting),
-    path("mobile/hs/setting.php", netmirror.netmirror_setting),
-    path("mobile/post.php", netmirror.netmirror_post),
-    path("mobile/hs/post.php", netmirror.netmirror_post),
-    path("mobile/playlist.php", netmirror.netmirror_playlist),
-    path("mobile/hs/playlist.php", netmirror.netmirror_playlist),
-    path("mobile/hls/<path:subpath>", netmirror.netmirror_hls),
-    path("mobile/hs/hls/<path:subpath>", netmirror.netmirror_hls),
+    # Dynamic NetMirror Mobile Proxy Routes (Universal for all platforms: hs, pv, nf, cp, ap, etc.)
+    re_path(r"^mobile/(?:.+/)?setting\.php$", netmirror.netmirror_setting),
+    re_path(r"^mobile/(?:.+/)?post\.php$", netmirror.netmirror_post),
+    re_path(r"^mobile/(?:.+/)?playlist\.php$", netmirror.netmirror_playlist),
+    re_path(r"^mobile/(?:.+/)?hls/(?P<subpath>.+)$", netmirror.netmirror_hls),
+    re_path(r"^mobile/(?P<subpath>.+\.m3u8)$", netmirror.netmirror_hls),
     path("mobile/<path:subpath>", netmirror.netmirror_general_mobile),
     path("verify", netmirror.netmirror_verify),
     path("verify/", netmirror.netmirror_verify),

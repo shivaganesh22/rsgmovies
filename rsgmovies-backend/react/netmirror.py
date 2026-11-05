@@ -25,11 +25,8 @@ DEFAULT_PROXY = "http://shivaganesh:Shiva123@198.23.243.226:6361"
 PROXY_URL = os.getenv("NETMIRROR_PROXY", os.getenv("PROXY_URL", DEFAULT_PROXY))
 BASE_TARGET_DOMAIN = os.getenv("NETMIRROR_DOMAIN", os.getenv("DOMAIN", "https://net52.cc")).rstrip("/")
 
-# HTTPS-safe stream proxy path matching moviebox (/stream-proxy) to prevent blocked:mixed-content
-DEFAULT_STREAM_PROXY = "/stream-proxy/netmirror"
-STREAM_PROXY_URL = os.getenv("STREAM_PROXY_URL", DEFAULT_STREAM_PROXY).rstrip("/")
-if STREAM_PROXY_URL.startswith("http://129.225.115.187:5000"):
-    STREAM_PROXY_URL = "/stream-proxy/netmirror"
+# Stream proxy path (relative /stream-proxy/netmirror or custom STREAM_PROXY_URL)
+STREAM_PROXY_URL = os.getenv("STREAM_PROXY_URL", "/stream-proxy/netmirror").rstrip("/")
 
 PROXIES = {
     "http": PROXY_URL,
@@ -729,16 +726,41 @@ def netmirror_status(request):
     })
 
 
+def _clean_netmirror_path(request_path: str) -> str:
+    """Strips any internal routing prefixes like /react/netmirror to get pure upstream path."""
+    clean = re.sub(r"^/react/netmirror", "", request_path)
+    if not clean.startswith("/"):
+        clean = "/" + clean
+    return clean
+
+
+def _rewrite_sources(data, base_domain=BASE_TARGET_DOMAIN, proxy_url=STREAM_PROXY_URL):
+    """Dynamically rewrites all stream file links in NetMirror JSON data."""
+    items = data if isinstance(data, list) else ([data] if isinstance(data, dict) else [])
+    for item in items:
+        if isinstance(item, dict) and "sources" in item:
+            for s in item.get("sources", []):
+                file_val = s.get("file", "")
+                if file_val and not file_val.startswith(proxy_url):
+                    full_file_url = urljoin(base_domain, file_val)
+                    s["file"] = f"{proxy_url}/stream.m3u8?url={quote(full_file_url, safe='')}"
+                if s.get("label") == "Auto":
+                    s["default"] = "true"
+                else:
+                    s.pop("default", None)
+
+
 @csrf_exempt
 def netmirror_setting(request):
     """
     Proxies setting updates (e.g. ott=nf, hd=hd, studio=...).
-    Supports standard and Disney/Hotstar endpoints.
+    Supports standard, Disney/Hotstar, Prime Video, and any platform endpoints.
     """
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Unauthorized"}, status=401)
 
-    url = f"{BASE_TARGET_DOMAIN}{request.path}"
+    target_path = _clean_netmirror_path(request.path)
+    url = f"{BASE_TARGET_DOMAIN}{target_path}"
     headers = get_api_headers()
     cookies = get_user_cookies(request)
 
@@ -821,7 +843,8 @@ def netmirror_post(request):
                 )
             return JsonResponse(cached_data, safe=False)
 
-    url = f"{BASE_TARGET_DOMAIN}{request.path}"
+    target_path = _clean_netmirror_path(request.path)
+    url = f"{BASE_TARGET_DOMAIN}{target_path}"
     headers = get_api_headers()
     cookies = get_user_cookies(request)
 
@@ -854,6 +877,9 @@ def netmirror_post(request):
                     if isinstance(item, dict) and "id" in item:
                         item["img"] = f"https://imgcdn.kim/nf/v/200/{item['id']}.jpg"
                         item["poster"] = f"https://imgcdn.kim/nf/v/200/{item['id']}.jpg"
+
+            # Dynamically rewrite any stream sources if present
+            _rewrite_sources(data)
 
             # Cache enriched post metadata for 30 minutes
             if cache_key and isinstance(data, dict):
@@ -911,7 +937,8 @@ def netmirror_playlist(request):
             django_resp.set_cookie("hd", "on", path="/", max_age=30 * 86400)
             return django_resp
 
-    url = f"{BASE_TARGET_DOMAIN}{request.path}"
+    target_path = _clean_netmirror_path(request.path)
+    url = f"{BASE_TARGET_DOMAIN}{target_path}"
     headers = get_api_headers()
     cookies = get_user_cookies(request)
     cookies["hd"] = "on"
@@ -940,19 +967,7 @@ def netmirror_playlist(request):
 
         try:
             data = resp.json()
-            if isinstance(data, list):
-                for item in data:
-                    if isinstance(item, dict) and "sources" in item:
-                        sources_list = item.get("sources", [])
-                        for s in sources_list:
-                            file_val = s.get("file", "")
-                            if file_val:
-                                full_file_url = urljoin(BASE_TARGET_DOMAIN, file_val)
-                                s["file"] = f"{STREAM_PROXY_URL}/stream.m3u8?url={quote(full_file_url, safe='')}"
-                            if s.get("label") == "Auto":
-                                s["default"] = "true"
-                            else:
-                                s.pop("default", None)
+            _rewrite_sources(data)
 
             if cache_key and isinstance(data, list):
                 cache.set(cache_key, data, timeout=600)  # 10 min cache
@@ -984,11 +999,12 @@ def netmirror_playlist(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
-def netmirror_hls(request, subpath):
+def netmirror_hls(request, subpath=""):
     """Redirects HLS requests to dedicated stream proxy."""
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Unauthorized"}, status=401)
-    full_url = f"{BASE_TARGET_DOMAIN}{request.path}"
+    target_path = _clean_netmirror_path(request.path)
+    full_url = f"{BASE_TARGET_DOMAIN}{target_path}"
     qs = request.META.get("QUERY_STRING", "")
     if qs:
         full_url += f"?{qs}"
@@ -1076,10 +1092,22 @@ def netmirror_api_init(request):
 
 @csrf_exempt
 @xframe_options_sameorigin
-def netmirror_general_mobile(request, subpath):
-    """Fallback proxy for any other /mobile/* requests."""
+def netmirror_general_mobile(request, subpath=""):
+    """Universal dynamic fallback proxy for any /mobile/* requests."""
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Unauthorized"}, status=401)
+
+    clean_path = request.path.rstrip("/")
+
+    # Dynamic route interception
+    if clean_path.endswith("setting.php"):
+        return netmirror_setting(request)
+    if clean_path.endswith("playlist.php"):
+        return netmirror_playlist(request)
+    if clean_path.endswith("post.php"):
+        return netmirror_post(request)
+    if "/hls/" in request.path or clean_path.endswith(".m3u8"):
+        return netmirror_hls(request, subpath)
 
     clean_subpath = subpath.split("?")[0]
     if clean_subpath in ["home", "series", "movies", ""]:
@@ -1087,7 +1115,8 @@ def netmirror_general_mobile(request, subpath):
         path_with_query = f"/mobile/{clean_subpath}" + (f"?{qs}" if qs else "?app=1")
         return render_proxied_page(request, path_with_query)
 
-    url = f"{BASE_TARGET_DOMAIN}/mobile/{subpath}"
+    target_path = _clean_netmirror_path(request.path)
+    url = f"{BASE_TARGET_DOMAIN}{target_path}"
     headers = get_api_headers()
     cookies = get_user_cookies(request)
     cookies["hd"] = "on"
@@ -1113,6 +1142,14 @@ def netmirror_general_mobile(request, subpath):
                 proxies=PROXIES,
                 timeout=20,
             )
+
+        # If upstream responded with an HLS manifest, redirect to stream proxy
+        if resp.text and resp.text.strip().startswith("#EXTM3U"):
+            full_url = f"{BASE_TARGET_DOMAIN}{target_path}"
+            qs = request.META.get("QUERY_STRING", "")
+            if qs:
+                full_url += f"?{qs}"
+            return HttpResponseRedirect(f"{STREAM_PROXY_URL}/stream.m3u8?url={quote(full_url, safe='')}")
 
         django_resp = HttpResponse(
             resp.content,
