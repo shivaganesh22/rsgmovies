@@ -189,7 +189,7 @@ urlpatterns = [
     path('moviebox/detail/<str:subject_id>/',moviebox.moviebox_details),
     path('moviebox/episode/<str:subject_id>/',moviebox.moviebox_episodes),
     path('moviebox/streams/<str:subject_id>/<int:season>/<int:episode>/',moviebox.moviebox_streams),
-
+    path('moviebox/captions/<str:subject_id>/<int:season>/<int:episode>/', moviebox.get_captions, name='moviebox-captions'),
     # Live TV Channels
     path('livetv/channels/', LiveTVChannelsView.as_view(), name='react-livetv-channels'),
     path('livetv/proxy/', LiveTVStreamProxyView.as_view(), name='react-livetv-proxy'),

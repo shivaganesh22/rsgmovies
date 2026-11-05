@@ -251,11 +251,13 @@ def add_domains_to_html(html_content, domain=BASE_TARGET_DOMAIN):
         if head:
             head.insert(0, soup.new_tag("base", href="/"))
 
-    for tag in soup.find_all(["img", "script", "source", "video"]):
+    for tag in soup.find_all(["img", "script", "source", "video", "track"]):
         for attr in ["src", "poster", "data-src", "data-original"]:
             val = tag.get(attr)
             if val and isinstance(val, str):
-                if val.startswith("/") and not val.startswith("//"):
+                if val.startswith("//"):
+                    tag[attr] = f"https:{val}"
+                elif val.startswith("/") and not val.startswith("//"):
                     tag[attr] = f"{domain}{val}"
                 elif val.startswith("./"):
                     tag[attr] = f"{domain}/{val[2:]}"
@@ -263,7 +265,9 @@ def add_domains_to_html(html_content, domain=BASE_TARGET_DOMAIN):
     for tag in soup.find_all("link"):
         val = tag.get("href")
         if val and isinstance(val, str):
-            if val.startswith("/") and not val.startswith("//"):
+            if val.startswith("//"):
+                tag["href"] = f"https:{val}"
+            elif val.startswith("/") and not val.startswith("//"):
                 tag["href"] = f"{domain}{val}"
             elif val.startswith("./"):
                 tag["href"] = f"{domain}/{val[2:]}"
@@ -735,19 +739,40 @@ def _clean_netmirror_path(request_path: str) -> str:
 
 
 def _rewrite_sources(data, base_domain=BASE_TARGET_DOMAIN, proxy_url=STREAM_PROXY_URL):
-    """Dynamically rewrites all stream file links in NetMirror JSON data."""
+    """
+    Dynamically rewrites all stream file links and subtitle tracks in NetMirror JSON data.
+    - Rewrites stream manifests to route through stream proxy.
+    - Upgrades protocol-relative (//) and http:// subtitle tracks to https:// to prevent
+      Cloudflare 301 redirects and resulting CORS block errors.
+    """
     items = data if isinstance(data, list) else ([data] if isinstance(data, dict) else [])
     for item in items:
-        if isinstance(item, dict) and "sources" in item:
-            for s in item.get("sources", []):
-                file_val = s.get("file", "")
-                if file_val and not file_val.startswith(proxy_url):
-                    full_file_url = urljoin(base_domain, file_val)
-                    s["file"] = f"{proxy_url}/stream.m3u8?url={quote(full_file_url, safe='')}"
-                if s.get("label") == "Auto":
-                    s["default"] = "true"
-                else:
-                    s.pop("default", None)
+        if isinstance(item, dict):
+            # 1. Rewrite video stream sources to stream proxy
+            if "sources" in item and isinstance(item["sources"], list):
+                for s in item.get("sources", []):
+                    file_val = s.get("file", "")
+                    if file_val and not file_val.startswith(proxy_url):
+                        full_file_url = urljoin(base_domain, file_val)
+                        s["file"] = f"{proxy_url}/stream.m3u8?url={quote(full_file_url, safe='')}"
+                    if s.get("label") == "Auto":
+                        s["default"] = "true"
+                    else:
+                        s.pop("default", None)
+
+            # 2. Rewrite subtitle tracks to HTTPS to prevent 301 CORS block
+            if "tracks" in item and isinstance(item["tracks"], list):
+                for t in item.get("tracks", []):
+                    t_file = t.get("file", "")
+                    if t_file and isinstance(t_file, str):
+                        if t_file.startswith("//"):
+                            t["file"] = f"https:{t_file}"
+                        elif t_file.startswith("http://"):
+                            t["file"] = "https://" + t_file[7:]
+                        elif not t_file.startswith("https://") and not t_file.startswith("/"):
+                            t["file"] = f"https://{t_file}"
+                        elif t_file.startswith("/"):
+                            t["file"] = urljoin(base_domain, t_file).replace("http://", "https://")
 
 
 @csrf_exempt
@@ -832,6 +857,7 @@ def netmirror_post(request):
     if cache_key and request.method == "GET":
         cached_data = cache.get(cache_key)
         if cached_data:
+            _rewrite_sources(cached_data)
             if getattr(request, "user", None) and request.user.is_authenticated and isinstance(cached_data, dict):
                 log_activity_event(
                     event_type="MOVIE_VIEWED",
@@ -923,6 +949,7 @@ def netmirror_playlist(request):
     if cache_key and request.method == "GET":
         cached_data = cache.get(cache_key)
         if cached_data:
+            _rewrite_sources(cached_data)
             if getattr(request, "user", None) and request.user.is_authenticated:
                 title_val = request.GET.get("t", post_id)
                 log_activity_event(
@@ -1012,12 +1039,17 @@ def netmirror_hls(request, subpath=""):
 
 
 def netmirror_subtitle(request):
-    """Proxies and formats WebVTT subtitles."""
+    """Proxies and formats WebVTT subtitles directly without residential proxy consumption."""
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Unauthorized"}, status=401)
     sub_url = request.GET.get("url")
     if not sub_url:
         return HttpResponse("Missing url parameter", status=400)
+
+    if sub_url.startswith("//"):
+        sub_url = f"https:{sub_url}"
+    elif sub_url.startswith("http://"):
+        sub_url = "https://" + sub_url[7:]
 
     headers = {
         "User-Agent": (
@@ -1029,10 +1061,13 @@ def netmirror_subtitle(request):
     }
 
     try:
-        resp = requests.get(sub_url, headers=headers, proxies=PROXIES, timeout=15)
+        # Direct fetch: subtitles are static public files and DO NOT consume residential proxy data
+        resp = requests.get(sub_url, headers=headers, timeout=15)
         vtt_text = "WEBVTT\n\n" + re.sub(r"(\d{2}:\d{2}:\d{2}),(\d{3})", r"\1.\2", resp.text)
-        response = HttpResponse(vtt_text, content_type="text/vtt")
+        response = HttpResponse(vtt_text, content_type="text/vtt; charset=utf-8")
         response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "*"
         return response
     except Exception as e:
         return HttpResponse(f"Subtitle error: {str(e)}", status=500)

@@ -556,3 +556,12 @@ def moviebox_streams(request,subject_id:str,season:int=0,episode:int=0):
             metadata={"title":data.get("title","-"),"id":str(subject_id)}
         )
     return JsonResponse(data)
+def get_captions(request,subject_id: str, season:int=0,episode:int=0):
+    subs = engine.get_subtitles(subject_id, season=season, episode=episode)
+    return JsonResponse({
+        "subject_id": subject_id,
+        "season": season,
+        "episode": episode,
+        "count": len(subs),
+        "captions": subs
+    })
