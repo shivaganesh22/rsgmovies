@@ -1,7 +1,7 @@
 import axios from 'axios';
 import apiClient from './client';
 
-export const MOVIEBOX_API_URL = (import.meta.env.VITE_MOVIEBOX_API_URL || 'http://localhost:8080').replace(/\/+$/, '');
+export const MOVIEBOX_API_URL = (import.meta.env.VITE_MOVIEBOX_API_URL || 'https://rsgmovies-moviebox.vercel.app/').replace(/\/+$/, '');
 
 const movieboxClient = axios.create({
   baseURL: MOVIEBOX_API_URL,
