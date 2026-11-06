@@ -38,7 +38,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         setupCustomControls()
         playerView.requestFocus()
 
-        val videoUrl = intent.getStringExtra("VIDEO_URL")
+        val videoUrl = intent.getStringExtra("VIDEO_URL") ?: intent.getStringExtra("STREAM_URL")
         if (!videoUrl.isNullOrEmpty()) {
             playVideo(videoUrl)
         } else {
@@ -84,8 +84,18 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     }
 
     private fun playVideo(videoUrl: String) {
-        val mediaItem = MediaItem.fromUri(videoUrl)
-        exoPlayer.setMediaItem(mediaItem)
+        val mediaItemBuilder = com.google.android.exoplayer2.MediaItem.Builder().setUri(videoUrl)
+        val subtitleUrl = intent.getStringExtra("SUBTITLE_URL")
+        val subtitleLang = intent.getStringExtra("SUBTITLE_LANG") ?: "en"
+        if (!subtitleUrl.isNullOrBlank()) {
+            val subtitleConfig = com.google.android.exoplayer2.MediaItem.SubtitleConfiguration.Builder(android.net.Uri.parse(subtitleUrl))
+                .setMimeType(com.google.android.exoplayer2.util.MimeTypes.TEXT_VTT)
+                .setLanguage(subtitleLang)
+                .setSelectionFlags(com.google.android.exoplayer2.C.SELECTION_FLAG_DEFAULT)
+                .build()
+            mediaItemBuilder.setSubtitleConfigurations(listOf(subtitleConfig))
+        }
+        exoPlayer.setMediaItem(mediaItemBuilder.build())
         exoPlayer.prepare()
     }
 

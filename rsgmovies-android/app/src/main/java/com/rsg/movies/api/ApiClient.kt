@@ -7,7 +7,9 @@ import android.os.Looper
 import android.widget.Toast
 import com.rsg.movies.api.ApiService
 import com.rsg.movies.api.FolderService
+import com.rsg.movies.api.MovieboxApiService
 import com.rsg.movies.api.OttApiService
+import com.rsg.movies.api.ScrapersApiService
 import com.rsg.movies.api.TVAuthApi
 import com.rsg.movies.data.ConfigManager
 import com.rsg.movies.ui.auth.QRLoginActivity
@@ -174,5 +176,21 @@ object ApiClient {
 
     val folderService: FolderService by lazy {
         retrofit.create(FolderService::class.java)
+    }
+
+    val scrapersApi: ScrapersApiService by lazy {
+        retrofit.create(ScrapersApiService::class.java)
+    }
+
+    private val movieboxRetrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(MovieboxApiService.MOVIEBOX_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    val movieboxApi: MovieboxApiService by lazy {
+        movieboxRetrofit.create(MovieboxApiService::class.java)
     }
 }

@@ -17,8 +17,11 @@ import com.rsg.movies.data.api.ApiClient
 import com.rsg.movies.ui.catalog.ModernCatalogScreenFragment
 import com.rsg.movies.ui.files.ModernFilesScreenFragment
 import com.rsg.movies.ui.home.ModernHomeScreenFragment
+import com.rsg.movies.ui.moviebox.ModernMovieboxScreenFragment
+import com.rsg.movies.ui.movierulz.ModernMovierulzScreenFragment
 import com.rsg.movies.ui.search.ModernSearchScreenFragment
 import com.rsg.movies.ui.settings.ModernSettingsScreenFragment
+import com.rsg.movies.ui.tamilmv.ModernTamilmvScreenFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,17 +32,23 @@ class MainActivity : FragmentActivity() {
     private lateinit var llBrandText: LinearLayout
 
     private lateinit var navHome: LinearLayout
-    private lateinit var navMovies: LinearLayout
-    private lateinit var navSeries: LinearLayout
+    private lateinit var navMoviebox: LinearLayout
     private lateinit var navSearch: LinearLayout
     private lateinit var navFiles: LinearLayout
+    private lateinit var navTamilmv: LinearLayout
+    private lateinit var navMovierulz: LinearLayout
+    private lateinit var navMovies: LinearLayout
+    private lateinit var navSeries: LinearLayout
     private lateinit var navSettings: LinearLayout
 
     private lateinit var tvLabelHome: TextView
-    private lateinit var tvLabelMovies: TextView
-    private lateinit var tvLabelSeries: TextView
+    private lateinit var tvLabelMoviebox: TextView
     private lateinit var tvLabelSearch: TextView
     private lateinit var tvLabelFiles: TextView
+    private lateinit var tvLabelTamilmv: TextView
+    private lateinit var tvLabelMovierulz: TextView
+    private lateinit var tvLabelMovies: TextView
+    private lateinit var tvLabelSeries: TextView
     private lateinit var tvLabelSettings: TextView
 
     private var isSidebarExpanded = false
@@ -53,21 +62,48 @@ class MainActivity : FragmentActivity() {
         llBrandText = findViewById(R.id.ll_brand_text)
 
         navHome = findViewById(R.id.nav_home)
-        navMovies = findViewById(R.id.nav_movies)
-        navSeries = findViewById(R.id.nav_series)
+        navMoviebox = findViewById(R.id.nav_moviebox)
         navSearch = findViewById(R.id.nav_search)
         navFiles = findViewById(R.id.nav_files)
+        navTamilmv = findViewById(R.id.nav_tamilmv)
+        navMovierulz = findViewById(R.id.nav_movierulz)
+        navMovies = findViewById(R.id.nav_movies)
+        navSeries = findViewById(R.id.nav_series)
         navSettings = findViewById(R.id.nav_settings)
 
         tvLabelHome = findViewById(R.id.tv_label_home)
-        tvLabelMovies = findViewById(R.id.tv_label_movies)
-        tvLabelSeries = findViewById(R.id.tv_label_series)
+        tvLabelMoviebox = findViewById(R.id.tv_label_moviebox)
         tvLabelSearch = findViewById(R.id.tv_label_search)
         tvLabelFiles = findViewById(R.id.tv_label_files)
+        tvLabelTamilmv = findViewById(R.id.tv_label_tamilmv)
+        tvLabelMovierulz = findViewById(R.id.tv_label_movierulz)
+        tvLabelMovies = findViewById(R.id.tv_label_movies)
+        tvLabelSeries = findViewById(R.id.tv_label_series)
         tvLabelSettings = findViewById(R.id.tv_label_settings)
 
-        val navItems = listOf(navHome, navMovies, navSeries, navSearch, navFiles, navSettings)
-        val navLabels = listOf(tvLabelHome, tvLabelMovies, tvLabelSeries, tvLabelSearch, tvLabelFiles, tvLabelSettings)
+        // Navbar Order: Home, Moviebox, Search, Files, Tamilmv, Movierulz, Movies, Series, Settings
+        val navItems = listOf(
+            navHome,
+            navMoviebox,
+            navSearch,
+            navFiles,
+            navTamilmv,
+            navMovierulz,
+            navMovies,
+            navSeries,
+            navSettings
+        )
+        val navLabels = listOf(
+            tvLabelHome,
+            tvLabelMoviebox,
+            tvLabelSearch,
+            tvLabelFiles,
+            tvLabelTamilmv,
+            tvLabelMovierulz,
+            tvLabelMovies,
+            tvLabelSeries,
+            tvLabelSettings
+        )
 
         fun dpToPx(dp: Float): Int {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics).toInt()
@@ -144,10 +180,13 @@ class MainActivity : FragmentActivity() {
         }
 
         navHome.setOnClickListener { selectTab(navHome, ModernHomeScreenFragment()) }
-        navMovies.setOnClickListener { selectTab(navMovies, ModernCatalogScreenFragment.newInstance(isSeries = false)) }
-        navSeries.setOnClickListener { selectTab(navSeries, ModernCatalogScreenFragment.newInstance(isSeries = true)) }
+        navMoviebox.setOnClickListener { selectTab(navMoviebox, ModernMovieboxScreenFragment()) }
         navSearch.setOnClickListener { selectTab(navSearch, ModernSearchScreenFragment()) }
         navFiles.setOnClickListener { selectTab(navFiles, ModernFilesScreenFragment()) }
+        navTamilmv.setOnClickListener { selectTab(navTamilmv, ModernTamilmvScreenFragment()) }
+        navMovierulz.setOnClickListener { selectTab(navMovierulz, ModernMovierulzScreenFragment()) }
+        navMovies.setOnClickListener { selectTab(navMovies, ModernCatalogScreenFragment.newInstance(isSeries = false)) }
+        navSeries.setOnClickListener { selectTab(navSeries, ModernCatalogScreenFragment.newInstance(isSeries = true)) }
         navSettings.setOnClickListener { selectTab(navSettings, ModernSettingsScreenFragment()) }
 
         if (savedInstanceState == null) {

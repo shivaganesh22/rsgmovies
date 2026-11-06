@@ -58,193 +58,291 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Navigation Tabs -->
-        <LinearLayout
+        <!-- Navigation Tabs (Order: Home, Moviebox, Search, Files, Tamilmv, Movierulz, Movies, Series, Settings) -->
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:scrollbars="none"
+            android:fillViewport="true">
 
-            <!-- Home -->
             <LinearLayout
-                android:id="@+id/nav_home"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:background="@drawable/nav_item_selector"
-                android:focusable="true"
-                android:layout_marginBottom="6dp">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🏠"
-                    android:textSize="16sp" />
+                <!-- 1. Home -->
+                <LinearLayout
+                    android:id="@+id/nav_home"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
 
-                <TextView
-                    android:id="@+id/tv_label_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Home"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginStart="14dp"
-                    android:visibility="gone" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🏠"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_home"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Home"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 2. Moviebox -->
+                <LinearLayout
+                    android:id="@+id/nav_moviebox"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📦"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_moviebox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Moviebox"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 3. Search -->
+                <LinearLayout
+                    android:id="@+id/nav_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔍"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_search"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Search"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 4. Files -->
+                <LinearLayout
+                    android:id="@+id/nav_files"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📁"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_files"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Files"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 5. Tamilmv -->
+                <LinearLayout
+                    android:id="@+id/nav_tamilmv"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚡"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_tamilmv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tamilmv"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 6. Movierulz -->
+                <LinearLayout
+                    android:id="@+id/nav_movierulz"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🍿"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_movierulz"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Movierulz"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 7. Movies -->
+                <LinearLayout
+                    android:id="@+id/nav_movies"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎬"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_movies"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Movies"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 8. Series -->
+                <LinearLayout
+                    android:id="@+id/nav_series"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📺"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_series"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Series"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- 9. Settings -->
+                <LinearLayout
+                    android:id="@+id/nav_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/nav_item_selector"
+                    android:focusable="true"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚙️"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_label_settings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Settings"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="14dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
             </LinearLayout>
-
-            <!-- Movies -->
-            <LinearLayout
-                android:id="@+id/nav_movies"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:background="@drawable/nav_item_selector"
-                android:focusable="true"
-                android:layout_marginBottom="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🎬"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_label_movies"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Movies"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginStart="14dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <!-- Series -->
-            <LinearLayout
-                android:id="@+id/nav_series"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:background="@drawable/nav_item_selector"
-                android:focusable="true"
-                android:layout_marginBottom="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📺"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_label_series"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Series"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginStart="14dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <!-- Search -->
-            <LinearLayout
-                android:id="@+id/nav_search"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:background="@drawable/nav_item_selector"
-                android:focusable="true"
-                android:layout_marginBottom="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🔍"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_label_search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Search"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginStart="14dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <!-- Files -->
-            <LinearLayout
-                android:id="@+id/nav_files"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:background="@drawable/nav_item_selector"
-                android:focusable="true"
-                android:layout_marginBottom="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📁"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_label_files"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Files"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginStart="14dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <!-- Settings -->
-            <LinearLayout
-                android:id="@+id/nav_settings"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:background="@drawable/nav_item_selector"
-                android:focusable="true"
-                android:layout_marginBottom="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⚙️"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_label_settings"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Settings"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginStart="14dp"
-                    android:visibility="gone" />
-            </LinearLayout>
-        </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
     <!-- Main Content Container -->

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/surface_card"
+    android:foreground="@drawable/card_focus_border"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="12dp">
+
+        <!-- Resolution Tag -->
+        <TextView
+            android:id="@+id/tv_link_res"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/badge_bg"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="1080p"
+            android:textColor="@color/text_accent"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="12dp" />
+
+        <!-- Info column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_link_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="Torrent File Name"
+                android:textColor="@color/text_white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_link_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Size: 1.4 GB"
+                android:textColor="@color/text_muted"
+                android:textSize="10sp"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <!-- Actions Row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="8dp">
+
+            <!-- Seedr Button -->
+            <Button
+                android:id="@+id/btn_link_seedr"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:background="@drawable/btn_primary_selector"
+                android:paddingHorizontal="14dp"
+                android:text="+ Seedr"
+                android:textColor="@color/text_white"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:focusable="true" />
+
+            <!-- Direct Button -->
+            <Button
+                android:id="@+id/btn_link_direct"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/nav_item_selector"
+                android:paddingHorizontal="12dp"
+                android:text="Direct"
+                android:textColor="#34d399"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:focusable="true" />
+
+            <!-- Magnet Button -->
+            <Button
+                android:id="@+id/btn_link_magnet"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/nav_item_selector"
+                android:paddingHorizontal="12dp"
+                android:text="🧲"
+                android:textColor="@color/text_white"
+                android:textSize="12sp"
+                android:focusable="true" />
+
+            <!-- Copy Button -->
+            <Button
+                android:id="@+id/btn_link_copy"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/nav_item_selector"
+                android:paddingHorizontal="12dp"
+                android:text="📋"
+                android:textColor="@color/text_white"
+                android:textSize="12sp"
+                android:focusable="true" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
