@@ -58,11 +58,19 @@ object TvFocusHelper {
         }
     }
 
-    @JvmOverloads
+    fun attachHorizontalRowFocus(
+        recyclerView: RecyclerView,
+        onLeftAtStart: (() -> Unit)?
+    ) {
+        attachHorizontalRowFocus(recyclerView, onLeftAtStart, null, null, null)
+    }
+
     fun attachHorizontalRowFocus(
         recyclerView: RecyclerView,
         onLeftAtStart: (() -> Unit)? = null,
-        onUpAtStart: (() -> Unit)? = null
+        onUpAtStart: (() -> Unit)? = null,
+        upTarget: View? = null,
+        downTarget: View? = null
     ) {
         val context = recyclerView.context
         val customLayoutManager = object : LinearLayoutManager(context, HORIZONTAL, false) {
@@ -72,7 +80,19 @@ object TvFocusHelper {
                     return super.onInterceptFocusSearch(focused, direction)
                 }
 
-                if (direction == View.FOCUS_LEFT) {
+                if (direction == View.FOCUS_UP) {
+                    if (upTarget != null) {
+                        return upTarget
+                    }
+                    if (onUpAtStart != null) {
+                        onUpAtStart.invoke()
+                        return focused
+                    }
+                } else if (direction == View.FOCUS_DOWN) {
+                    if (downTarget != null) {
+                        return downTarget
+                    }
+                } else if (direction == View.FOCUS_LEFT) {
                     if (currentPos > 0) {
                         val targetPos = currentPos - 1
                         scrollToPosition(targetPos)
@@ -112,8 +132,17 @@ object TvFocusHelper {
                         val pos = recyclerView.getChildAdapterPosition(v)
                         if (pos != RecyclerView.NO_POSITION) {
                             val count = recyclerView.adapter?.itemCount ?: 0
-                            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && onUpAtStart != null) {
-                                onUpAtStart.invoke()
+                            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                                if (upTarget != null) {
+                                    upTarget.requestFocus()
+                                    return@setOnKeyListener true
+                                }
+                                if (onUpAtStart != null) {
+                                    onUpAtStart.invoke()
+                                    return@setOnKeyListener true
+                                }
+                            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && downTarget != null) {
+                                downTarget.requestFocus()
                                 return@setOnKeyListener true
                             } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                                 if (pos == 0) {

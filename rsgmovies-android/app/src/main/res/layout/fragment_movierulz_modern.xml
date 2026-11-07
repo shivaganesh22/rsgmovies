@@ -8,71 +8,15 @@
     android:paddingEnd="24dp"
     android:paddingTop="20dp">
 
-    <!-- Header: Title, Description & Search Input -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Clean Title Header -->
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="12dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/badge_bg"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="3dp"
-                android:layout_marginBottom="4dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🍿 Movierulz Scraper Feed"
-                    android:textColor="@color/primary_light"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Movierulz Releases"
-                android:textColor="@color/text_white"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Browse verified Telugu, Tamil, Hindi, and Malayalam releases with live quality tags"
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <!-- Search input -->
-        <EditText
-            android:id="@+id/et_movierulz_search"
-            android:layout_width="220dp"
-            android:layout_height="38dp"
-            android:background="@drawable/nav_item_selector"
-            android:hint="Search Movierulz..."
-            android:textColorHint="@color/text_muted"
-            android:textColor="@color/text_white"
-            android:textSize="12sp"
-            android:paddingHorizontal="14dp"
-            android:singleLine="true"
-            android:imeOptions="actionSearch"
-            android:focusable="true" />
-    </LinearLayout>
+        android:text="Movierulz"
+        android:textColor="@color/text_white"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
 
     <!-- Category Pills Bar -->
     <androidx.recyclerview.widget.RecyclerView

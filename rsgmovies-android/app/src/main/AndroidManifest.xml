@@ -134,17 +134,17 @@
 
         <activity
             android:name=".ui.moviebox.MovieboxDetailActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
 
         <activity
             android:name=".ui.tamilmv.TamilmvDetailActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
 
         <activity
             android:name=".ui.movierulz.MovierulzDetailActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.RSGMOVIES.NoActionBar" />
 
     </application>

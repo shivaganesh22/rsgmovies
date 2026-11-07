@@ -190,7 +190,9 @@ class ModernCatalogScreenFragment : Fragment() {
                 }
             } catch (e: Exception) {
                 pbLoading.visibility = View.GONE
-                Toast.makeText(requireContext(), "Failed to load catalog: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                context?.let { ctx ->
+                    Toast.makeText(ctx, "Failed to load catalog: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
             } finally {
                 isLoading = false
             }

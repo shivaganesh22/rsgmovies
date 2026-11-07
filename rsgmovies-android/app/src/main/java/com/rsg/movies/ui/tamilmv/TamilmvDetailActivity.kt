@@ -101,6 +101,13 @@ class TamilmvDetailActivity : FragmentActivity() {
             return
         }
 
+        val cacheKey = "tamilmv_detail_$movieLink"
+        val cached = com.rsg.movies.providers.ContentCache.get<com.rsg.movies.data.model.TamilmvMovieDetailResponse>(cacheKey)
+        if (cached != null) {
+            bindDetailData(cached)
+            return
+        }
+
         pbLoading.visibility = View.VISIBLE
         nsvDetail.visibility = View.GONE
 
@@ -108,27 +115,36 @@ class TamilmvDetailActivity : FragmentActivity() {
             try {
                 val resp = ApiClient.scrapersApi.getTamilmvMovie(movieLink)
                 pbLoading.visibility = View.GONE
-                nsvDetail.visibility = View.VISIBLE
 
                 if (resp.isSuccessful && resp.body() != null) {
                     val body = resp.body()!!
-                    val title = body.title?.ifBlank { null } ?: movieTitle
-                    tvTitle.text = title
-
-                    val links = body.links ?: emptyList()
-                    downloadLinks.clear()
-                    downloadLinks.addAll(links)
-                    linkAdapter.notifyDataSetChanged()
-
-                    tvLinksHeader.text = "Available Downloads & Magnet Links (${downloadLinks.size})"
+                    com.rsg.movies.providers.ContentCache.put(cacheKey, body)
+                    bindDetailData(body)
                 } else {
+                    nsvDetail.visibility = View.VISIBLE
                     Toast.makeText(this@TamilmvDetailActivity, "Could not load release details", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 pbLoading.visibility = View.GONE
+                nsvDetail.visibility = View.VISIBLE
                 Toast.makeText(this@TamilmvDetailActivity, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun bindDetailData(body: com.rsg.movies.data.model.TamilmvMovieDetailResponse) {
+        pbLoading.visibility = View.GONE
+        nsvDetail.visibility = View.VISIBLE
+
+        val title = body.title?.ifBlank { null } ?: movieTitle
+        tvTitle.text = title
+
+        val links = body.links ?: emptyList()
+        downloadLinks.clear()
+        downloadLinks.addAll(links)
+        linkAdapter.notifyDataSetChanged()
+
+        tvLinksHeader.text = "Available Downloads & Magnet Links (${downloadLinks.size})"
     }
 
     private fun addToSeedr(magnetLink: String) {
@@ -137,11 +153,19 @@ class TamilmvDetailActivity : FragmentActivity() {
 
         lifecycleScope.launch {
             try {
-                val resp = ApiClient.filesApi.addTorrent(token, magnetLink)
+                val body = mapOf("link" to magnetLink)
+                val resp = ApiClient.filesApi.addTorrent(token, body, magnetLink)
                 if (resp.isSuccessful) {
                     Toast.makeText(this@TamilmvDetailActivity, "Torrent added to Seedr! Downloading in cloud.", Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(this@TamilmvDetailActivity, "Failed to add torrent to Seedr", Toast.LENGTH_SHORT).show()
+                    val errMsg = try {
+                        val errStr = resp.errorBody()?.string() ?: ""
+                        val json = org.json.JSONObject(errStr)
+                        json.optJSONObject("error")?.optString("message") 
+                            ?: json.optString("detail") 
+                            ?: json.optString("message")
+                    } catch (_: Exception) { null }
+                    Toast.makeText(this@TamilmvDetailActivity, errMsg ?: "Failed to add torrent to Seedr", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@TamilmvDetailActivity, "Error adding to Seedr: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()

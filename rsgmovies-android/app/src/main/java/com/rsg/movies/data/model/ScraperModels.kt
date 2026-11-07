@@ -71,8 +71,34 @@ data class MovierulzDetailObj(
     val name: String? = null,
     val image: String? = null,
     val quality: String? = null,
-    val meta: Map<String, String>? = null
-) : Serializable
+    val meta: Map<String, JsonElement>? = null,
+    val info: List<String>? = null,
+    val desc: String? = null
+) : Serializable {
+
+    fun getFormattedMeta(): String {
+        val m = meta ?: return ""
+        val parts = mutableListOf<String>()
+        for ((key, value) in m) {
+            if (value.isJsonArray) {
+                val names = mutableListOf<String>()
+                for (item in value.asJsonArray) {
+                    if (item.isJsonObject && item.asJsonObject.has("name")) {
+                        names.add(item.asJsonObject.get("name").asString)
+                    } else if (item.isJsonPrimitive) {
+                        names.add(item.asString)
+                    }
+                }
+                if (names.isNotEmpty()) {
+                    parts.add("$key: ${names.joinToString(", ")}")
+                }
+            } else if (value.isJsonPrimitive) {
+                parts.add("$key: ${value.asString}")
+            }
+        }
+        return parts.joinToString("   •   ")
+    }
+}
 
 
 // ======================== TAMILMV MODELS ========================
@@ -104,10 +130,14 @@ data class TamilmvItem(
     }
 }
 
+data class TamilmvImageItem(
+    val link: String? = null
+) : Serializable
+
 data class TamilmvMovieDetailResponse(
     val title: String? = null,
     val links: List<TamilmvDownloadLink>? = null,
-    val images: List<String>? = null,
+    val images: List<TamilmvImageItem>? = null,
     val details: JsonElement? = null
 ) : Serializable
 

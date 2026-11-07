@@ -48,11 +48,36 @@ class TamilmvCardAdapter(
             holder.tvYear.visibility = View.GONE
         }
 
-        holder.root.setOnFocusChangeListener { v, hasFocus ->
+        val context = holder.itemView.context
+        fun applyFocusState(hasFocus: Boolean) {
             if (hasFocus) {
-                v.animate().scaleX(1.02f).scaleY(1.02f).translationZ(6f).setDuration(120).start()
+                holder.tvTitle.setTextColor(context.resources.getColor(R.color.text_accent))
             } else {
-                v.animate().scaleX(1.0f).scaleY(1.0f).translationZ(0f).setDuration(120).start()
+                holder.tvTitle.setTextColor(context.resources.getColor(R.color.text_white))
+            }
+        }
+
+        holder.root.setOnFocusChangeListener { v, hasFocus ->
+            applyFocusState(hasFocus)
+            if (hasFocus) {
+                val pad = (30 * context.resources.displayMetrics.density).toInt()
+                val rect = android.graphics.Rect(0, -pad, v.width, v.height + pad)
+                v.requestRectangleOnScreen(rect, false)
+            }
+        }
+
+        holder.root.setOnHoverListener { v, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_HOVER_ENTER -> {
+                    v.requestFocus()
+                    applyFocusState(true)
+                    true
+                }
+                android.view.MotionEvent.ACTION_HOVER_EXIT -> {
+                    applyFocusState(v.hasFocus())
+                    true
+                }
+                else -> false
             }
         }
 

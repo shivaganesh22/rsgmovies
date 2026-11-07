@@ -3,6 +3,7 @@ package com.rsg.movies.api
 import com.rsg.movies.data.model.FolderResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -17,7 +18,14 @@ interface ApiService {
     @POST("react/addtorrent/")
     suspend fun addTorrent(
         @Header("Authorization") token: String,
-        @Query("link") link: String
+        @Body body: Map<String, String>,
+        @Query("link") link: String? = null
+    ): Response<ResponseBody>
+
+    @POST("react/addtorrent/")
+    suspend fun addTorrent(
+        @Body body: Map<String, String>,
+        @Query("link") link: String? = null
     ): Response<ResponseBody>
 
     @DELETE("react/deletefolder/{id}")

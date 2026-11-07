@@ -19,7 +19,7 @@ interface MovieboxApiService {
         @Query("query") query: String,
         @Query("page") page: Int = 1,
         @Query("per_page") perPage: Int = 20
-    ): Response<MovieboxSearchResponse>
+    ): Response<com.google.gson.JsonElement>
 
     @GET("react/moviebox/detail/{subject_id}/")
     suspend fun getDetails(@Path("subject_id") subjectId: String): Response<MovieboxDetailData>

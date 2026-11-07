@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
 
 class ModernMovierulzScreenFragment : Fragment() {
 
-    private lateinit var etSearch: EditText
     private lateinit var rvCategories: RecyclerView
     private lateinit var rvGrid: RecyclerView
     private lateinit var pbLoading: ProgressBar
@@ -36,7 +35,6 @@ class ModernMovierulzScreenFragment : Fragment() {
     private lateinit var gridAdapter: MovierulzCardAdapter
 
     private var activeCategory: String = ""
-    private var activeSearchQuery: String = ""
 
     private val categories = listOf(
         Genre(rawId = "", name = "All Releases"),
@@ -54,7 +52,6 @@ class ModernMovierulzScreenFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_movierulz_modern, container, false)
 
-        etSearch = view.findViewById(R.id.et_movierulz_search)
         rvCategories = view.findViewById(R.id.rv_movierulz_categories)
         rvGrid = view.findViewById(R.id.rv_movierulz_grid)
         pbLoading = view.findViewById(R.id.pb_movierulz_loading)
@@ -70,7 +67,6 @@ class ModernMovierulzScreenFragment : Fragment() {
 
         setupCategories()
         setupGrid()
-        setupSearch()
 
         loadMovies()
 
@@ -84,8 +80,6 @@ class ModernMovierulzScreenFragment : Fragment() {
 
         val catAdapter = GenreChipAdapter(categories, 0) { genre, _ ->
             activeCategory = genre.id
-            activeSearchQuery = ""
-            etSearch.setText("")
             loadMovies()
         }
         rvCategories.adapter = catAdapter
@@ -107,48 +101,30 @@ class ModernMovierulzScreenFragment : Fragment() {
         rvGrid.adapter = gridAdapter
     }
 
-    private fun setupSearch() {
-        etSearch.setOnKeyListener { _, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (etSearch.selectionStart == 0) {
-                    com.rsg.movies.ui.TvFocusHelper.focusSidebar(activity)
-                    return@setOnKeyListener true
-                }
-            }
-            false
-        }
-
-        etSearch.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val q = etSearch.text.toString().trim()
-                if (q.isNotEmpty()) {
-                    activeSearchQuery = q
-                    activeCategory = ""
-                    loadMovies()
-                }
-                true
-            } else {
-                false
-            }
-        }
-    }
-
     private fun loadMovies() {
+        val cacheKey = "movierulz_$activeCategory"
+        val cached = com.rsg.movies.providers.ContentCache.get<List<MovierulzMovieItem>>(cacheKey)
+        if (!cached.isNullOrEmpty()) {
+            pbLoading.visibility = View.GONE
+            moviesList.clear()
+            moviesList.addAll(cached)
+            gridAdapter.notifyDataSetChanged()
+            rvGrid.visibility = View.VISIBLE
+            return
+        }
+
         pbLoading.visibility = View.VISIBLE
         tvEmpty.visibility = View.GONE
 
         lifecycleScope.launch {
             try {
-                val resp = if (activeSearchQuery.isNotBlank()) {
-                    ApiClient.scrapersApi.searchMovierulz(activeSearchQuery)
-                } else {
-                    ApiClient.scrapersApi.getMovierulz(activeCategory)
-                }
+                val resp = ApiClient.scrapersApi.getMovierulz(activeCategory)
 
                 pbLoading.visibility = View.GONE
                 if (resp.isSuccessful && !resp.body()?.movies.isNullOrEmpty()) {
                     moviesList.clear()
                     moviesList.addAll(resp.body()!!.movies!!)
+                    com.rsg.movies.providers.ContentCache.put(cacheKey, moviesList)
                     gridAdapter.notifyDataSetChanged()
                     rvGrid.visibility = View.VISIBLE
                 } else {

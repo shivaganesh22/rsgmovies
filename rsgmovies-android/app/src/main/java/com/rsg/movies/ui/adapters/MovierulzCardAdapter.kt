@@ -85,11 +85,35 @@ class MovierulzCardAdapter(
             .transition(DrawableTransitionOptions.withCrossFade(150))
             .into(holder.ivPoster)
 
-        holder.root.setOnFocusChangeListener { v, hasFocus ->
+        fun applyFocusState(hasFocus: Boolean) {
             if (hasFocus) {
-                v.animate().scaleX(1.08f).scaleY(1.08f).translationZ(8f).setDuration(120).start()
+                holder.tvTitle.setTextColor(context.resources.getColor(R.color.text_accent))
             } else {
-                v.animate().scaleX(1.0f).scaleY(1.0f).translationZ(0f).setDuration(120).start()
+                holder.tvTitle.setTextColor(context.resources.getColor(R.color.text_white))
+            }
+        }
+
+        holder.root.setOnFocusChangeListener { v, hasFocus ->
+            applyFocusState(hasFocus)
+            if (hasFocus) {
+                val pad = dpToPx(30f)
+                val rect = android.graphics.Rect(0, -pad, v.width, v.height + pad)
+                v.requestRectangleOnScreen(rect, false)
+            }
+        }
+
+        holder.root.setOnHoverListener { v, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_HOVER_ENTER -> {
+                    v.requestFocus()
+                    applyFocusState(true)
+                    true
+                }
+                android.view.MotionEvent.ACTION_HOVER_EXIT -> {
+                    applyFocusState(v.hasFocus())
+                    true
+                }
+                else -> false
             }
         }
 

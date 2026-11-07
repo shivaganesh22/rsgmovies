@@ -126,6 +126,15 @@ class MovieboxDetailActivity : FragmentActivity() {
     }
 
     private fun fetchDetails() {
+        val cacheKey = "mb_detail_$initialSubjectId"
+        val cached = com.rsg.movies.providers.ContentCache.get<MovieboxDetailData>(cacheKey)
+        if (cached != null) {
+            currentDetails = cached
+            bindDetails(cached)
+            handleDubsAndContent(cached)
+            return
+        }
+
         pbLoading.visibility = View.VISIBLE
         nsvDetails.visibility = View.GONE
 
@@ -134,6 +143,7 @@ class MovieboxDetailActivity : FragmentActivity() {
                 val resp = ApiClient.movieboxApi.getDetails(initialSubjectId)
                 if (resp.isSuccessful && resp.body() != null) {
                     currentDetails = resp.body()
+                    com.rsg.movies.providers.ContentCache.put(cacheKey, currentDetails)
                     bindDetails(currentDetails!!)
                     handleDubsAndContent(currentDetails!!)
                 } else {
@@ -272,8 +282,25 @@ class MovieboxDetailActivity : FragmentActivity() {
 
     private fun bindEpisodesForSelectedSeason() {
         val matchedSeason = seasonsList.find { (it.season ?: 1) == selectedSeason } ?: seasonsList.firstOrNull()
-        val eps = matchedSeason?.episodes ?: emptyList()
-        val epAdapter = MovieboxEpisodeAdapter(eps, selectedEpisode) { epItem ->
+        val count = matchedSeason?.episode_count ?: matchedSeason?.episodes?.size ?: 1
+        val fallbackPoster = currentDetails?.getCoverUrl() ?: ""
+        val eps = if (!matchedSeason?.episodes.isNullOrEmpty()) {
+            matchedSeason!!.episodes!!
+        } else {
+            (1..count).map { epNum ->
+                MovieboxEpisodeItem(
+                    episode = epNum,
+                    title = "Episode $epNum",
+                    cover = fallbackPoster
+                )
+            }
+        }
+        val epAdapter = MovieboxEpisodeAdapter(
+            episodes = eps,
+            seasonNumber = selectedSeason,
+            fallbackImage = fallbackPoster,
+            selectedEpisodeNum = selectedEpisode
+        ) { epItem ->
             selectedEpisode = epItem.episode ?: 1
             fetchStreams()
         }
@@ -284,6 +311,30 @@ class MovieboxDetailActivity : FragmentActivity() {
         val s = if (currentDetails?.isSeries() == true) selectedSeason else 0
         val e = if (currentDetails?.isSeries() == true) selectedEpisode else 0
 
+        val cacheKey = "mb_streams_${activeSubjectId}_${s}_${e}"
+        val cached = com.rsg.movies.providers.ContentCache.get<List<MovieboxStreamItem>>(cacheKey)
+        if (!cached.isNullOrEmpty()) {
+            availableStreams = cached
+            val mp4Streams = availableStreams.filter { it.isMp4() }
+            val pref = if (mp4Streams.isNotEmpty()) {
+                mp4Streams.maxByOrNull { it.getNumericQuality() } ?: mp4Streams.first()
+            } else {
+                availableStreams.maxByOrNull { it.getNumericQuality() } ?: availableStreams.first()
+            }
+            selectedStream = pref
+            val prefIdx = availableStreams.indexOf(pref).coerceAtLeast(0)
+
+            tvStreamsTitle.text = "Available Video Streams (${availableStreams.size})"
+            val streamAdapter = MovieboxStreamAdapter(availableStreams, prefIdx) { st, _ ->
+                selectedStream = st
+                showStreamActionModal(st)
+            }
+            rvStreams.adapter = streamAdapter
+            val streamIdLong = (pref.id as? Number)?.toLong() ?: 0L
+            fetchCaptions(streamIdLong)
+            return
+        }
+
         tvStreamsTitle.text = "Loading video streams..."
 
         lifecycleScope.launch {
@@ -291,9 +342,15 @@ class MovieboxDetailActivity : FragmentActivity() {
                 val resp = ApiClient.movieboxApi.getStreams(activeSubjectId, s, e)
                 if (resp.isSuccessful && !resp.body()?.streams.isNullOrEmpty()) {
                     availableStreams = resp.body()!!.streams!!
-                    // Preferred: 1080p stream
-                    val pref = availableStreams.find { it.quality_value == 1080 || it.resolution == 1080 }
-                        ?: availableStreams.first()
+                    com.rsg.movies.providers.ContentCache.put(cacheKey, availableStreams)
+                    // Preferred: MP4 with highest resolution
+                    // Fallback: highest resolution DASH stream
+                    val mp4Streams = availableStreams.filter { it.isMp4() }
+                    val pref = if (mp4Streams.isNotEmpty()) {
+                        mp4Streams.maxByOrNull { it.getNumericQuality() } ?: mp4Streams.first()
+                    } else {
+                        availableStreams.maxByOrNull { it.getNumericQuality() } ?: availableStreams.first()
+                    }
                     selectedStream = pref
                     val prefIdx = availableStreams.indexOf(pref).coerceAtLeast(0)
 
@@ -304,7 +361,8 @@ class MovieboxDetailActivity : FragmentActivity() {
                     }
                     rvStreams.adapter = streamAdapter
 
-                    fetchCaptions(pref.id ?: 0L)
+                    val streamIdLong = (pref.id as? Number)?.toLong() ?: 0L
+                    fetchCaptions(streamIdLong)
                 } else {
                     tvStreamsTitle.text = "No streams available for this dub/episode"
                 }
@@ -337,7 +395,7 @@ class MovieboxDetailActivity : FragmentActivity() {
 
         val proxiedUrl = MovieboxApiService.getProxiedStreamUrl(rawUrl, stream.headers)
         val title = currentDetails?.getCleanTitle() ?: "Moviebox Stream"
-        val subtitleInfo = "${stream.getQualityLabel()} • ${if (currentDetails?.isSeries() == true) "S${selectedSeason}E${selectedEpisode}" else "Full Movie"}"
+        val subtitleInfo = "${stream.getDisplayFormat()} ${stream.getQualityLabel()} • ${if (currentDetails?.isSeries() == true) "S${selectedSeason}E${selectedEpisode}" else "Full Movie"}"
 
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -356,7 +414,7 @@ class MovieboxDetailActivity : FragmentActivity() {
         tvModalTitle.text = title
         tvModalSubtitle.text = subtitleInfo
 
-        // 1. VLC Player with Proxied URL
+        // 1. VLC Player with Proxied URL (Default focused)
         btnVlc.setOnClickListener {
             dialog.dismiss()
             openExternalPlayer(proxiedUrl, "org.videolan.vlc")
@@ -407,8 +465,9 @@ class MovieboxDetailActivity : FragmentActivity() {
 
         btnCancel.setOnClickListener { dialog.dismiss() }
 
+        btnVlc.requestFocus()
         dialog.show()
-        btnPlayApp.requestFocus()
+        btnVlc.post { btnVlc.requestFocus() }
     }
 
     private fun openExternalPlayer(streamUrl: String, packageName: String) {

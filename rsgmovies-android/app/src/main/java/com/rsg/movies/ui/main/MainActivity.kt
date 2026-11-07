@@ -17,6 +17,7 @@ import com.rsg.movies.data.api.ApiClient
 import com.rsg.movies.ui.catalog.ModernCatalogScreenFragment
 import com.rsg.movies.ui.files.ModernFilesScreenFragment
 import com.rsg.movies.ui.home.ModernHomeScreenFragment
+import com.rsg.movies.ui.livetv.ModernLiveTvScreenFragment
 import com.rsg.movies.ui.moviebox.ModernMovieboxScreenFragment
 import com.rsg.movies.ui.movierulz.ModernMovierulzScreenFragment
 import com.rsg.movies.ui.search.ModernSearchScreenFragment
@@ -37,6 +38,7 @@ class MainActivity : FragmentActivity() {
     private lateinit var navFiles: LinearLayout
     private lateinit var navTamilmv: LinearLayout
     private lateinit var navMovierulz: LinearLayout
+    private lateinit var navLivetv: LinearLayout
     private lateinit var navMovies: LinearLayout
     private lateinit var navSeries: LinearLayout
     private lateinit var navSettings: LinearLayout
@@ -47,6 +49,7 @@ class MainActivity : FragmentActivity() {
     private lateinit var tvLabelFiles: TextView
     private lateinit var tvLabelTamilmv: TextView
     private lateinit var tvLabelMovierulz: TextView
+    private lateinit var tvLabelLivetv: TextView
     private lateinit var tvLabelMovies: TextView
     private lateinit var tvLabelSeries: TextView
     private lateinit var tvLabelSettings: TextView
@@ -67,6 +70,7 @@ class MainActivity : FragmentActivity() {
         navFiles = findViewById(R.id.nav_files)
         navTamilmv = findViewById(R.id.nav_tamilmv)
         navMovierulz = findViewById(R.id.nav_movierulz)
+        navLivetv = findViewById(R.id.nav_livetv)
         navMovies = findViewById(R.id.nav_movies)
         navSeries = findViewById(R.id.nav_series)
         navSettings = findViewById(R.id.nav_settings)
@@ -77,11 +81,12 @@ class MainActivity : FragmentActivity() {
         tvLabelFiles = findViewById(R.id.tv_label_files)
         tvLabelTamilmv = findViewById(R.id.tv_label_tamilmv)
         tvLabelMovierulz = findViewById(R.id.tv_label_movierulz)
+        tvLabelLivetv = findViewById(R.id.tv_label_livetv)
         tvLabelMovies = findViewById(R.id.tv_label_movies)
         tvLabelSeries = findViewById(R.id.tv_label_series)
         tvLabelSettings = findViewById(R.id.tv_label_settings)
 
-        // Navbar Order: Home, Moviebox, Search, Files, Tamilmv, Movierulz, Movies, Series, Settings
+        // Navbar Order: Home, Moviebox, Search, Files, Tamilmv, Movierulz, Live TV, Movies, Series, Settings
         val navItems = listOf(
             navHome,
             navMoviebox,
@@ -89,6 +94,7 @@ class MainActivity : FragmentActivity() {
             navFiles,
             navTamilmv,
             navMovierulz,
+            navLivetv,
             navMovies,
             navSeries,
             navSettings
@@ -100,6 +106,7 @@ class MainActivity : FragmentActivity() {
             tvLabelFiles,
             tvLabelTamilmv,
             tvLabelMovierulz,
+            tvLabelLivetv,
             tvLabelMovies,
             tvLabelSeries,
             tvLabelSettings
@@ -185,6 +192,7 @@ class MainActivity : FragmentActivity() {
         navFiles.setOnClickListener { selectTab(navFiles, ModernFilesScreenFragment()) }
         navTamilmv.setOnClickListener { selectTab(navTamilmv, ModernTamilmvScreenFragment()) }
         navMovierulz.setOnClickListener { selectTab(navMovierulz, ModernMovierulzScreenFragment()) }
+        navLivetv.setOnClickListener { selectTab(navLivetv, ModernLiveTvScreenFragment()) }
         navMovies.setOnClickListener { selectTab(navMovies, ModernCatalogScreenFragment.newInstance(isSeries = false)) }
         navSeries.setOnClickListener { selectTab(navSeries, ModernCatalogScreenFragment.newInstance(isSeries = true)) }
         navSettings.setOnClickListener { selectTab(navSettings, ModernSettingsScreenFragment()) }

@@ -41,7 +41,10 @@
                 android:textSize="14sp"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:nextFocusDown="@+id/rv_search_sources" />
 
             <Button
                 android:id="@+id/btn_clear_search"
@@ -66,6 +69,19 @@
             android:textSize="14sp"
             android:visibility="visible" />
 
+        <!-- Search Source Filter Pills (All, Blast, Moviebox) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_search_sources"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:orientation="horizontal"
+            android:clipToPadding="false"
+            android:layout_marginBottom="12dp"
+            android:focusable="true"
+            android:nextFocusUp="@+id/et_search_query"
+            android:nextFocusDown="@+id/rv_search_results"
+            android:visibility="gone" />
+
         <!-- 5-Column Search Results Grid -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_results"
@@ -74,6 +90,8 @@
             android:layout_weight="1"
             android:clipToPadding="false"
             android:paddingBottom="40dp"
+            android:focusable="true"
+            android:nextFocusUp="@+id/rv_search_sources"
             android:visibility="gone" />
     </LinearLayout>
 

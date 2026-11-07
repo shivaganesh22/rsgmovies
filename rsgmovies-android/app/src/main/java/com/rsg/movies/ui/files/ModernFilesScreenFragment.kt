@@ -157,12 +157,20 @@ class ModernFilesScreenFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 Toast.makeText(requireContext(), "Adding torrent...", Toast.LENGTH_SHORT).show()
-                val resp = ApiClient.filesApi.addTorrent(token, link)
+                val body = mapOf("link" to link)
+                val resp = ApiClient.filesApi.addTorrent(token, body, link)
                 if (resp.isSuccessful) {
                     Toast.makeText(requireContext(), "Torrent added successfully!", Toast.LENGTH_SHORT).show()
                     loadFilesData()
                 } else {
-                    Toast.makeText(requireContext(), "Could not add torrent", Toast.LENGTH_SHORT).show()
+                    val errMsg = try {
+                        val errStr = resp.errorBody()?.string() ?: ""
+                        val json = org.json.JSONObject(errStr)
+                        json.optJSONObject("error")?.optString("message") 
+                            ?: json.optString("detail") 
+                            ?: json.optString("message")
+                    } catch (_: Exception) { null }
+                    Toast.makeText(requireContext(), errMsg ?: "Could not add torrent", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()

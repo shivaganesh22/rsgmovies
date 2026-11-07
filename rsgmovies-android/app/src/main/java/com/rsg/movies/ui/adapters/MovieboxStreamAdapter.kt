@@ -26,8 +26,8 @@ class MovieboxStreamAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val stream = streams[position]
-        holder.tvServerName.text = stream.getQualityLabel()
-        holder.tvLang.text = if (stream.resolution != null && stream.resolution > 0) "${stream.resolution}p" else "Direct"
+        holder.tvServerName.text = stream.getDisplayFormat()
+        holder.tvLang.text = stream.getQualityLabel()
 
         holder.itemView.isSelected = (position == selectedIndex)
 

@@ -12,10 +12,15 @@ except ImportError:
     curl_requests = None
 from bs4 import BeautifulSoup as bs
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.authentication import SessionAuthentication
+from tv.auth_backend import TVDeviceSessionAuthentication
+from accounts.auth_backend import AndroidTVTokenAuthentication
 from accounts.permissions import IsAuthenticated, IsAdminRole, IsUserRole
 from seedr_service.services import get_seedr_service_for_user
 from seedr_service.exceptions import SeedrError
@@ -24,6 +29,10 @@ from react.serializers import ContactSerializer
 from activity.services import log_activity_event
 
 logger = logging.getLogger(__name__)
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return  # Bypass CSRF checks for mobile / TV clients and API requests
 
 # Request headers for web scraping
 HEADERS = {
@@ -181,10 +190,16 @@ class GetFilePlayer(APIView):
             return Response({"error": {"code": "SEEDR_ERROR", "message": "Failed to fetch player"}}, status=status.HTTP_502_BAD_GATEWAY)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class AddTorrent(APIView):
     """
     Adds a magnet or torrent link to the user's Seedr account.
     """
+    authentication_classes = [
+        CsrfExemptSessionAuthentication,
+        TVDeviceSessionAuthentication,
+        AndroidTVTokenAuthentication,
+    ]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -214,10 +229,16 @@ class AddTorrent(APIView):
         return self.get(request)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class DeleteTorrent(APIView):
     """
     Deletes a torrent task by ID.
     """
+    authentication_classes = [
+        CsrfExemptSessionAuthentication,
+        TVDeviceSessionAuthentication,
+        AndroidTVTokenAuthentication,
+    ]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
@@ -241,10 +262,16 @@ class DeleteTorrent(APIView):
         return self.get(request, id)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class DeleteFolder(APIView):
     """
     Deletes a folder by ID.
     """
+    authentication_classes = [
+        CsrfExemptSessionAuthentication,
+        TVDeviceSessionAuthentication,
+        AndroidTVTokenAuthentication,
+    ]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
@@ -270,10 +297,16 @@ class DeleteFolder(APIView):
         return self.get(request, id)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class DeleteFile(APIView):
     """
     Deletes a file by ID.
     """
+    authentication_classes = [
+        CsrfExemptSessionAuthentication,
+        TVDeviceSessionAuthentication,
+        AndroidTVTokenAuthentication,
+    ]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id, fid=None):

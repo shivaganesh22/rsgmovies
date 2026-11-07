@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="20dp">
+
+    <!-- Clean Title Header -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Live TV"
+        android:textColor="@color/text_white"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Live TV Search Bar Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/media_card_focus_bg"
+        android:paddingHorizontal="14dp"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔍"
+            android:textSize="16sp"
+            android:layout_marginEnd="10dp" />
+
+        <EditText
+            android:id="@+id/et_livetv_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Search channels (e.g. Star, Zee, Sports, News)..."
+            android:textColorHint="@color/text_muted"
+            android:textColor="@color/text_white"
+            android:textSize="14sp"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:nextFocusDown="@+id/rv_livetv_categories" />
+
+        <Button
+            android:id="@+id/btn_clear_livetv_search"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:text="✕"
+            android:textColor="@color/text_secondary"
+            android:background="@drawable/nav_item_selector"
+            android:visibility="gone"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- Category Pills Bar -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_livetv_categories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:nextFocusUp="@+id/et_livetv_search"
+        android:nextFocusDown="@+id/rv_livetv_grid"
+        android:layout_marginBottom="14dp" />
+
+    <!-- Grid Content Area -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_livetv_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:focusable="true"
+            android:nextFocusUp="@+id/rv_livetv_categories"
+            android:paddingBottom="40dp" />
+
+        <ProgressBar
+            android:id="@+id/pb_livetv_loading"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/primary_light"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_livetv_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No channels found"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</LinearLayout>

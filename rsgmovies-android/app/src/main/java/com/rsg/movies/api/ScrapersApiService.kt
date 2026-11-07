@@ -35,4 +35,13 @@ interface ScrapersApiService {
     suspend fun getTamilmvMovie(
         @Query("link") link: String
     ): Response<TamilmvMovieDetailResponse>
+
+
+    // ======================== LIVE TV ========================
+
+    @GET("react/livetv/channels/")
+    suspend fun getLiveTvChannels(
+        @Query("category") category: String = "",
+        @Query("search") search: String = ""
+    ): Response<LiveTvResponse>
 }

@@ -153,6 +153,13 @@ class ModernMovieboxScreenFragment : Fragment() {
     }
 
     private fun loadMovieboxData() {
+        val cached = com.rsg.movies.providers.ContentCache.get<List<MovieboxOperatingItem>>("moviebox_home_operating")
+        if (!cached.isNullOrEmpty()) {
+            pbLoading.visibility = View.GONE
+            bindMovieboxHome(cached)
+            return
+        }
+
         pbLoading.visibility = View.VISIBLE
         llError.visibility = View.GONE
 
@@ -162,6 +169,7 @@ class ModernMovieboxScreenFragment : Fragment() {
                 pbLoading.visibility = View.GONE
                 if (resp.isSuccessful && resp.body()?.data != null) {
                     val operatingList = resp.body()!!.data!!.operatingList ?: emptyList()
+                    com.rsg.movies.providers.ContentCache.put("moviebox_home_operating", operatingList)
                     bindMovieboxHome(operatingList)
                 } else {
                     showError()

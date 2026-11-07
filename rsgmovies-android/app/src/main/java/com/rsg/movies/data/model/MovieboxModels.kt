@@ -135,7 +135,7 @@ data class MovieboxDetailData(
 
 data class MovieboxDubItem(
     @SerializedName("subject_id", alternate = ["subjectId", "id"]) val subject_id: JsonElement? = null,
-    @SerializedName("lang_name", alternate = ["language", "name", "title"]) val lang_name: String? = null,
+    @SerializedName("lang_name", alternate = ["lanName"]) val lang_name: String? = null,
     val language: String? = null,
     val name: String? = null
 ) : Serializable {
@@ -157,6 +157,7 @@ data class MovieboxDubItem(
 
 data class MovieboxSeasonItem(
     val season: Int? = 1,
+    @SerializedName("episode_count", alternate = ["maxEp", "episodeCount"]) val episode_count: Int? = 1,
     val episodes: List<MovieboxEpisodeItem>? = null
 ) : Serializable
 
@@ -171,20 +172,50 @@ data class MovieboxStreamsResponse(
 ) : Serializable
 
 data class MovieboxStreamItem(
-    val id: Long? = null,
+    val id: Any? = null,
     val name: String? = null,
     @SerializedName("quality_value") val quality_value: Int? = null,
     val resolution: Int? = null,
+    val quality: String? = null,
+    val format: String? = null,
+    val source: String? = null,
+    @SerializedName("size_mb") val size_mb: Double? = null,
     val url: String? = null,
     val headers: Map<String, String>? = null,
     val cookie: String? = null
 ) : Serializable {
 
+    fun getDisplayFormat(): String {
+        val f = format?.trim()?.uppercase()
+        if (!f.isNullOrBlank()) return f
+        if (source?.contains("dash", ignoreCase = true) == true || url?.contains(".mpd", ignoreCase = true) == true) {
+            return "DASH"
+        }
+        return "MP4"
+    }
+
     fun getQualityLabel(): String {
-        if (!name.isNullOrBlank()) return name
+        val q = quality?.trim()
+        if (!q.isNullOrBlank()) return q
         if (resolution != null && resolution > 0) return "${resolution}p"
         if (quality_value != null && quality_value > 0) return "${quality_value}p"
+        if (!name.isNullOrBlank()) return name
         return "HD"
+    }
+
+    fun getDisplayBadge(): String {
+        return "${getDisplayFormat()} ${getQualityLabel()}"
+    }
+
+    fun isMp4(): Boolean {
+        return getDisplayFormat() == "MP4"
+    }
+
+    fun getNumericQuality(): Int {
+        if (quality_value != null && quality_value > 0) return quality_value
+        if (resolution != null && resolution > 0) return resolution
+        val match = Regex("""(\d{3,4})""").find(quality ?: "")
+        return match?.groupValues?.get(1)?.toIntOrNull() ?: 720
     }
 }
 

@@ -114,6 +114,15 @@ class ModernTamilmvScreenFragment : Fragment() {
     }
 
     private fun loadTamilmv() {
+        val cached = com.rsg.movies.providers.ContentCache.get<List<TamilmvItem>>("tamilmv_feed_items")
+        if (!cached.isNullOrEmpty()) {
+            pbLoading.visibility = View.GONE
+            allReleases.clear()
+            allReleases.addAll(cached)
+            applyFilter()
+            return
+        }
+
         pbLoading.visibility = View.VISIBLE
         tvEmpty.visibility = View.GONE
 
@@ -124,6 +133,7 @@ class ModernTamilmvScreenFragment : Fragment() {
                 if (resp.isSuccessful && !resp.body()?.items.isNullOrEmpty()) {
                     allReleases.clear()
                     allReleases.addAll(resp.body()!!.items!!)
+                    com.rsg.movies.providers.ContentCache.put("tamilmv_feed_items", allReleases)
                     applyFilter()
                 } else {
                     tvEmpty.visibility = View.VISIBLE

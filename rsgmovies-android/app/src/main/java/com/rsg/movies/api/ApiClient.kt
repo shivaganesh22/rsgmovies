@@ -37,9 +37,13 @@ object ApiClient {
 
     private val authInterceptor = Interceptor { chain ->
         val original = chain.request()
+        val currentHost = original.url.host
+        val baseOrigin = "https://$currentHost"
         val builder = original.newBuilder()
             .header("X-Client", "TV")
             .header("X-Platform", "AndroidTV")
+            .header("Referer", "$baseOrigin/")
+            .header("Origin", baseOrigin)
 
         val token = appContext?.let { ConfigManager.getAuthToken(it) }
         if (!token.isNullOrBlank() && !original.url.encodedPath.contains("/api/tv/auth/")) {
@@ -154,11 +158,15 @@ object ApiClient {
         builder.build()
     }
 
+    private val gson: com.google.gson.Gson = com.google.gson.GsonBuilder()
+        .setLenient()
+        .create()
+
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 
@@ -186,7 +194,7 @@ object ApiClient {
         Retrofit.Builder()
             .baseUrl(MovieboxApiService.MOVIEBOX_BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 

@@ -8,7 +8,7 @@
     android:paddingEnd="24dp"
     android:paddingTop="20dp">
 
-    <!-- Header: Title, Description & Search Input -->
+    <!-- Header: Clean Title & Search Filter -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,53 +16,20 @@
         android:gravity="center_vertical"
         android:layout_marginBottom="12dp">
 
-        <LinearLayout
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/badge_bg"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="3dp"
-                android:layout_marginBottom="4dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="✨ 1TamilMV Live Feed"
-                    android:textColor="#34d399"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TamilMV Releases"
-                android:textColor="@color/text_white"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Latest torrent releases with direct magnets and Seedr cloud downloads"
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
+            android:text="TamilMV"
+            android:textColor="@color/text_white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
         <!-- Search input -->
         <EditText
             android:id="@+id/et_tamilmv_search"
             android:layout_width="220dp"
-            android:layout_height="38dp"
+            android:layout_height="36dp"
             android:background="@drawable/nav_item_selector"
             android:hint="Filter releases..."
             android:textColorHint="@color/text_muted"

@@ -114,6 +114,13 @@ class MovierulzDetailActivity : FragmentActivity() {
             return
         }
 
+        val cacheKey = "movierulz_detail_$movieSlug"
+        val cached = com.rsg.movies.providers.ContentCache.get<com.rsg.movies.data.model.MovierulzMovieDetailResponse>(cacheKey)
+        if (cached != null) {
+            bindDetailData(cached)
+            return
+        }
+
         pbLoading.visibility = View.VISIBLE
         nsvDetail.visibility = View.GONE
 
@@ -121,49 +128,61 @@ class MovierulzDetailActivity : FragmentActivity() {
             try {
                 val resp = ApiClient.scrapersApi.getMovierulzMovie(movieSlug)
                 pbLoading.visibility = View.GONE
-                nsvDetail.visibility = View.VISIBLE
 
                 if (resp.isSuccessful && resp.body() != null) {
                     val body = resp.body()!!
-                    val details = body.details
-                    if (details != null) {
-                        tvTitle.text = details.name?.ifBlank { null } ?: movieName
-
-                        if (!details.quality.isNullOrBlank()) {
-                            tvQuality.text = details.quality
-                        }
-
-                        if (!details.image.isNullOrBlank()) {
-                            Glide.with(this@MovierulzDetailActivity)
-                                .load(details.image)
-                                .placeholder(R.drawable.ic_placeholder)
-                                .into(ivPoster)
-                        }
-
-                        val meta = details.meta
-                        if (!meta.isNullOrEmpty()) {
-                            val metaText = meta.entries.joinToString("  •  ") { "${it.key}: ${it.value}" }
-                            tvMeta.text = metaText
-                            tvMeta.visibility = View.VISIBLE
-                        } else {
-                            tvMeta.visibility = View.GONE
-                        }
-                    }
-
-                    val links = body.links ?: emptyList()
-                    torrentLinks.clear()
-                    torrentLinks.addAll(links)
-                    linkAdapter.notifyDataSetChanged()
-
-                    tvLinksHeader.text = "Available Torrents & Magnet Links (${torrentLinks.size})"
+                    com.rsg.movies.providers.ContentCache.put(cacheKey, body)
+                    bindDetailData(body)
                 } else {
+                    nsvDetail.visibility = View.VISIBLE
                     Toast.makeText(this@MovierulzDetailActivity, "Could not load movie details", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 pbLoading.visibility = View.GONE
+                nsvDetail.visibility = View.VISIBLE
                 Toast.makeText(this@MovierulzDetailActivity, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun bindDetailData(body: com.rsg.movies.data.model.MovierulzMovieDetailResponse) {
+        pbLoading.visibility = View.GONE
+        nsvDetail.visibility = View.VISIBLE
+
+        val details = body.details
+        if (details != null) {
+            tvTitle.text = details.name?.ifBlank { null } ?: movieName
+
+            if (!details.quality.isNullOrBlank()) {
+                tvQuality.text = details.quality
+            }
+
+            val img = details.image?.ifBlank { null } ?: movieImage
+            if (!img.isNullOrBlank()) {
+                Glide.with(this@MovierulzDetailActivity)
+                    .load(img)
+                    .placeholder(R.drawable.ic_placeholder)
+                    .into(ivPoster)
+            }
+
+            val formattedMeta = details.getFormattedMeta()
+            if (formattedMeta.isNotBlank()) {
+                tvMeta.text = formattedMeta
+                tvMeta.visibility = View.VISIBLE
+            } else if (!details.desc.isNullOrBlank()) {
+                tvMeta.text = details.desc
+                tvMeta.visibility = View.VISIBLE
+            } else {
+                tvMeta.visibility = View.GONE
+            }
+        }
+
+        val links = body.links ?: emptyList()
+        torrentLinks.clear()
+        torrentLinks.addAll(links)
+        linkAdapter.notifyDataSetChanged()
+
+        tvLinksHeader.text = "Available Torrents & Magnet Links (${torrentLinks.size})"
     }
 
     private fun addToSeedr(magnetLink: String) {
@@ -172,11 +191,19 @@ class MovierulzDetailActivity : FragmentActivity() {
 
         lifecycleScope.launch {
             try {
-                val resp = ApiClient.filesApi.addTorrent(token, magnetLink)
+                val body = mapOf("link" to magnetLink)
+                val resp = ApiClient.filesApi.addTorrent(token, body, magnetLink)
                 if (resp.isSuccessful) {
                     Toast.makeText(this@MovierulzDetailActivity, "Torrent added to Seedr! Downloading in cloud.", Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(this@MovierulzDetailActivity, "Failed to add torrent to Seedr", Toast.LENGTH_SHORT).show()
+                    val errMsg = try {
+                        val errStr = resp.errorBody()?.string() ?: ""
+                        val json = org.json.JSONObject(errStr)
+                        json.optJSONObject("error")?.optString("message") 
+                            ?: json.optString("detail") 
+                            ?: json.optString("message")
+                    } catch (_: Exception) { null }
+                    Toast.makeText(this@MovierulzDetailActivity, errMsg ?: "Failed to add torrent to Seedr", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@MovierulzDetailActivity, "Error adding to Seedr: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
